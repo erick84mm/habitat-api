@@ -81,12 +81,12 @@ class ViewpointData:
 
     def __init__(
         self, image_id: str,
-        pos: List[float],
-        rot: List[float],
+        position: List[float],
+        rotation: List[float],
         radius: Optional[float] = 2.0
     ):
         self.image_id = image_id
-        self.view_point = AgentState(pos,rot)
+        self.view_point = AgentState(position,rotation)
         self.radius = radius
 
 

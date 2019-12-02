@@ -91,5 +91,5 @@ class R2RDatasetV1(Dataset):
                 rot = self.connectivity[scan][viewpoint]["start_rotation"]
                 episode.path[v_index] = ViewpointData(
                     image_id=viewpoint,
-                    pos=pos,
-                    rot=rot)
+                    position=pos,
+                    rotation=rot)
