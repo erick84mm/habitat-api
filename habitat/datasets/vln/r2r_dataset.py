@@ -39,8 +39,8 @@ class R2RDatasetV1(Dataset):
     """
 
     episodes: List[VLNEpisode]
-    answer_vocab: VocabDict
-    question_vocab: VocabDict
+    train_vocab: VocabDict
+    trainval_vocab: VocabDict
 
     @staticmethod
     def check_config_paths_exist(config: Config) -> bool:
