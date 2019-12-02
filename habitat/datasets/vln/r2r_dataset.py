@@ -73,6 +73,7 @@ class R2RDatasetV1(Dataset):
         )
 
         for ep_index, episode in enumerate(deserialized["episodes"]):
+            episode = VLNEpisode(**episode)
 
             try:
                 if not episode.scene_id:
@@ -81,8 +82,6 @@ class R2RDatasetV1(Dataset):
             except:
                 print(ep_index)
                 print(episode)
-
-            episode = VLNEpisode(**episode)
 
             if scenes_dir is not None:
                 if episode.scene_id.startswith(DEFAULT_SCENE_PATH_PREFIX):
