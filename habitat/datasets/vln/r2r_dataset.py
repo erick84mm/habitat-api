@@ -59,6 +59,7 @@ class R2RDatasetV1(Dataset):
 
         with open(config.CONNECTIVITY_PATH) as f:
             self.connectivity = json.load(f)
+            print(self.connectivity)
 
     def from_json(
         self, json_str: str, scenes_dir: Optional[str] = None
