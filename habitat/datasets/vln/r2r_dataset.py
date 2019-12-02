@@ -73,23 +73,27 @@ class R2RDatasetV1(Dataset):
         )
 
         for ep_index, episode in enumerate(deserialized["episodes"]):
-            episode = VLNEpisode(**episode)
+            if not episode.scene_id:
+                print("error")
+                print(episode)
+            else:
+                episode = VLNEpisode(**episode)
 
-            if scenes_dir is not None:
-                if episode.scene_id.startswith(DEFAULT_SCENE_PATH_PREFIX):
-                    episode.scene_id = episode.scene_id[
-                        len(DEFAULT_SCENE_PATH_PREFIX) :
-                    ]
-                episode.scene_id = os.path.join(scenes_dir, episode.scene_id)
-            episode.instruction = InstructionData(
-                instruction=episode.instruction
-            )
+                if scenes_dir is not None:
+                    if episode.scene_id.startswith(DEFAULT_SCENE_PATH_PREFIX):
+                        episode.scene_id = episode.scene_id[
+                            len(DEFAULT_SCENE_PATH_PREFIX) :
+                        ]
+                    episode.scene_id = os.path.join(scenes_dir, episode.scene_id)
+                episode.instruction = InstructionData(
+                    instruction=episode.instruction
+                )
 
-            for v_index, viewpoint in enumerate(episode.path):
-                scan = episode.scan
-                pos = self.connectivity[scan][viewpoint]["start_position"]
-                rot = self.connectivity[scan][viewpoint]["start_rotation"]
-                episode.path[v_index] = ViewpointData(
-                    image_id=viewpoint,
-                    view_point=AgentState(position=pos,rotation=rot)
-                    )
+                for v_index, viewpoint in enumerate(episode.path):
+                    scan = episode.scan
+                    pos = self.connectivity[scan][viewpoint]["start_position"]
+                    rot = self.connectivity[scan][viewpoint]["start_rotation"]
+                    episode.path[v_index] = ViewpointData(
+                        image_id=viewpoint,
+                        view_point=AgentState(position=pos,rotation=rot)
+                        )
