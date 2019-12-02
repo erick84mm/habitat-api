@@ -91,7 +91,7 @@ class R2RDatasetV1(Dataset):
                 instruction=episode.instruction
             )
 
-            for v_index, viewpoint in enumerate(episode.path):
+            for v_index, viewpoint in enumerate(episode.goals):
                 scan = episode.scan
                 pos = self.connectivity[scan][viewpoint]["start_position"]
                 rot = self.connectivity[scan][viewpoint]["start_rotation"]
