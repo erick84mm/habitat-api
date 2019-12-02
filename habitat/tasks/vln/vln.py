@@ -105,15 +105,15 @@ class VLNEpisode(Episode):
             From heading_to_rotation in R2R.
         path: list of viewpoints in R2R path.
         instruction: the instruction in R2R.
+        scan: The name of the scan in R2R.
     """
-
     instruction: InstructionData = attr.ib(
         default=None, validator=not_none_validator
     )
     path: List[ViewpointData] = attr.ib(
         default=None, validator=not_none_validator
     )
-    start_room: Optional[ViewpointData] = None
+    scan: str = None
 
 
 
