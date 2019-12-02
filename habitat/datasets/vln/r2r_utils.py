@@ -146,7 +146,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                     scan = episode["scan"]
                     distance = 0
                     if "distance" in episode:
-                        distance = episode["distance"
+                        distance = episode["distance"]
                     habitat_episode = {
                         'episode_id': make_id(episode["path_id"], i),
                         'scene_id': SCENE_ID.format(scan=scan),
