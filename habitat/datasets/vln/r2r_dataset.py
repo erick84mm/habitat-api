@@ -66,7 +66,6 @@ class R2RDatasetV1(Dataset):
     ) -> None:
         deserialized = json.loads(json_str)
 
-        self.__dict__.update(deserialized)
         self.train_vocab = VocabDict(word_list=self.train_vocab["word_list"])
         self.trainval_vocab = VocabDict(
             word_list=self.trainval_vocab["word_list"]
