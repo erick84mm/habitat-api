@@ -68,9 +68,11 @@ class R2RDatasetV1(Dataset):
     ) -> None:
         deserialized = json.loads(json_str)
 
-        self.train_vocab = VocabDict(word_list=self.train_vocab["word_list"])
+        self.train_vocab = VocabDict(
+            word_list=deserialized["train_vocab"]["word_list"]
+        )
         self.trainval_vocab = VocabDict(
-            word_list=self.trainval_vocab["word_list"]
+            word_list=deserialized["trainval_vocab"]["word_list"]
         )
 
         for ep_index, r2r_episode in enumerate(deserialized["episodes"]):
