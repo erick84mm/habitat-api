@@ -8,20 +8,20 @@ from habitat.core.embodied_task import EmbodiedTask
 from habitat.core.registry import registry
 
 
-def _try_register_r2r_task():
+def _try_register_vln_task():
     try:
-        from habitat.tasks.r2r.r2r import Room2RoomTask
+        from habitat.tasks.vln.vln import VLNTask
 
-        has_r2rtask = True
+        has_vlntask = True
     except ImportError as e:
-        has_r2rtask = False
-        r2rtask_import_error = e
+        has_vlntask = False
+        vlntask_import_error = e
 
-    if has_r2rtask:
-        from habitat.tasks.r2r.r2r import Room2RoomTask
+    if has_vlntask:
+        from habitat.tasks.vln.vln import VLNTask
     else:
 
-        @registry.register_task(name="R2R-v0")
-        class Room2RoomTaskImportError(EmbodiedTask):
+        @registry.register_task(name="VLN-v1")
+        class VLNTaskImportError(EmbodiedTask):
             def __init__(self, *args, **kwargs):
-                raise r2rtask_import_error
+                raise vlntask_import_error

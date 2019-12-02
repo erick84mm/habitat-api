@@ -7,7 +7,7 @@
 import numpy as np
 import quaternion  # noqa # pylint: disable=unused-import
 
-def rotation_to_quartenion(r: np.array):
+def rotation_to_quaternion(r: np.array):
     r"""
     ref: https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
     """
@@ -98,7 +98,15 @@ def cartesian_to_polar(x, y):
     phi = np.arctan2(y, x)
     return rho, phi
 
+
 def polar_to_cartesian(phi, rho=1):
     x = rho * np.cos(phi)
     y = rho * np.sin(phi)
     return x, y
+
+def heading_to_rotation(heading):
+    x, y = polar_to_cartesian(heading)
+    heading_vector = [y, 0, -x]
+    rotation_matrix = np.array([[-x, 0, -y], [0, -1, 0], [-y, 0, x]])
+    quat =  rotation_to_quaternion(rotation_matrix)
+    return [quat.real] + quat.imag.tolist()

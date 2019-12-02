@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) National Institute of Advanced Industrial Science and Technology （AIST).
+# Copyright (c) Facebook, Inc. and its affiliates.
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
@@ -61,37 +61,59 @@ def merge_sim_episode_config(
 
 
 @attr.s(auto_attribs=True, kw_only=True)
-class NavigationGoal:
-    r"""Base class for a goal specification hierarchy.
+class InstructionData:
+    r"""Base class for Instruction processing.
     """
-
-    position: List[float] = attr.ib(default=None, validator=not_none_validator)
-    radius: Optional[float] = None
+    instruction: str
+    tokens: Optional[List[int]] = None
 
 
 @attr.s(auto_attribs=True, kw_only=True)
-class NavigationEpisode(Episode):
+class ViewpointData:
+    r"""Base class for a viewpoint specification.
+    """
+    image_id: str = attr.ib(default=None, validator=not_none_validator)
+    view_point: AgentState = None
+    radius: Optional[float] = None
+
+    def __init__(
+        self, image_id: str,
+        pos: List[float],
+        rot: List[float],
+        radius: Optional[float] = 2.0
+    ):
+        self.image_id = image_id
+        self.view_point = AgentState(pos,rot)
+        self.radius = radius
+
+
+
+@attr.s(auto_attribs=True, kw_only=True)
+class VLNEpisode(Episode):
     r"""Class for episode specification that includes initial position and
     rotation of agent, scene name, navigation instruction and optional shortest
     paths. An episode is a description of one task instance for the agent.
 
     Args:
-        episode_id: id of episode in the dataset, usually episode number
-        scene_id: id of scene in scene dataset
-        start_position: numpy ndarray containing 3 entries for (x, y, z)
+        episode_id: id of episode in the dataset. From path_id in R2R
+        scene_id: id of scene in scene dataset. From scan in R2R
+        start_position: numpy ndarray containing 3 entries for (x, y, z).
+            From viewpoint_to_xyz in R2R.
         start_rotation: numpy ndarray with 4 entries for (x, y, z, w)
             elements of unit quaternion (versor) representing agent 3D
-            orientation. ref: https://en.wikipedia.org/wiki/Versor
-        goals: list of goals specifications
-        start_room: room id
-        shortest_paths: list containing shortest paths to goals
+            orientation. ref: https://en.wikipedia.org/wiki/Versor.
+            From heading_to_rotation in R2R.
+        path: list of viewpoints in R2R path.
+        instruction: the instruction in R2R.
     """
 
-    goals: List[NavigationGoal] = attr.ib(
+    instruction: InstructionData = attr.ib(
         default=None, validator=not_none_validator
     )
-    start_room: Optional[str] = None
-    shortest_paths: Optional[List[ShortestPathPoint]] = None
+    path: List[ViewpointData] = attr.ib(
+        default=None, validator=not_none_validator
+    )
+    start_room: Optional[ViewpointData] = None
 
 
 
@@ -679,8 +701,8 @@ class LookDownAction(SimulatorTaskAction):
         return self._sim.step(HabitatSimActions.LOOK_DOWN)
 
 
-@registry.register_task(name="R2R-v0")
-class Room2RoomTask(EmbodiedTask):
+@registry.register_task(name="VLN-v1")
+class VLNTask(EmbodiedTask):
     def __init__(
         self, config: Config, sim: Simulator, dataset: Optional[Dataset] = None
     ) -> None:

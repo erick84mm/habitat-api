@@ -1,0 +1,30 @@
+ENVIRONMENT:
+  MAX_EPISODE_STEPS: 500
+SIMULATOR:
+  AGENT_0:
+    SENSORS: ['RGB_SENSOR', 'DEPTH_SENSOR']
+  FORWARD_STEP_SIZE: 0.25
+  TURN_ANGLE: 15
+  HABITAT_SIM_V0:
+    GPU_DEVICE_ID: 0
+  RGB_SENSOR:
+    WIDTH: 256
+    HEIGHT: 256
+    HFOV: 90
+  DEPTH_SENSOR:
+    WIDTH: 256
+    HEIGHT: 256
+TASK:
+  TYPE: VLN-v1
+  SUCCESS_DISTANCE: 3.0
+  SENSORS: ['HEADING_SENSOR']
+  MEASUREMENTS: ['SPL']
+  SPL:
+    TYPE: SPL
+    SUCCESS_DISTANCE: 3.0
+DATASET:
+  TYPE: VLNR2R-v1
+  SPLIT: train
+  DATA_PATH: "data/datasets/vln/r2r/v1/{split}/R2R_{split}.json.gz"
+  CONNECTIVITY_PATH: "data/datasets/vln/r2r/v1/connectivity/connectivity.json"
+  SCENES_DIR: "data/scene_datasets/"
