@@ -67,6 +67,9 @@ class InstructionData:
     instruction: str
     tokens: Optional[List[int]] = None
 
+    def __init__(self, instruction: str):
+        self.instruction = instruction
+
 
 @attr.s(auto_attribs=True, kw_only=True)
 class ViewpointData:
