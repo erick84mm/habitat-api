@@ -80,8 +80,7 @@ class R2RDatasetV1(Dataset):
                         len(DEFAULT_SCENE_PATH_PREFIX) :
                     ]
                 episode.scene_id = os.path.join(scenes_dir, episode.scene_id)
-            print(episode.instruction)
-            episode.instruction = InstructionData(episode.instruction)
+            episode.instruction = InstructionData(**episode.instruction)
 
             for v_index, viewpoint in enumerate(episode.path):
                 scan = episode.scan
