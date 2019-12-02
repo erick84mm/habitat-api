@@ -67,9 +67,6 @@ class InstructionData:
     instruction: str
     tokens: Optional[List[int]] = None
 
-    def __init__(self, instruction: str):
-        self.instruction = instruction
-
 
 @attr.s(auto_attribs=True, kw_only=True)
 class ViewpointData:
@@ -78,17 +75,6 @@ class ViewpointData:
     image_id: str = attr.ib(default=None, validator=not_none_validator)
     view_point: AgentState = None
     radius: Optional[float] = None
-
-    def __init__(
-        self, image_id: str,
-        position: List[float],
-        rotation: List[float],
-        radius: Optional[float] = 2.0
-    ):
-        self.image_id = image_id
-        self.view_point = AgentState(position,rotation)
-        self.radius = radius
-
 
 
 @attr.s(auto_attribs=True, kw_only=True)
