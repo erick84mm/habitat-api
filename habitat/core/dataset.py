@@ -408,7 +408,16 @@ class EpisodeIterator(Iterator):
         assert self.group_by_scene
 
         scene_sort_keys = {}
-        for e in episodes:
+        for ep_index, e in enumerate(episodes):
+
+            try:
+                if not e.scene_id:
+                    print("error", episode)
+                else:
+                    print(ep_index, episode.scene_id, ep_index)
+            except:
+                print(ep_index)
+                print(episode)
             if e.scene_id not in scene_sort_keys:
                 scene_sort_keys[e.scene_id] = len(scene_sort_keys)
 
