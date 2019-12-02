@@ -285,7 +285,9 @@ _C.DATASET.CONTENT_SCENES = ["*"]
 _C.DATASET.DATA_PATH = (
     "data/datasets/pointnav/habitat-test-scenes/v1/{split}/{split}.json.gz"
 )
-
+_C.DATASET.CONNECTIVITY_PATH = (
+    "data/datasets/vln/r2r/v1/connectivity/connectivity.json"
+)
 # -----------------------------------------------------------------------------
 
 
