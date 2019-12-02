@@ -144,6 +144,9 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                 for i, instr in enumerate(episode["instructions"]):
                     viewpoint = episode["path"][0]
                     scan = episode["scan"]
+                    distance = 0
+                    if "distance" in episode:
+                        distance = episode["distance"
                     habitat_episode = {
                         'episode_id': make_id(episode["path_id"], i),
                         'scene_id': SCENE_ID.format(scan=scan),
@@ -151,7 +154,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                             connectivity[scan][viewpoint]["start_position"],
                         'start_rotation':
                             heading_to_rotation(episode["heading"]),
-                        'info': {},
+                        'info':{"geodesic_distance": distance},
                         'path': episode["path"],
                         'instruction': instr,
                         'scan': scan
