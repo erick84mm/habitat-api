@@ -86,6 +86,9 @@ class R2RDatasetV1(Dataset):
 
             for v_index, viewpoint in enumerate(episode.path):
                 scan = episode.scan
+                print(self.connectivity[scan][viewpoint])
+                print("-"*100)
+                print(self.connectivity[scan]) 
                 pos = self.connectivity[scan][viewpoint]["start_position"]
                 rot = self.connectivity[scan][viewpoint]["start_rotation"]
                 episode.path[v_index] = ViewpointData(viewpoint, pos, rot)
