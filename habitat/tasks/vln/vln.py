@@ -47,8 +47,8 @@ def merge_sim_episode_config(
     sim_config.SCENE = episode.scene_id
     sim_config.freeze()
     if (
-        episode.start_position is not None
-        and episode.start_rotation is not None
+        episode.start_position is not None and
+        episode.start_rotation is not None
     ):
         agent_name = sim_config.AGENTS[sim_config.DEFAULT_AGENT_ID]
         agent_cfg = getattr(sim_config, agent_name)
@@ -103,7 +103,6 @@ class VLNEpisode(Episode):
         default=None, validator=not_none_validator
     )
     scan: str = None
-
 
 
 @registry.register_sensor
@@ -171,14 +170,17 @@ class EpisodicCompassSensor(HeadingSensor):
 
 @registry.register_sensor(name="GPSSensor")
 class EpisodicGPSSensor(Sensor):
-    r"""The agents current location in the coordinate frame defined by the episode,
-    i.e. the axis it faces along and the origin is defined by its state at t=0
+    r"""The agents current location in the coordinate frame defined by
+    the episode, i.e. the axis it faces along and the origin is defined
+    by its state at t=0
 
     Args:
         sim: reference to the simulator for calculating task observations.
-        config: Contains the DIMENSIONALITY field for the number of dimensions to express the agents position
+        config: Contains the DIMENSIONALITY field for the number of dimensions
+        to express the agents position
     Attributes:
-        _dimensionality: number of dimensions used to specify the agents position
+        _dimensionality: number of dimensions used to specify the agents
+        position
     """
 
     def __init__(
@@ -310,9 +312,9 @@ class SPL(Measure):
         )
 
         if (
-            hasattr(task, "is_stop_called")
-            and task.is_stop_called
-            and distance_to_target < self._config.SUCCESS_DISTANCE
+            hasattr(task, "is_stop_called") and
+            task.is_stop_called and
+            distance_to_target < self._config.SUCCESS_DISTANCE
         ):
             ep_success = 1
 
@@ -323,8 +325,8 @@ class SPL(Measure):
         self._previous_position = current_position
 
         self._metric = ep_success * (
-            self._start_end_episode_distance
-            / max(
+            self._start_end_episode_distance /
+            max(
                 self._start_end_episode_distance, self._agent_episode_distance
             )
         )
@@ -424,8 +426,8 @@ class TopDownMap(Measure):
             np.ceil(self._map_resolution[0] / MAP_THICKNESS_SCALAR)
         )
         self._top_down_map[
-            s_x - point_padding : s_x + point_padding + 1,
-            s_y - point_padding : s_y + point_padding + 1,
+            s_x - point_padding: s_x + point_padding + 1,
+            s_y - point_padding: s_y + point_padding + 1,
         ] = maps.MAP_SOURCE_POINT_INDICATOR
 
         # mark target point
@@ -437,8 +439,8 @@ class TopDownMap(Measure):
             self._map_resolution,
         )
         self._top_down_map[
-            t_x - point_padding : t_x + point_padding + 1,
-            t_y - point_padding : t_y + point_padding + 1,
+            t_x - point_padding: t_x + point_padding + 1,
+            t_y - point_padding: t_y + point_padding + 1,
         ] = maps.MAP_TARGET_POINT_INDICATOR
 
     def reset_metric(self, *args: Any, episode, **kwargs: Any):
@@ -456,7 +458,8 @@ class TopDownMap(Measure):
         self._previous_xy_location = (a_y, a_x)
         if self._config.DRAW_SHORTEST_PATH:
             # draw shortest path
-            self._shortest_path_points = self._sim.get_straight_shortest_path_points(
+            self._shortest_path_points =
+            self._sim.get_straight_shortest_path_points(
                 agent_position, episode.goals[0].position
             )
             self._shortest_path_points = [
@@ -484,12 +487,12 @@ class TopDownMap(Measure):
 
     def _clip_map(self, _map):
         return _map[
-            self._ind_x_min
-            - self._grid_delta : self._ind_x_max
-            + self._grid_delta,
-            self._ind_y_min
-            - self._grid_delta : self._ind_y_max
-            + self._grid_delta,
+            self._ind_x_min -
+            self._grid_delta: self._ind_x_max +
+            self._grid_delta,
+            self._ind_y_min -
+            self._grid_delta: self._ind_y_max +
+            self._grid_delta,
         ]
 
     def update_metric(self, episode, action, *args: Any, **kwargs: Any):
@@ -567,9 +570,9 @@ class TopDownMap(Measure):
                 agent_position,
                 self.get_polar_angle(),
                 fov=self._config.FOG_OF_WAR.FOV,
-                max_line_len=self._config.FOG_OF_WAR.VISIBILITY_DIST
-                * max(self._map_resolution)
-                / (self._coordinate_max - self._coordinate_min),
+                max_line_len=self._config.FOG_OF_WAR.VISIBILITY_DIST *
+                max(self._map_resolution) /
+                (self._coordinate_max - self._coordinate_min),
             )
 
 
@@ -622,8 +625,8 @@ class DistanceToGoal(Measure):
         self._metric = {
             "distance_to_target": distance_to_target,
             "start_distance_to_target": self._start_end_episode_distance,
-            "distance_delta": self._start_end_episode_distance
-            - distance_to_target,
+            "distance_delta": self._start_end_episode_distance -
+            distance_to_target,
             "agent_path_length": self._agent_episode_distance,
         }
 

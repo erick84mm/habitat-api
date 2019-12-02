@@ -47,10 +47,10 @@ class R2RDatasetV1(Dataset):
         return os.path.exists(config.DATA_PATH.format(split=config.SPLIT))
 
     def __init__(self, config: Config = None) -> None:
-        serialize_r2r(config)
-        self.episodes = []
-        self.train_vocab = []
-        self.trainval_vocab = []
+        serialize_r2r(config)  # R2R to Habitat convertion
+        self.episodes: List[VLNEpisode] = []
+        self.train_vocab: VocabDict = []
+        self.trainval_vocab: VocabDict = []
         self.connectivity = {}
 
         if config is None:
@@ -61,7 +61,6 @@ class R2RDatasetV1(Dataset):
 
         with gzip.open(config.DATA_PATH.format(split=config.SPLIT), "rt") as f:
             self.from_json(f.read(), scenes_dir=config.SCENES_DIR)
-
 
     def from_json(
         self, json_str: str, scenes_dir: Optional[str] = None
@@ -76,15 +75,12 @@ class R2RDatasetV1(Dataset):
         )
 
         for ep_index, r2r_episode in enumerate(deserialized["episodes"]):
-            try:
-                episode = VLNEpisode(**r2r_episode)
-            except:
-                print(ep_index)
+            episode = VLNEpisode(**r2r_episode)
 
             if scenes_dir is not None:
                 if episode.scene_id.startswith(DEFAULT_SCENE_PATH_PREFIX):
                     episode.scene_id = episode.scene_id[
-                        len(DEFAULT_SCENE_PATH_PREFIX) :
+                        len(DEFAULT_SCENE_PATH_PREFIX):
                     ]
                 episode.scene_id = os.path.join(scenes_dir, episode.scene_id)
             episode.instruction = InstructionData(
@@ -97,7 +93,7 @@ class R2RDatasetV1(Dataset):
                 rot = self.connectivity[scan][viewpoint]["start_rotation"]
                 episode.goals[v_index] = ViewpointData(
                     image_id=viewpoint,
-                    view_point=AgentState(position=pos,rotation=rot)
+                    view_point=AgentState(position=pos, rotation=rot)
                     )
 
             self.episodes.append(episode)

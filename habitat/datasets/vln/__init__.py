@@ -7,6 +7,7 @@
 from habitat.core.dataset import Dataset
 from habitat.core.registry import registry
 
+
 def _try_register_r2r_dataset():
     try:
         from habitat.datasets.vln.r2r_dataset import (
