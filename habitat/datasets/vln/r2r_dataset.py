@@ -14,7 +14,7 @@ from habitat.core.dataset import Dataset
 from habitat.core.registry import registry
 from habitat.core.simulator import AgentState
 from habitat.datasets.utils import VocabDict
-from habitat.tasks.vln.vln import VLNEpisode
+from habitat.tasks.vln.vln import VLNEpisode, InstructionData, ViewpointData
 from habitat.datasets.vln.r2r_utils import serialize_r2r
 
 DEFAULT_SCENE_PATH_PREFIX = "data/scene_datasets/"
