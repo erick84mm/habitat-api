@@ -73,8 +73,10 @@ class R2RDatasetV1(Dataset):
         )
 
         for ep_index, r2r_episode in enumerate(deserialized["episodes"]):
-            print(r2r_episode)
-            episode = VLNEpisode(**r2r_episode)
+            try:
+                episode = VLNEpisode(**r2r_episode)
+            except:
+                print(ep_index)
 
             if scenes_dir is not None:
                 if episode.scene_id.startswith(DEFAULT_SCENE_PATH_PREFIX):
