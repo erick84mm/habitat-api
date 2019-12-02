@@ -87,7 +87,7 @@ class R2RDatasetV1(Dataset):
                     print("error")
                     print(episode)
                 else:
-                    print(episode.scene_id)
+                    print(ep_index, episode.scene_id)
             except:
                 print(ep_index)
                 print(episode)
