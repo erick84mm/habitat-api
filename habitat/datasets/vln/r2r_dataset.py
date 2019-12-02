@@ -49,7 +49,7 @@ class R2RDatasetV1(Dataset):
     def __init__(self, config: Config = None) -> None:
         serialize_r2r(config)
         self.episodes = []
-        self.connectivity = []
+        self.connectivity = {}
 
         if config is None:
             return
@@ -88,7 +88,7 @@ class R2RDatasetV1(Dataset):
                 scan = episode.scan
                 print(self.connectivity[scan][viewpoint])
                 print("-"*100)
-                print(self.connectivity[scan]) 
+                print(self.connectivity[scan])
                 pos = self.connectivity[scan][viewpoint]["start_position"]
                 rot = self.connectivity[scan][viewpoint]["start_rotation"]
                 episode.path[v_index] = ViewpointData(viewpoint, pos, rot)
