@@ -8,7 +8,7 @@ from habitat.core.logging import logger
 from habitat.core.registry import registry
 from habitat.tasks.eqa import _try_register_eqa_task
 from habitat.tasks.nav import _try_register_nav_task
-from habitat.tasks.r2r import _try_register_r2r_task
+from habitat.tasks.vln import _try_register_r2r_task
 
 
 def make_task(id_task, **kwargs):
