@@ -93,3 +93,5 @@ class R2RDatasetV1(Dataset):
                     image_id=viewpoint,
                     view_point=AgentState(position=pos,rotation=rot)
                     )
+
+            self.episodes.append(episode)
