@@ -54,12 +54,12 @@ class R2RDatasetV1(Dataset):
         if config is None:
             return
 
+        with open(config.CONNECTIVITY_PATH) as f:
+            self.connectivity = json.load(f)
+
         with gzip.open(config.DATA_PATH.format(split=config.SPLIT), "rt") as f:
             self.from_json(f.read(), scenes_dir=config.SCENES_DIR)
 
-        with open(config.CONNECTIVITY_PATH) as f:
-            self.connectivity = json.load(f)
-            print(self.connectivity)
 
     def from_json(
         self, json_str: str, scenes_dir: Optional[str] = None
@@ -87,9 +87,6 @@ class R2RDatasetV1(Dataset):
 
             for v_index, viewpoint in enumerate(episode.path):
                 scan = episode.scan
-                print(self.connectivity[scan][viewpoint])
-                print("-"*100)
-                print(self.connectivity[scan])
                 pos = self.connectivity[scan][viewpoint]["start_position"]
                 rot = self.connectivity[scan][viewpoint]["start_rotation"]
                 episode.path[v_index] = ViewpointData(viewpoint, pos, rot)
