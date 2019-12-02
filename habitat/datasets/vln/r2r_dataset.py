@@ -49,6 +49,8 @@ class R2RDatasetV1(Dataset):
     def __init__(self, config: Config = None) -> None:
         serialize_r2r(config)
         self.episodes = []
+        self.train_vocab = []
+        self.trainval_vocab = []
         self.connectivity = {}
 
         if config is None:
