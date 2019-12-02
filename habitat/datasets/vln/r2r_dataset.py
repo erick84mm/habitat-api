@@ -80,7 +80,7 @@ class R2RDatasetV1(Dataset):
                     episode.scene_id = episode.scene_id[
                         len(DEFAULT_SCENE_PATH_PREFIX) :
                     ]
-                episode.scene_id = os.path.join(scenes_dir, episode.scene_id)
+                episode.scene_id = os.path.join(scenes_dir, episode.scene_id).strip()
 
             try:
                 if not episode.scene_id:
