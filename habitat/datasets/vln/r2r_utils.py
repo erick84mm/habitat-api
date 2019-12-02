@@ -155,7 +155,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                         'start_rotation':
                             heading_to_rotation(episode["heading"]),
                         'info':{"geodesic_distance": distance},
-                        'path': episode["path"],
+                        'goals': episode["path"],
                         'instruction': instr,
                         'scan': scan
                     }
