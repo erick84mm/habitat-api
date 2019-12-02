@@ -95,7 +95,7 @@ class R2RDatasetV1(Dataset):
                 scan = episode.scan
                 pos = self.connectivity[scan][viewpoint]["start_position"]
                 rot = self.connectivity[scan][viewpoint]["start_rotation"]
-                episode.path[v_index] = ViewpointData(
+                episode.goals[v_index] = ViewpointData(
                     image_id=viewpoint,
                     view_point=AgentState(position=pos,rotation=rot)
                     )
