@@ -72,8 +72,8 @@ class R2RDatasetV1(Dataset):
             word_list=self.trainval_vocab["word_list"]
         )
 
-        for ep_index, episode in enumerate(deserialized["episodes"]):
-            episode = VLNEpisode(**episode)
+        for ep_index, r2r_episode in enumerate(deserialized["episodes"]):
+            episode = VLNEpisode(**r2r_episode)
 
             if scenes_dir is not None:
                 if episode.scene_id.startswith(DEFAULT_SCENE_PATH_PREFIX):
