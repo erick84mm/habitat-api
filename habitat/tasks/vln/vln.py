@@ -311,10 +311,18 @@ class TurnLeftAction(SimulatorTaskAction):
 
 @registry.register_task_action
 class TurnRightAction(SimulatorTaskAction):
+    name: str = "TURN_RIGHT"
     def step(self, *args: Any, **kwargs: Any):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
         """
+
+        if args and 'num_steps' in args:
+            assert args['num_steps'] > 0, (
+                "TurnRightAction: A number of steps greater than 0 is needed."
+            )
+            for _ in range(args["num_steps"] - 1):
+                self._sim.step(HabitatSimActions.TURN_RIGHT)
         return self._sim.step(HabitatSimActions.TURN_RIGHT)
 
 
