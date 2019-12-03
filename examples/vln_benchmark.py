@@ -21,7 +21,7 @@ class RandomAgent(habitat.Agent):
         return dist <= self.dist_threshold_to_stop
 
     def act(self, observations):
-        if self._elapsed_steps == 0:
+        if self._sim._elapsed_steps == 0:
             # Turn right (direction choosing)
             action = "TURN_RIGHT"
             num_steps = random.randint(0,11)
