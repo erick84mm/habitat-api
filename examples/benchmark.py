@@ -28,7 +28,7 @@ def main():
 
     agent = ForwardOnlyAgent()
     benchmark = habitat.Benchmark(args.task_config)
-    metrics = benchmark.evaluate(agent, num_episodes=10)
+    metrics = benchmark.evaluate(agent, num_episodes=1000)
 
     for k, v in metrics.items():
         print("{}: {:.3f}".format(k, v))
