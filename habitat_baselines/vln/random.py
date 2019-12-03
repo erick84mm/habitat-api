@@ -8,7 +8,7 @@ import argparse
 
 import habitat
 
-class RandomAgent(habitat.Agent):
+class RandomAgent(habitat.agent):
     def __init__(self, success_distance, goal_sensor_uuid):
         self.dist_threshold_to_stop = success_distance
         self.goal_sensor_uuid = goal_sensor_uuid
