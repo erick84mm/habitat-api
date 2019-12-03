@@ -7,7 +7,6 @@
 import argparse
 
 import habitat
-from habitat.sims.habitat_simulator.actions import HabitatSimActions
 
 class RandomAgent(habitat.Agent):
     def __init__(self, success_distance, goal_sensor_uuid):
