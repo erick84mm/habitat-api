@@ -103,13 +103,13 @@ def main():
         "--task-config", type=str, default="configs/tasks/pointnav.yaml"
     )
     parser.add_argument(
-        "--num_episodes", type=int, default=100
+        "--num-episodes", type=int, default=100
     )
     args = parser.parse_args()
 
     agent = RandomAgent(3.0, "SPL")
     benchmark = VLNRandomBenchmark(args.task_config)
-    metrics = benchmark.evaluate(agent, num_episodes=1000)
+    metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
 
     for k, v in metrics.items():
         print("{}: {:.3f}".format(k, v))
