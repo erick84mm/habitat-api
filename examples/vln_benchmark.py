@@ -6,10 +6,12 @@
 
 import argparse
 import habitat
+import random
 
 from collections import defaultdict
 from typing import Dict, Optional
 from habitat.core.agent import Agent
+
 
 class VLNRandomBenchmark(habitat.Benchmark):
     def evaluate(
