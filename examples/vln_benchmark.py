@@ -49,16 +49,16 @@ class VLNRandomBenchmark(habitat.Benchmark):
                 c = 0
                 while not self._env.episode_over:
                     c += 1
-                    print("before action ", c)
+                    print("before action ", c, action)
                     action = agent.act(
                         observations,
                         self._env._elapsed_steps,
                         self._env._sim.previous_step_collided
                         )
 
-                    print("after action ", c)
+                    print("after action ", c, action)
                     observations = self._env.step(action)
-                    print("executing action ", c)
+                    print("executing action ", c, action)
 
                 metrics = self._env.get_metrics()
                 for m, v in metrics.items():
