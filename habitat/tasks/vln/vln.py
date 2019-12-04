@@ -316,8 +316,8 @@ class TurnRightAction(SimulatorTaskAction):
         ``step``.
         """
 
-        if args and 'num_steps' in args:
-            assert args['num_steps'] > 0, (
+        if kwargs and 'num_steps' in kwargs:
+            assert kwargs['num_steps'] > 0, (
                 "TurnRightAction: A number of steps greater than 0 is needed."
             )
             print("executing %d right steps" % args['num_steps'])
