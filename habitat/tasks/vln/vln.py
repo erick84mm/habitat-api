@@ -146,7 +146,6 @@ class HeadingSensor(Sensor):
 
         return self._quat_to_xy_heading(rotation_world_agent.inverse())
 
-
 @registry.register_measure
 class SPL(Measure):
     r"""SPL (Success weighted by Path Length)
