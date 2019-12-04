@@ -244,12 +244,14 @@ class Env:
         observations = self.task.step(
             action=action, episode=self.current_episode
         )
-
+        print("after task action is performed")
         self._task.measurements.update_measures(
             episode=self.current_episode, action=action, task=self.task
         )
+        print("after measurements are updated")
 
         self._update_step_stats()
+        print("after stats are updated")
 
         return observations
 
