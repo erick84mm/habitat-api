@@ -315,7 +315,7 @@ class TurnRightAction(SimulatorTaskAction):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
         """
-
+        
         if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 0:
             for _ in range(kwargs["num_steps"] - 1):
                 self._sim.step(HabitatSimActions.TURN_RIGHT)
