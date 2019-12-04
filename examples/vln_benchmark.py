@@ -44,6 +44,8 @@ class VLNRandomBenchmark(habitat.Benchmark):
                 agent.reset()
                 observations = self._env.reset()
                 print(self._env.current_episode.episode_id)
+                if self._env.current_episode.episode_id.startswith("5238"):
+                    continue
 
                 while not self._env.episode_over:
                     action = agent.act(
