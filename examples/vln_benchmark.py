@@ -46,7 +46,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
                     action = agent.act(
                         observations,
                         self._env._elapsed_steps,
-                        self._env._sim.previous_step_collided()
+                        self._env._sim.previous_step_collided
                         )
                     observations = self._env.step(action)
 
