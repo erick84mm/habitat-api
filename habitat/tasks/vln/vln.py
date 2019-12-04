@@ -316,10 +316,7 @@ class TurnRightAction(SimulatorTaskAction):
         ``step``.
         """
 
-        if kwargs and 'num_steps' in kwargs:
-            assert kwargs['num_steps'] > 0, (
-                "TurnRightAction: A number of steps greater than 0 is needed."
-            )
+        if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 0:
             for _ in range(kwargs["num_steps"] - 1):
                 self._sim.step(HabitatSimActions.TURN_RIGHT)
         return self._sim.step(HabitatSimActions.TURN_RIGHT)
