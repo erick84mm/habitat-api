@@ -79,7 +79,16 @@ class RandomAgent(habitat.Agent):
             # Turn right (direction choosing)
             action = "TURN_RIGHT"
             num_steps = random.randint(0,11)
-            return {"action": action, "action_args": {"num_steps": num_steps}}
+            if num_steps > 0:
+                return {
+                    "action": action,
+                    "action_args": {"num_steps": num_steps}
+                    }
+            else:
+                action = "MOVE_FORWARD"
+        elif elapsed_steps >= 5:
+            # Stop action after 5 tries.
+            action = "STOP"
         elif previous_step_collided:
             # Turn right until we can go forward
             action = "TURN_RIGHT"
