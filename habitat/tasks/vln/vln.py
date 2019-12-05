@@ -256,6 +256,7 @@ class AdjacentViewpointSensor(Sensor):
     def get_observation(
         self, observations, episode, *args: Any, **kwargs: Any
     ):
+        print("Get observations")
         abjacent_viewpoints = self._get_observation_space(
             scan=episode.scan,
             curr_viewpoint=episode.curr_viewpoint
