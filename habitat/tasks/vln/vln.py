@@ -187,7 +187,7 @@ class AdjacentViewpointSensor(Sensor):
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
         return heading_vector
 
-    def _unit_vector(vector):
+    def _unit_vector(self, vector):
         """ Returns the unit vector of the vector.  """
         return vector / np.linalg.norm(vector)
 
