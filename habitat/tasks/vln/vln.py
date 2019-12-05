@@ -174,7 +174,7 @@ class AdjacentViewpointSensor(Sensor):
         return SensorTypes.NULL  # Missing sensor type
 
     def _load_connectivity(self):
-        with open(config.CONNECTIVITY_PATH) as f:
+        with open(self.config.CONNECTIVITY_PATH) as f:
             data = json.load(f)
         return data
 
