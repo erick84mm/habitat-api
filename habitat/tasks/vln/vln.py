@@ -164,10 +164,7 @@ class AdjacentViewpointSensor(Sensor):
         self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
     ):
         self._sim = sim
-        if kwargs and "config" in kwargs:
-            print("kwargs config", kwargs["config"])
-        print("This is the config", config)
-        self._connectivity = self._load_connectivity(config.CONNECTIVITY_PATH)
+        self._connectivity = self._sim._connectivity
         super().__init__(config=config)
 
     def _get_uuid(self, *args: Any, **kwargs: Any):
@@ -175,11 +172,6 @@ class AdjacentViewpointSensor(Sensor):
 
     def _get_sensor_type(self, *args: Any, **kwargs: Any):
         return SensorTypes.NULL  # Missing sensor type
-
-    def _load_connectivity(self, path):
-        with open(path) as f:
-            data = json.load(f)
-        return data
 
     def _quat_to_xy_heading_vector(self, quat):
         direction_vector = np.array([0, 0, -1])
@@ -478,6 +470,7 @@ class VLNTask(EmbodiedTask):
     def __init__(
         self, config: Config, sim: Simulator, dataset: Optional[Dataset] = None
     ) -> None:
+        self._connectivity = self._load_connectivity()
         super().__init__(config=config, sim=sim, dataset=dataset)
 
     def overwrite_sim_config(
@@ -487,3 +480,9 @@ class VLNTask(EmbodiedTask):
 
     def _check_episode_is_active(self, *args: Any, **kwargs: Any) -> bool:
         return not getattr(self, "is_stop_called", False)
+
+
+    def _load_connectivity(self):
+        with open(self._config.CONNECTIVITY_PATH) as f:
+            data = json.load(f)
+        return data
