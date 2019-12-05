@@ -164,7 +164,7 @@ class AdjacentViewpointSensor(Sensor):
         self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
     ):
         self._sim = sim
-        self._connectivity = self._load_connectivity()
+        self._connectivity = self._load_connectivity(config.CONNECTIVITY_PATH)
         super().__init__(config=config)
 
     def _get_uuid(self, *args: Any, **kwargs: Any):
@@ -173,8 +173,8 @@ class AdjacentViewpointSensor(Sensor):
     def _get_sensor_type(self, *args: Any, **kwargs: Any):
         return SensorTypes.NULL  # Missing sensor type
 
-    def _load_connectivity(self):
-        with open(self._config.CONNECTIVITY_PATH) as f:
+    def _load_connectivity(self, path):
+        with open(path) as f:
             data = json.load(f)
         return data
     def _quat_to_xy_heading_vector(self, quat):
