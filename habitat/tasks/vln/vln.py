@@ -229,8 +229,9 @@ class AdjacentViewpointSensor(Sensor):
         observations = []
         if kwargs and 'scan' in kwargs:
             scan = kwargs["scan"]
+            curr_viewpoint = kwargs["curr_viewpoint"]
             scan_inf = self._connectivity[scan]
-            viewpoint_inf = scan_inf[episode.curr_viewpoint]
+            viewpoint_inf = scan_inf[curr_viewpoint]
             for i in range(len(viewpoint_inf["visible"])):
                 if viewpoint_inf["visible"][i] \
                 and viewpoint_inf["unobstructed"][i]:
@@ -252,7 +253,10 @@ class AdjacentViewpointSensor(Sensor):
     def get_observation(
         self, observations, episode, *args: Any, **kwargs: Any
     ):
-        abjacent_viewpoints = self._get_observation_space(scan=episode.scan)
+        abjacent_viewpoints = self._get_observation_space(
+            scan=episode.scan,
+            curr_viewpoint=episode.curr_viewpoint
+            )
         accessible_viewpoints = []
         for viewpoint in abjacent_viewpoints:
             target_pos = viewpoint["start_position"]
