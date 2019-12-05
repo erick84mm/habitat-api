@@ -223,6 +223,7 @@ class AdjacentViewpointSensor(Sensor):
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
         if kwargs and 'scan' in kwargs:
+            scan = kwargs["scan"]
             observations = []
             scan_inf = self._connectivity[scan]
             viewpoint_inf = scan_inf[episode.curr_viewpoint]
