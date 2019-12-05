@@ -164,7 +164,7 @@ class AdjacentViewpointSensor(Sensor):
         self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
     ):
         self._sim = sim
-        if kwargs and kwargs["config"]:
+        if kwargs and "config" in kwargs:
             print("kwargs config", kwargs["config"])
         print("This is the config", config)
         self._connectivity = self._load_connectivity(config.CONNECTIVITY_PATH)
