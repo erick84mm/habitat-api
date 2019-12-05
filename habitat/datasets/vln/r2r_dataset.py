@@ -89,6 +89,7 @@ class R2RDatasetV1(Dataset):
             )
 
             for v_index, viewpoint in enumerate(episode.goals):
+                scan = episode.scan
                 viewpoint_dic = self.connectivity[scan]["viewpoints"][viewpoint]
                 pos = viewpoint_dic["start_position"]
                 rot = viewpoint_dic["start_rotation"]
