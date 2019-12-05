@@ -164,7 +164,9 @@ class AdjacentViewpointSensor(Sensor):
         self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
     ):
         self._sim = sim
-        self._connectivity = self._load_connectivity(config.CONNECTIVITY_PATH)
+        print("this is the config", config)
+        connectivity_path = getattr(config, "CONNECTIVITY_PATH", "")
+        self._connectivity = self._load_connectivity(connectivity_path)
         super().__init__(config=config)
 
     def _get_uuid(self, *args: Any, **kwargs: Any):
