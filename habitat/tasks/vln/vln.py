@@ -197,7 +197,7 @@ class AdjacentViewpointSensor(Sensor):
         v2_u = self._unit_vector(v2)
         return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
-    def _is_accessible(self, target_pos):
+    def _is_navigable(self, target_pos):
         '''
         For a viewpoint to be accessible it has to be within the
         horizontal field of View HFOV.
@@ -256,12 +256,12 @@ class AdjacentViewpointSensor(Sensor):
             scan=episode.scan,
             curr_viewpoint=episode.curr_viewpoint
             )
-        accessible_viewpoints = []
+        navigable_viewpoints = []
         for viewpoint in abjacent_viewpoints:
             target_pos = viewpoint["start_position"]
-            if self._is_accessible(target_pos):
-                accessible_viewpoints.append(viewpoint["image_id"])
-        return accessible_viewpoints
+            if self._is_navigable(target_pos):
+                navigable_viewpoints.append(viewpoint)
+        return navigable_viewpoints
 
 
 @registry.register_measure
@@ -407,6 +407,55 @@ class DistanceToGoal(Measure):
 
 
 @registry.register_task_action
+class TeleportAction(SimulatorTaskAction):
+    # TODO @maksymets: Propagate through Simulator class
+    COORDINATE_EPSILON = 1e-6
+    COORDINATE_MIN = -62.3241 - COORDINATE_EPSILON
+    COORDINATE_MAX = 90.0399 + COORDINATE_EPSILON
+
+    def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
+        return "TELEPORT"
+
+    def step(
+        self,
+        *args: Any,
+        position: List[float],
+        rotation: List[float],
+        **kwargs: Any
+    ):
+        r"""Update ``_metric``, this method is called from ``Env`` on each
+        ``step``.
+        """
+
+        if not isinstance(rotation, list):
+            rotation = list(rotation)
+
+        if not self._sim.is_navigable(position):
+            return self._sim.get_observations_at()
+
+        return self._sim.get_observations_at(
+            position=position, rotation=rotation, keep_agent_at_new_pose=True
+        )
+
+    @property
+    def action_space(self):
+        return spaces.Dict(
+            {
+                "position": spaces.Box(
+                    low=np.array([self.COORDINATE_MIN] * 3),
+                    high=np.array([self.COORDINATE_MAX] * 3),
+                    dtype=np.float32,
+                ),
+                "rotation": spaces.Box(
+                    low=np.array([-1.0, -1.0, -1.0, -1.0]),
+                    high=np.array([1.0, 1.0, 1.0, 1.0]),
+                    dtype=np.float32,
+                ),
+            }
+        )
+
+
+@registry.register_task_action
 class MoveForwardAction(SimulatorTaskAction):
     name: str = "MOVE_FORWARD"
 
@@ -414,9 +463,6 @@ class MoveForwardAction(SimulatorTaskAction):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
         """
-        # Check if is possible to move forward.
-        print("moving forward???")
-
         return self._sim.step(HabitatSimActions.MOVE_FORWARD)
 
 

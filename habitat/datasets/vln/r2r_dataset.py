@@ -89,9 +89,9 @@ class R2RDatasetV1(Dataset):
             )
 
             for v_index, viewpoint in enumerate(episode.goals):
-                scan = episode.scan
-                pos = self.connectivity[scan][viewpoint]["start_position"]
-                rot = self.connectivity[scan][viewpoint]["start_rotation"]
+                viewpoint_dic = self.connectivity[scan]["viewpoints"][viewpoint]
+                pos = viewpoint_dic["start_position"]
+                rot = viewpoint_dic["start_rotation"]
                 episode.goals[v_index] = ViewpointData(
                     image_id=viewpoint,
                     view_point=AgentState(position=pos, rotation=rot)
