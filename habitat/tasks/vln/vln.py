@@ -222,9 +222,9 @@ class AdjacentViewpointSensor(Sensor):
         return False
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
+        observations = []
         if kwargs and 'scan' in kwargs:
             scan = kwargs["scan"]
-            observations = []
             scan_inf = self._connectivity[scan]
             viewpoint_inf = scan_inf[episode.curr_viewpoint]
             for i in range(len(viewpoint_inf["visible"])):
@@ -243,7 +243,7 @@ class AdjacentViewpointSensor(Sensor):
                                     adjacent_viewpoint["start_rotation"]
                             }
                         )
-            return observations
+        return observations
 
     def get_observation(
         self, observations, episode, *args: Any, **kwargs: Any
