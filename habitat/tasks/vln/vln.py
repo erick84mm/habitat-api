@@ -181,7 +181,7 @@ class AdjacentViewpointSensor(Sensor):
             with open(path) as f:
                 data = json.load(f)
         return data
-        
+
     def _quat_to_xy_heading_vector(self, quat):
         direction_vector = np.array([0, 0, -1])
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
@@ -252,6 +252,8 @@ class AdjacentViewpointSensor(Sensor):
     def get_observation(
         self, observations, episode, *args: Any, **kwargs: Any
     ):
+        if kwargs and kwargs["config"]:
+            print(kwargs["config"])
         abjacent_viewpoints = self._get_observation_space(scan=episode.scan)
         accessible_viewpoints = []
         for viewpoint in abjacent_viewpoints:
