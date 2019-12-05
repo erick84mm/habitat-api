@@ -221,26 +221,28 @@ class AdjacentViewpointSensor(Sensor):
                 return True
         return False
 
-    def _get_observation_space(self, scan, *args: Any, **kwargs: Any):
-        observations = []
-        scan_inf = self._connectivity[scan]
-        viewpoint_inf = scan_inf[episode.curr_viewpoint]
-        for i in range(len(viewpoint_inf["visible"])):
-            if viewpoint_inf["visible"][i] and viewpoint_inf["unobstructed"][i]:
-                adjacent_viewpoint_name = scan_inf["itoidx"][i]
-                adjacent_viewpoint = scan_inf[adjacent_viewpoint_name]
+    def _get_observation_space(self, *args: Any, **kwargs: Any):
+        if kwargs and 'scan' in kwargs:
+            observations = []
+            scan_inf = self._connectivity[scan]
+            viewpoint_inf = scan_inf[episode.curr_viewpoint]
+            for i in range(len(viewpoint_inf["visible"])):
+                if viewpoint_inf["visible"][i]
+                and viewpoint_inf["unobstructed"][i]:
+                    adjacent_viewpoint_name = scan_inf["itoidx"][i]
+                    adjacent_viewpoint = scan_inf[adjacent_viewpoint_name]
 
-                if adjacent_viewpoint["included"]:
-                    observations.append(
-                        {
-                            "image_id": adjacent_viewpoint_name,
-                            "start_position":
-                                adjacent_viewpoint["start_position"],
-                            "start_rotation":
-                                adjacent_viewpoint["start_rotation"]
-                        }
-                    )
-        return observations
+                    if adjacent_viewpoint["included"]:
+                        observations.append(
+                            {
+                                "image_id": adjacent_viewpoint_name,
+                                "start_position":
+                                    adjacent_viewpoint["start_position"],
+                                "start_rotation":
+                                    adjacent_viewpoint["start_rotation"]
+                            }
+                        )
+            return observations
 
     def get_observation(
         self, observations, episode, *args: Any, **kwargs: Any
