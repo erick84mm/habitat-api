@@ -252,7 +252,7 @@ class AdjacentViewpointSensor(Sensor):
     def get_observation(
         self, observations, episode, *args: Any, **kwargs: Any
     ):
-        if kwargs and kwargs["config"]:
+        if kwargs and "config" in kwargs:
             print(kwargs["config"])
         abjacent_viewpoints = self._get_observation_space(scan=episode.scan)
         accessible_viewpoints = []
