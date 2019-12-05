@@ -106,7 +106,7 @@ class VLNEpisode(Episode):
         default=None, validator=not_none_validator
     )
     scan: str = None
-    curr_viewpoint: Optional[str] = goals[0].image_id
+    curr_viewpoint: Optional[str] = None
 
 
 @registry.register_sensor
