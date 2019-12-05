@@ -106,7 +106,7 @@ class VLNEpisode(Episode):
         default=None, validator=not_none_validator
     )
     scan: str = None
-    curr_viewpoint: Optional[str] = None
+    curr_viewpoint: Optional[str] = goals[0].image_id
 
 
 @registry.register_sensor
@@ -237,7 +237,6 @@ class AdjacentViewpointSensor(Sensor):
                 and viewpoint_inf["unobstructed"][i]:
                     adjacent_viewpoint_name = scan_inf["itoidx"][i]
                     adjacent_viewpoint = scan_inf[adjacent_viewpoint_name]
-
                     if adjacent_viewpoint["included"]:
                         observations.append(
                             {
