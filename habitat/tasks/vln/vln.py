@@ -470,6 +470,7 @@ class VLNTask(EmbodiedTask):
     def __init__(
         self, config: Config, sim: Simulator, dataset: Optional[Dataset] = None
     ) -> None:
+        print(config)
         self._connectivity = self._load_connectivity(config.CONNECTIVITY_PATH)
         super().__init__(config=config, sim=sim, dataset=dataset)
 
