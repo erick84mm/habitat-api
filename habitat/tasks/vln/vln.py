@@ -210,7 +210,7 @@ class AdjacentViewpointSensor(Sensor):
         target_vector = np.array(target_pos) - np.array(agent_state.pos)
 
         angle = self._angle_between(
-            heading_vector
+            heading_vector,
             target_vector
         )
 
