@@ -206,7 +206,7 @@ class AdjacentViewpointSensor(Sensor):
         rotation_world_agent = agent_state.rotation
         heading_vector = self._quat_to_xy_heading_vector(
                             rotation_world_agent.inverse()
-                         )
+        )
         target_vector = np.array(target_pos) - np.array(agent_state.pos)
 
         angle = self._angle_between(
@@ -218,10 +218,9 @@ class AdjacentViewpointSensor(Sensor):
         target_angle = self._config.HFOV * 2 * np.pi / 360 / 2
 
         if angle <= target_angle or
-           opposite_angle <= target_angle:
-            return True
+        opposite_angle <= target_angle:
+                return True
         return False
-
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
         observations = []
@@ -230,16 +229,18 @@ class AdjacentViewpointSensor(Sensor):
         viewpoint_inf = scan_inf[episode.curr_viewpoint]
         for i in range(len(viewpoint_inf["visible"])):
             if viewpoint_inf["visible"][i] and
-               viewpoint_inf["unobstructed"][i]:
+            viewpoint_inf["unobstructed"][i]:
                 adjacent_viewpoint_name = scan_inf["itoidx"][i]
                 adjacent_viewpoint = scan_inf[adjacent_viewpoint_name]
 
                 if adjacent_viewpoint["included"]:
                     observations.append(
                         {
-                        "image_id": adjacent_viewpoint_name,
-                        "start_position": adjacent_viewpoint["start_position"],
-                        "start_rotation": adjacent_viewpoint["start_rotation"]
+                            "image_id": adjacent_viewpoint_name,
+                            "start_position":
+                                adjacent_viewpoint["start_position"],
+                            "start_rotation":
+                                adjacent_viewpoint["start_rotation"]
                         }
                     )
         return observations
@@ -398,7 +399,6 @@ class DistanceToGoal(Measure):
         }
 
 
-
 @registry.register_task_action
 class MoveForwardAction(SimulatorTaskAction):
     name: str = "MOVE_FORWARD"
@@ -425,6 +425,7 @@ class TurnLeftAction(SimulatorTaskAction):
 @registry.register_task_action
 class TurnRightAction(SimulatorTaskAction):
     name: str = "TURN_RIGHT"
+
     def step(self, *args: Any, **kwargs: Any):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
