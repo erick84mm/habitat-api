@@ -7,6 +7,7 @@
 from typing import Any, Dict, List, Optional, Type, Union
 
 import attr
+import json
 import numpy as np
 from gym import spaces
 
@@ -164,7 +165,6 @@ class AdjacentViewpointSensor(Sensor):
         self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
     ):
         self._sim = sim
-        print("this is the config", config)
         connectivity_path = getattr(config, "CONNECTIVITY_PATH", "")
         self._connectivity = self._load_connectivity(connectivity_path)
         super().__init__(config=config)
@@ -252,8 +252,6 @@ class AdjacentViewpointSensor(Sensor):
     def get_observation(
         self, observations, episode, *args: Any, **kwargs: Any
     ):
-        if kwargs and "config" in kwargs:
-            print(kwargs["config"])
         abjacent_viewpoints = self._get_observation_space(scan=episode.scan)
         accessible_viewpoints = []
         for viewpoint in abjacent_viewpoints:
