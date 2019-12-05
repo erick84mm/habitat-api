@@ -176,9 +176,12 @@ class AdjacentViewpointSensor(Sensor):
         return SensorTypes.NULL  # Missing sensor type
 
     def _load_connectivity(self, path):
-        with open(path) as f:
-            data = json.load(f)
+        data = {}
+        if path:
+            with open(path) as f:
+                data = json.load(f)
         return data
+        
     def _quat_to_xy_heading_vector(self, quat):
         direction_vector = np.array([0, 0, -1])
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
