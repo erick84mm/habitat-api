@@ -217,8 +217,7 @@ class AdjacentViewpointSensor(Sensor):
         opposite_angle = 2 * np.pi - angle
         target_angle = self._config.HFOV * 2 * np.pi / 360 / 2
 
-        if angle <= target_angle or
-        opposite_angle <= target_angle:
+        if angle <= target_angle or opposite_angle <= target_angle:
                 return True
         return False
 
