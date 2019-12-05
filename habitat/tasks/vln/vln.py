@@ -237,7 +237,8 @@ class AdjacentViewpointSensor(Sensor):
                 and viewpoint_inf["unobstructed"][i] \
                 and viewpoint_inf["visible"][i]:
                     adjacent_viewpoint_name = scan_inf["idxtoid"][str(i)]
-                    adjacent_viewpoint = scan_inf[adjacent_viewpoint_name]
+                    adjacent_viewpoint = 
+                        scan_inf["viewpoints"][adjacent_viewpoint_name]
                     if adjacent_viewpoint["included"]:
                         observations.append(
                             {
