@@ -32,6 +32,7 @@ from habitat.tasks.utils import (
     cartesian_to_polar,
     quaternion_from_coeff,
     quaternion_rotate_vector,
+    heading_to_rotation,
 )
 from habitat.utils.visualizations import fog_of_war, maps
 
@@ -165,8 +166,8 @@ class AdjacentViewpointSensor(Sensor):
         self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
     ):
         self._sim = sim
-        connectivity_path = getattr(self._sim.config, "CONNECTIVITY_PATH", "")
-        print(self._sim.config)
+        print(config)
+        connectivity_path = getattr(config, "CONNECTIVITY_PATH", "")
         self._connectivity = self._load_connectivity(connectivity_path)
         super().__init__(config=config)
 
@@ -218,7 +219,7 @@ class AdjacentViewpointSensor(Sensor):
             heading_vector,
             target_vector
         )
-
+        rot = heading_to_rotation(angle)
         opposite_angle = 2 * np.pi - angle
         target_angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
 
