@@ -95,6 +95,8 @@ class VLNEpisode(Episode):
         goals: list of viewpoints in R2R path.
         instruction: the instruction in R2R.
         scan: The name of the scan in R2R.
+        curr_viewpoint: In the case we are running the task in discrete mode
+        this variable holds the image_id of the place the agent is at.
     """
     instruction: InstructionData = attr.ib(
         default=None, validator=not_none_validator
@@ -103,6 +105,7 @@ class VLNEpisode(Episode):
         default=None, validator=not_none_validator
     )
     scan: str = None
+    curr_viewpoint: Optional[str] = None
 
 
 @registry.register_sensor
@@ -145,6 +148,113 @@ class HeadingSensor(Sensor):
         rotation_world_agent = agent_state.rotation
 
         return self._quat_to_xy_heading(rotation_world_agent.inverse())
+
+
+@registry.register_sensor
+class AdjacentViewpointSensor(Sensor):
+    r"""Sensor for observing the adjacent viewpoints near the current
+    position of the agent. Created for the discrete VLNTask.
+
+    Args:
+        sim: reference to the simulator for calculating task observations.
+        config: config for the sensor.
+    """
+
+    def __init__(
+        self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
+    ):
+        self._sim = sim
+        self._connectivity = self._load_connectivity
+        super().__init__(config=config)
+
+    def _get_uuid(self, *args: Any, **kwargs: Any):
+        return "adjacentViewpoints"
+
+    def _get_sensor_type(self, *args: Any, **kwargs: Any):
+        return SensorTypes.NULL  # Missing sensor type
+
+    def _load_connectivity(self):
+        with open(config.CONNECTIVITY_PATH) as f:
+            data = json.load(f)
+        return data
+
+    def _quat_to_xy_heading_vector(self, quat):
+        direction_vector = np.array([0, 0, -1])
+        heading_vector = quaternion_rotate_vector(quat, direction_vector)
+        return heading_vector
+
+    def _unit_vector(vector):
+        """ Returns the unit vector of the vector.  """
+        return vector / np.linalg.norm(vector)
+
+    def _angle_between(v1, v2):
+        """ Returns the angle in radians between vectors 'v1' and 'v2'"""
+        v1_u = self._unit_vector(v1)
+        v2_u = self._unit_vector(v2)
+        return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
+
+    def _is_accessible(self, target_pos):
+        '''
+        For a viewpoint to be accessible it has to be within the
+        horizontal field of View HFOV.
+
+        This function returns True if the target position is
+        accessible from the curr_viewpoint given the previous
+        condition.
+        '''
+        agent_state = self._sim.get_agent_state()
+        rotation_world_agent = agent_state.rotation
+        heading_vector = self._quat_to_xy_heading_vector(
+                            rotation_world_agent.inverse()
+                         )
+        target_vector = np.array(target_pos) - np.array(agent_state.pos)
+
+        angle = self._angle_between(
+            heading_vector
+            target_vector
+        )
+
+        opposite_angle = 2 * np.pi - angle
+        target_angle = self._config.HFOV * 2 * np.pi / 360 / 2
+
+        if angle <= target_angle or
+           opposite_angle <= target_angle:
+            return True
+        return False
+
+
+    def _get_observation_space(self, *args: Any, **kwargs: Any):
+        observations = []
+        episode = kwargs["episode"]
+        scan_inf = self._connectivity[episode.scan]
+        viewpoint_inf = scan_inf[episode.curr_viewpoint]
+        for i in range(len(viewpoint_inf["visible"])):
+            if viewpoint_inf["visible"][i] and
+               viewpoint_inf["unobstructed"][i]:
+                adjacent_viewpoint_name = scan_inf["itoidx"][i]
+                adjacent_viewpoint = scan_inf[adjacent_viewpoint_name]
+
+                if adjacent_viewpoint["included"]:
+                    observations.append(
+                        {
+                        "image_id": adjacent_viewpoint_name,
+                        "start_position": adjacent_viewpoint["start_position"],
+                        "start_rotation": adjacent_viewpoint["start_rotation"]
+                        }
+                    )
+        return observations
+
+    def get_observation(
+        self, observations, episode, *args: Any, **kwargs: Any
+    ):
+        abjacent_viewpoints = _get_observation_space(episode)
+        accessible_viewpoints = []
+        for viewpoint in abjacent_viewpoints:
+            target_pos = viewpoint["start_position"]
+            if self._is_accessible(target_pos):
+                accessible_viewpoints.append(viewpoint["image_id"])
+        return accessible_viewpoints
+
 
 @registry.register_measure
 class SPL(Measure):
@@ -286,6 +396,7 @@ class DistanceToGoal(Measure):
             distance_to_target,
             "agent_path_length": self._agent_episode_distance,
         }
+
 
 
 @registry.register_task_action
