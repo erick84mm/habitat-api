@@ -165,7 +165,8 @@ class AdjacentViewpointSensor(Sensor):
         self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
     ):
         self._sim = sim
-        connectivity_path = getattr(config, "CONNECTIVITY_PATH", "")
+        connectivity_path = getattr(self._sim.config, "CONNECTIVITY_PATH", "")
+        print(connectivity_path)
         self._connectivity = self._load_connectivity(connectivity_path)
         super().__init__(config=config)
 
