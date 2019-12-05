@@ -237,12 +237,9 @@ class HabitatSim(Simulator):
         return self._sensor_suite.get_observations(sim_obs)
 
     def step(self, action):
-        print("step in habitat simulator")
         sim_obs = self._sim.step(action)
-        print("after sim obs in habitat simulator")
         self._prev_sim_obs = sim_obs
         observations = self._sensor_suite.get_observations(sim_obs)
-        print("after getting observations in habitat simulator")
         return observations
 
     def render(self, mode: str = "rgb") -> Any:
