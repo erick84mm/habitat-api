@@ -470,7 +470,7 @@ class VLNTask(EmbodiedTask):
     def __init__(
         self, config: Config, sim: Simulator, dataset: Optional[Dataset] = None
     ) -> None:
-        self._connectivity = self._load_connectivity()
+        self._connectivity = self._load_connectivity(config.CONNECTIVITY_PATH)
         super().__init__(config=config, sim=sim, dataset=dataset)
 
     def overwrite_sim_config(
@@ -482,7 +482,7 @@ class VLNTask(EmbodiedTask):
         return not getattr(self, "is_stop_called", False)
 
 
-    def _load_connectivity(self):
-        with open(self._config.CONNECTIVITY_PATH) as f:
+    def _load_connectivity(self, path):
+        with open(path) as f:
             data = json.load(f)
         return data
