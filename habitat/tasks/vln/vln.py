@@ -227,7 +227,7 @@ class AdjacentViewpointSensor(Sensor):
             scan_inf = self._connectivity[scan]
             viewpoint_inf = scan_inf[episode.curr_viewpoint]
             for i in range(len(viewpoint_inf["visible"])):
-                if viewpoint_inf["visible"][i]
+                if viewpoint_inf["visible"][i] \
                 and viewpoint_inf["unobstructed"][i]:
                     adjacent_viewpoint_name = scan_inf["itoidx"][i]
                     adjacent_viewpoint = scan_inf[adjacent_viewpoint_name]
