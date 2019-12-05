@@ -228,6 +228,7 @@ class AdjacentViewpointSensor(Sensor):
         return False
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
+        print("Get observation space", len(self._connectivity))
         observations = []
         if kwargs and 'scan' in kwargs:
             scan = kwargs["scan"]
