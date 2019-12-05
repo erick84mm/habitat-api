@@ -75,7 +75,6 @@ class R2RDatasetV1(Dataset):
         )
 
         for ep_index, r2r_episode in enumerate(deserialized["episodes"]):
-            print(r2r_episode)
             r2r_episode["curr_viewpoint"] = r2r_episode["goals"][0]
             episode = VLNEpisode(**r2r_episode)
 

@@ -43,22 +43,18 @@ class VLNRandomBenchmark(habitat.Benchmark):
             while count_episodes < num_episodes:
                 agent.reset()
                 observations = self._env.reset()
-                print(self._env.current_episode.episode_id)
                 if not self._env.current_episode.episode_id.startswith("5238"):
                     continue
                 c = 0
                 while not self._env.episode_over:
                     c += 1
-                    print("before action ", c)
                     action = agent.act(
                         observations,
                         self._env._elapsed_steps,
                         self._env._sim.previous_step_collided
                         )
 
-                    print("after action ", c, action)
                     observations = self._env.step(action)
-                    print("executing action ", c, action)
 
                 metrics = self._env.get_metrics()
                 for m, v in metrics.items():

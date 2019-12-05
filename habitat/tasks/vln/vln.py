@@ -231,11 +231,11 @@ class AdjacentViewpointSensor(Sensor):
             scan = kwargs["scan"]
             curr_viewpoint = kwargs["curr_viewpoint"]
             scan_inf = self._connectivity[scan]
-            viewpoint_inf = scan_inf[curr_viewpoint]
+            viewpoint_inf = scan_inf["viewpoints"][curr_viewpoint]
             for i in range(len(viewpoint_inf["visible"])):
                 if viewpoint_inf["visible"][i] \
                 and viewpoint_inf["unobstructed"][i]:
-                    adjacent_viewpoint_name = scan_inf["itoidx"][i]
+                    adjacent_viewpoint_name = scan_inf["idxtoid"][i]
                     adjacent_viewpoint = scan_inf[adjacent_viewpoint_name]
                     if adjacent_viewpoint["included"]:
                         observations.append(
