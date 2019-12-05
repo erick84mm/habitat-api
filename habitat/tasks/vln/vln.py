@@ -211,7 +211,7 @@ class AdjacentViewpointSensor(Sensor):
         heading_vector = self._quat_to_xy_heading_vector(
                             rotation_world_agent.inverse()
         )
-        target_vector = np.array(target_pos) - np.array(agent_state.pos)
+        target_vector = np.array(target_pos) - np.array(agent_state.position)
 
         angle = self._angle_between(
             heading_vector,
