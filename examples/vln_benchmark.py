@@ -52,7 +52,6 @@ class VLNRandomBenchmark(habitat.Benchmark):
                         observations,
                         self._env._elapsed_steps,
                         self._env._sim.previous_step_collided,
-                        self._env._current_episode,
                         )
 
                     observations = self._env.step(action)
