@@ -166,9 +166,7 @@ class AdjacentViewpointSensor(Sensor):
     def __init__(
         self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
     ):
-        print("Performed init")
         self._sim = sim
-        print(config)
         connectivity_path = getattr(config, "CONNECTIVITY_PATH", "")
         self._connectivity = self._load_connectivity(connectivity_path)
         super().__init__(config=config)
@@ -230,8 +228,6 @@ class AdjacentViewpointSensor(Sensor):
         return False
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
-        print("Get observation space", len(self._connectivity))
-        print("Has scan", 'scan' in kwargs)
         observations = []
         if kwargs and 'scan' in kwargs:
             scan = kwargs["scan"]
@@ -260,8 +256,6 @@ class AdjacentViewpointSensor(Sensor):
     def get_observation(
         self, observations, episode, *args: Any, **kwargs: Any
     ):
-        print("Get observations", len(self._connectivity))
-        print("Has episode", episode != None)
         abjacent_viewpoints = self._get_observation_space(
             scan=episode.scan,
             curr_viewpoint=episode.curr_viewpoint

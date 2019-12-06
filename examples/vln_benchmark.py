@@ -97,6 +97,44 @@ class RandomAgent(habitat.Agent):
         return {"action": action}
 
 
+class RandomDiscreteAgent(habitat.Agent):
+    def __init__(self, success_distance, goal_sensor_uuid):
+        self.dist_threshold_to_stop = success_distance
+        self.goal_sensor_uuid = goal_sensor_uuid
+
+    def reset(self):
+        pass
+
+    def is_goal_reached(self, observations):
+        dist = observations[self.goal_sensor_uuid][0]
+        return dist <= self.dist_threshold_to_stop
+
+    def act(self, observations, elapsed_steps, previous_step_collided):
+        if elapsed_steps == 0:
+            # Turn right (direction choosing)
+            action = "TURN_RIGHT"
+            num_steps = random.randint(0,11)
+            if num_steps > 0:
+                return {
+                    "action": action,
+                    "action_args": {"num_steps": num_steps}
+                    }
+        elif elapsed_steps >= 5:
+            # Stop action after 5 tries.
+            action = "STOP"
+        elif len(observations["adjacentViewpoints"]) > 0:
+            # Turn right until we can go forward
+            action = "TELEPORT"
+            pos = observations["adjacentViewpoints"][0]["start_position"]
+            rot = observations["adjacentViewpoints"][0]["start_rotation"]
+            return {
+                "action": action,
+                "action_args": {"position": pos, "rotation": rot}
+                }
+        else:
+            action = "TURN_RIGHT"
+        return {"action": action}
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
