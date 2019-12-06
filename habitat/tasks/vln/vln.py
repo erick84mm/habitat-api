@@ -216,13 +216,13 @@ class AdjacentViewpointSensor(Sensor):
         )
         target_vector = np.array(target_pos) - np.array(agent_state.position)
 
-        if heading_vector == target_vector:
-            return True
-
         angle = self._angle_between(
             heading_vector,
             target_vector
         )
+
+        if angle == 0:
+            return True
 
         rot = heading_to_rotation(angle)
         opposite_angle = 2 * np.pi - angle
