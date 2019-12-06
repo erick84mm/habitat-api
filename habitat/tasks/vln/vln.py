@@ -445,13 +445,10 @@ class TeleportAction(SimulatorTaskAction):
             rotation = list(rotation)
 
         if not self._sim.is_navigable(position):
-            print("Not navigable")
             return self._sim.get_observations_at()
 
-            print("navigable")
         if kwargs and "episode" in kwargs:
-            print("Navigable + episode")
-            kwargs["episode"].curr_viewpoint = target.view_point.image_id
+            kwargs["episode"].curr_viewpoint = target.image_id
             print("Teleporting from %s to %s \n" % (
                  kwargs["episode"].curr_viewpoint,
                  target.view_point.image_id
