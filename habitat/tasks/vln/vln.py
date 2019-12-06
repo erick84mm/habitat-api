@@ -451,7 +451,7 @@ class TeleportAction(SimulatorTaskAction):
             kwargs["episode"].curr_viewpoint = target.image_id
             print("Teleporting from %s to %s \n" % (
                  kwargs["episode"].curr_viewpoint,
-                 target.view_point.image_id
+                 target.image_id
                  )
              )
 
