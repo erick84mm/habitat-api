@@ -191,6 +191,8 @@ class AdjacentViewpointSensor(Sensor):
 
     def _unit_vector(self, vector):
         """ Returns the unit vector of the vector.  """
+        if not np.linalg.norm(vector):
+            return 0
         return vector / np.linalg.norm(vector)
 
     def _angle_between(self,v1, v2):
@@ -425,7 +427,7 @@ class TeleportAction(SimulatorTaskAction):
     COORDINATE_EPSILON = 1e-6
     COORDINATE_MIN = -62.3241 - COORDINATE_EPSILON
     COORDINATE_MAX = 90.0399 + COORDINATE_EPSILON
-    
+
     def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
         return "TELEPORT"
 
