@@ -79,6 +79,7 @@ class ViewpointData:
     radius: Optional[float] = None
 
 
+
 @attr.s(auto_attribs=True, kw_only=True)
 class VLNEpisode(Episode):
     r"""Class for episode specification that includes initial position and
@@ -165,6 +166,7 @@ class AdjacentViewpointSensor(Sensor):
     def __init__(
         self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
     ):
+        print("Performed init")
         self._sim = sim
         print(config)
         connectivity_path = getattr(config, "CONNECTIVITY_PATH", "")
@@ -259,7 +261,7 @@ class AdjacentViewpointSensor(Sensor):
         self, observations, episode, *args: Any, **kwargs: Any
     ):
         print("Get observations", len(self._connectivity))
-        print("Has episode", episode)
+        print("Has episode", episode != None)
         abjacent_viewpoints = self._get_observation_space(
             scan=episode.scan,
             curr_viewpoint=episode.curr_viewpoint
