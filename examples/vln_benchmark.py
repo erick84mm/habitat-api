@@ -56,7 +56,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
 
                     observations = self._env.step(
                         action,
-                        episode=self._env._current_episode
+                        action_args={"episode": self._env._current_episode}
                     )
 
 
