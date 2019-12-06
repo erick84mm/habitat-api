@@ -191,8 +191,6 @@ class AdjacentViewpointSensor(Sensor):
 
     def _unit_vector(self, vector):
         """ Returns the unit vector of the vector.  """
-        if not np.linalg.norm(vector):
-            return 0
         return vector / np.linalg.norm(vector)
 
     def _angle_between(self,v1, v2):
