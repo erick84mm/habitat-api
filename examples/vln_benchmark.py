@@ -11,6 +11,10 @@ import random
 from collections import defaultdict
 from typing import Dict, Optional
 from habitat.core.agent import Agent
+from habitat.tasks.vln.vln import ViewpointData
+from habitat.core.simulator import (
+    AgentState,
+)
 
 
 class VLNRandomBenchmark(habitat.Benchmark):
@@ -47,7 +51,8 @@ class VLNRandomBenchmark(habitat.Benchmark):
                     action = agent.act(
                         observations,
                         self._env._elapsed_steps,
-                        self._env._sim.previous_step_collided
+                        self._env._sim.previous_step_collided,
+                        self._env._current_episode,
                         )
 
                     observations = self._env.step(action)
@@ -121,14 +126,18 @@ class RandomDiscreteAgent(habitat.Agent):
         elif elapsed_steps >= 5:
             # Stop action after 5 tries.
             action = "STOP"
-        elif len(observations["adjacentViewpoints"]) > 0:
+        elif len(observations["adjacentViewpoints"]) > 1:
             # Turn right until we can go forward
             action = "TELEPORT"
-            pos = observations["adjacentViewpoints"][0]["start_position"]
-            rot = observations["adjacentViewpoints"][0]["start_rotation"]
+            pos = observations["adjacentViewpoints"][1]["start_position"]
+            rot = observations["adjacentViewpoints"][1]["start_rotation"]
+            image_id = observations["adjacentViewpoints"][1]["image_id"]
+
+            viewpoint = ViewpointData(image_id, AgentState(pos, rot))
+
             return {
                 "action": action,
-                "action_args": {"position": pos, "rotation": rot}
+                "action_args": {"target": viewpoint}
                 }
         else:
             action = "TURN_RIGHT"

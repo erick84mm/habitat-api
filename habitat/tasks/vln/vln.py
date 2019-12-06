@@ -234,6 +234,15 @@ class AdjacentViewpointSensor(Sensor):
             curr_viewpoint = kwargs["curr_viewpoint"]
             scan_inf = self._connectivity[scan]
             viewpoint_inf = scan_inf["viewpoints"][curr_viewpoint]
+            observations.append(
+                    {
+                        "image_id": curr_viewpoint,
+                        "start_position":
+                            viewpoint_inf["start_position"],
+                        "start_rotation":
+                            viewpoint_inf["start_rotation"]
+                    }
+            )
             for i in range(len(viewpoint_inf["visible"])):
                 if viewpoint_inf["included"] \
                 and viewpoint_inf["unobstructed"][i] \
@@ -412,24 +421,20 @@ class DistanceToGoal(Measure):
 
 @registry.register_task_action
 class TeleportAction(SimulatorTaskAction):
-    # TODO @maksymets: Propagate through Simulator class
-    COORDINATE_EPSILON = 1e-6
-    COORDINATE_MIN = -62.3241 - COORDINATE_EPSILON
-    COORDINATE_MAX = 90.0399 + COORDINATE_EPSILON
-
     def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
         return "TELEPORT"
 
     def step(
         self,
         *args: Any,
-        position: List[float],
-        rotation: List[float],
+        target: ViewpointData,
         **kwargs: Any
     ):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
         """
+        position = target.view_point.position
+        rotation = target.view_point.rotation
 
         if not isinstance(rotation, list):
             rotation = list(rotation)
