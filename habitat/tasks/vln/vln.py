@@ -441,7 +441,7 @@ class TeleportAction(SimulatorTaskAction):
         """
         position = target.view_point.position
         rotation = target.view_point.rotation
-
+        print(kwargs)
         if not isinstance(rotation, list):
             rotation = list(rotation)
 
