@@ -221,10 +221,12 @@ class AdjacentViewpointSensor(Sensor):
             target_vector
         )
 
+
         rot = heading_to_rotation(angle)
         opposite_angle = 2 * np.pi - angle
         target_angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
 
+        print("Angle %s, target angle %s, opposite angle %s" % (str(angle), str(target_angle), str(opposite_angle)))
         if angle <= target_angle or opposite_angle <= target_angle:
                 return True
         return False
