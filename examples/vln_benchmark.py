@@ -145,7 +145,7 @@ def main():
     )
     args = parser.parse_args()
 
-    agent = RandomAgent(3.0, "SPL")
+    agent = RandomDiscreteAgent(3.0, "SPL")
     benchmark = VLNRandomBenchmark(args.task_config)
     metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
 
