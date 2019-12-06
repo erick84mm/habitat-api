@@ -132,7 +132,10 @@ class RandomDiscreteAgent(habitat.Agent):
             rot = observations["adjacentViewpoints"][1]["start_rotation"]
             image_id = observations["adjacentViewpoints"][1]["image_id"]
 
-            viewpoint = ViewpointData(image_id, AgentState(pos, rot))
+            viewpoint = ViewpointData(
+                image_id=viewpoint,
+                view_point=AgentState(position=pos, rotation=rot)
+            )
 
             return {
                 "action": action,
