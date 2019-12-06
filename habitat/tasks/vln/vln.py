@@ -421,6 +421,11 @@ class DistanceToGoal(Measure):
 
 @registry.register_task_action
 class TeleportAction(SimulatorTaskAction):
+    # TODO @maksymets: Propagate through Simulator class
+    COORDINATE_EPSILON = 1e-6
+    COORDINATE_MIN = -62.3241 - COORDINATE_EPSILON
+    COORDINATE_MAX = 90.0399 + COORDINATE_EPSILON
+    
     def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
         return "TELEPORT"
 
