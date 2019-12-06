@@ -152,7 +152,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                         'episode_id': make_id(episode["path_id"], i),
                         'scene_id': SCENE_ID.format(scan=scan),
                         'start_position':
-                            connectivity[scan][viewpoint]["start_position"],
+                            connectivity[scan]["viewpoints"][viewpoint]["start_position"],
                         'start_rotation':
                             heading_to_rotation(episode["heading"]),
                         'info': {"geodesic_distance": distance},
