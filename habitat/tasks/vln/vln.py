@@ -111,6 +111,7 @@ class VLNEpisode(Episode):
     curr_viewpoint: Optional[str] = None
 
 
+
 @registry.register_sensor
 class HeadingSensor(Sensor):
     r"""Sensor for observing the agent's heading in the global coordinate
@@ -447,6 +448,9 @@ class TeleportAction(SimulatorTaskAction):
         if not self._sim.is_navigable(position):
             return self._sim.get_observations_at()
 
+        if kwargs and "episode" in kwargs:
+            kwargs["episode"].curr_viewpoint = target.view_point.image_id
+
         return self._sim.get_observations_at(
             position=position, rotation=rotation, keep_agent_at_new_pose=True
         )
@@ -477,6 +481,9 @@ class MoveForwardAction(SimulatorTaskAction):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
         """
+        if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 0:
+            for _ in range(kwargs["num_steps"] - 1):
+                self._sim.step(HabitatSimActions.MOVE_FORWARD)
         return self._sim.step(HabitatSimActions.MOVE_FORWARD)
 
 
@@ -486,6 +493,10 @@ class TurnLeftAction(SimulatorTaskAction):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
         """
+
+        if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 0:
+            for _ in range(kwargs["num_steps"] - 1):
+                self._sim.step(HabitatSimActions.TURN_LEFT)
         return self._sim.step(HabitatSimActions.TURN_LEFT)
 
 
@@ -525,6 +536,10 @@ class LookUpAction(SimulatorTaskAction):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
         """
+
+        if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 0:
+            for _ in range(kwargs["num_steps"] - 1):
+                self._sim.step(HabitatSimActions.LOOK_UP)
         return self._sim.step(HabitatSimActions.LOOK_UP)
 
 
@@ -534,6 +549,10 @@ class LookDownAction(SimulatorTaskAction):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
         """
+
+        if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 0:
+            for _ in range(kwargs["num_steps"] - 1):
+                self._sim.step(HabitatSimActions.LOOK_DOWN)
         return self._sim.step(HabitatSimActions.LOOK_DOWN)
 
 
