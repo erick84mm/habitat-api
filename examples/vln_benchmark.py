@@ -83,15 +83,15 @@ class RandomAgent(habitat.Agent):
         return dist <= self.dist_threshold_to_stop
 
     def act(self, observations, elapsed_steps, previous_step_collided):
+        action = ""
+        action_args = {}
+
         if elapsed_steps == 0:
             # Turn right (direction choosing)
             action = "TURN_RIGHT"
             num_steps = random.randint(0,11)
             if num_steps > 0:
-                return {
-                    "action": action,
-                    "action_args": {"num_steps": num_steps}
-                    }
+                action_args= {"num_steps": num_steps}
             else:
                 action = "MOVE_FORWARD"
         elif elapsed_steps >= 5:
@@ -102,7 +102,7 @@ class RandomAgent(habitat.Agent):
             action = "TURN_RIGHT"
         else:
             action = "MOVE_FORWARD"
-        return {"action": action}
+        return {"action": action, "action_args": action_args}
 
 
 class RandomDiscreteAgent(habitat.Agent):
@@ -118,15 +118,14 @@ class RandomDiscreteAgent(habitat.Agent):
         return dist <= self.dist_threshold_to_stop
 
     def act(self, observations, elapsed_steps, previous_step_collided):
+        action = ""
+        action_args = {}
         if elapsed_steps == 0:
             # Turn right (direction choosing)
             action = "TURN_RIGHT"
             num_steps = random.randint(0,11)
             if num_steps > 0:
-                return {
-                    "action": action,
-                    "action_args": {"num_steps": num_steps}
-                    }
+                action_args = {"num_steps": num_steps}
         elif elapsed_steps >= 5:
             # Stop action after 5 tries.
             action = "STOP"
@@ -141,14 +140,11 @@ class RandomDiscreteAgent(habitat.Agent):
                 image_id=image_id,
                 view_point=AgentState(position=pos, rotation=rot)
             )
+            action_args.update({"target": viewpoint})
 
-            return {
-                "action": action,
-                "action_args": {"target": viewpoint}
-                }
         else:
             action = "TURN_RIGHT"
-        return {"action": action}
+        return {"action": action, "action_args": action_args}
 
 def main():
     parser = argparse.ArgumentParser()
