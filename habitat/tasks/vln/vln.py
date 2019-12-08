@@ -225,7 +225,7 @@ class AdjacentViewpointSensor(Sensor):
         opposite_angle = 2 * np.pi - angle
         target_angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
 
-        print("Angle %s, target angle %s, opposite angle %s" % (str(angle), str(target_angle), str(opposite_angle)))
+        #print("Angle %s, target angle %s, opposite angle %s" % (str(angle), str(target_angle), str(opposite_angle)))
         if angle <= target_angle or opposite_angle <= target_angle:
                 return True
         return False
@@ -274,10 +274,10 @@ class AdjacentViewpointSensor(Sensor):
             curr_viewpoint=episode.curr_viewpoint
             )
         navigable_viewpoints = [adjacent_viewpoints[0]]
-        print("Adjacent viewpoints ", adjacent_viewpoints)
+        #print("Adjacent viewpoints ", adjacent_viewpoints)
         for viewpoint in adjacent_viewpoints[1:]:
             target_pos = viewpoint["start_position"]
-            print("processing Viewpoint %s" % viewpoint["image_id"])
+            #print("processing Viewpoint %s" % viewpoint["image_id"])
             if self._is_navigable(target_pos):
                 navigable_viewpoints.append(viewpoint)
         return navigable_viewpoints
@@ -455,11 +455,12 @@ class TeleportAction(SimulatorTaskAction):
         if kwargs and "episode" in kwargs:
             last_viewpoint = kwargs["episode"].curr_viewpoint
             kwargs["episode"].curr_viewpoint = target.image_id
-            print("Teleporting from %s to %s \n" % (
-                 last_viewpoint,
-                 target.image_id
-                 )
-             )
+
+            #print("Teleporting from %s to %s \n" % (
+            #     last_viewpoint,
+            #     target.image_id
+            #     )
+            # )
 
         return self._sim.get_observations_at(
             position=position, rotation=rotation, keep_agent_at_new_pose=True
