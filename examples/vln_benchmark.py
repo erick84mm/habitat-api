@@ -62,7 +62,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
 
                     print("Taking action %s from %s \n" % (action["action"], self._env._current_episode.curr_viewpoint))
                     observations = self._env.step(action)
-                    print("Result of Action \n", observations)
+                    print("Result of Action in position %s\n" %  self._env._current_episode.curr_viewpoint, observations)
 
 
                 metrics = self._env.get_metrics()
