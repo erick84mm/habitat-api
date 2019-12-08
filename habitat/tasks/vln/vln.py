@@ -222,8 +222,8 @@ class AdjacentViewpointSensor(Sensor):
         )
 
         rot = heading_to_rotation(angle)
-        print("Processing angle %s with rotation " % str(angle), rot)
-        print("\n")
+        #print("Processing angle %s with rotation " % str(angle), rot)
+        #print("\n")
         opposite_angle = 2 * np.pi - angle
         target_angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
 
@@ -278,12 +278,11 @@ class AdjacentViewpointSensor(Sensor):
             curr_viewpoint=episode.curr_viewpoint
             )
         navigable_viewpoints = [adjacent_viewpoints[0]]
-        print("Adjacent viewpoints ", adjacent_viewpoints)
+        #print("Adjacent viewpoints ", adjacent_viewpoints)
         for viewpoint in adjacent_viewpoints[1:]:
             target_pos = viewpoint["start_position"]
-            print("processing Viewpoint %s" % viewpoint["image_id"])
+            #print("processing Viewpoint %s" % viewpoint["image_id"])
             rel_rot = self._get_relative_rotation(target_pos)
-            print("this is the relative rotation ", rel_rot)
             if rel_rot:
                 navigable_viewpoints.append({
                     "image_id": viewpoint["image_id"],
@@ -291,7 +290,7 @@ class AdjacentViewpointSensor(Sensor):
                         viewpoint["start_position"],
                     "start_rotation": rel_rot
                 })
-        print("\nNavigable viewpoints", navigable_viewpoints)
+        #print("\nNavigable viewpoints", navigable_viewpoints)
         return navigable_viewpoints
 
 
