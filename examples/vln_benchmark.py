@@ -47,7 +47,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
             while count_episodes < num_episodes:
                 agent.reset()
                 observations = self._env.reset()
-                print(self._env._current_episode.curr_viewpoint, observations)
+                #print(self._env._current_episode.curr_viewpoint, observations)
                 while not self._env.episode_over:
                     action = agent.act(
                         observations,
@@ -60,12 +60,12 @@ class VLNRandomBenchmark(habitat.Benchmark):
                         }
                     )
 
-                    print("Taking action %s from %s \n" % (action["action"], self._env._current_episode.curr_viewpoint))
+                    #print("Taking action %s from %s \n" % (action["action"], self._env._current_episode.curr_viewpoint))
                     observations = self._env.step(action)
-                    print("Result of Action in position %s\n" %  self._env._current_episode.curr_viewpoint, observations)
+                    #print("Result of Action in position %s\n" %  self._env._current_episode.curr_viewpoint, observations)
                     state = self._env._sim.get_agent_state()
-                    print("Current position", state.position)
-                    print("Current rotation", state.rotation)
+                    #print("Current position", state.position)
+                    #print("Current rotation", state.rotation)
 
                 metrics = self._env.get_metrics()
                 for m, v in metrics.items():
