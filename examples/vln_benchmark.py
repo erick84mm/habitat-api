@@ -63,7 +63,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
                     print("Taking action %s from %s \n" % (action["action"], self._env._current_episode.curr_viewpoint))
                     observations = self._env.step(action)
                     print("Result of Action in position %s\n" %  self._env._current_episode.curr_viewpoint, observations)
-                    state = self._sim.get_agent_state()
+                    state = self._env._sim.get_agent_state()
                     print("Current position", state.position)
                     print("Current rotation", state.rotation)
 
