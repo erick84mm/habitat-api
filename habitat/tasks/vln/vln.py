@@ -200,12 +200,12 @@ class AdjacentViewpointSensor(Sensor):
         v2_u = self._unit_vector(v2)
         return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
-    def _is_navigable(self, target_pos):
+    def _get_relative_rotation(self, target_pos, restricted=True):
         '''
         For a viewpoint to be accessible it has to be within the
-        horizontal field of View HFOV.
+        horizontal field of View HFOV for the restricted rotation.
 
-        This function returns True if the target position is
+        This function returns the rotation if the target position is
         accessible from the curr_viewpoint given the previous
         condition.
         '''
@@ -226,9 +226,11 @@ class AdjacentViewpointSensor(Sensor):
         target_angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
 
         #print("Angle %s, target angle %s, opposite angle %s" % (str(angle), str(target_angle), str(opposite_angle)))
-        if angle <= target_angle or opposite_angle <= target_angle:
-                return True
-        return False
+        if restricted:
+            if angle <= target_angle or opposite_angle <= target_angle:
+                    return rot
+            return None
+        return rot
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
         observations = []
@@ -278,7 +280,9 @@ class AdjacentViewpointSensor(Sensor):
         for viewpoint in adjacent_viewpoints[1:]:
             target_pos = viewpoint["start_position"]
             #print("processing Viewpoint %s" % viewpoint["image_id"])
-            if self._is_navigable(target_pos):
+            rel_rot = self._get_relative_rotation(target_pos)
+            if rel_rot:
+                viewpoint["start_rotation"] = rel_rot
                 navigable_viewpoints.append(viewpoint)
         return navigable_viewpoints
 
