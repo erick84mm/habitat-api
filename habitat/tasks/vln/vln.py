@@ -453,9 +453,10 @@ class TeleportAction(SimulatorTaskAction):
             return self._sim.get_observations_at()
 
         if kwargs and "episode" in kwargs:
+            last_viewpoint = kwargs["episode"].curr_viewpoint
             kwargs["episode"].curr_viewpoint = target.image_id
             print("Teleporting from %s to %s \n" % (
-                 kwargs["episode"].curr_viewpoint,
+                 last_viewpoint,
                  target.image_id
                  )
              )
