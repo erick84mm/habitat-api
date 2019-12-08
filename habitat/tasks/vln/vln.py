@@ -277,6 +277,7 @@ class AdjacentViewpointSensor(Sensor):
         print("Adjacent viewpoints ", adjacent_viewpoints)
         for viewpoint in adjacent_viewpoints[1:]:
             target_pos = viewpoint["start_position"]
+            print("processing Viewpoint %s" % viewpoint["image_id"])
             if self._is_navigable(target_pos):
                 navigable_viewpoints.append(viewpoint)
         return navigable_viewpoints
