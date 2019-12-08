@@ -283,6 +283,7 @@ class AdjacentViewpointSensor(Sensor):
             target_pos = viewpoint["start_position"]
             print("processing Viewpoint %s" % viewpoint["image_id"])
             rel_rot = self._get_relative_rotation(target_pos)
+            print("this is the relative rotation ", rel_rot)
             if rel_rot:
                 navigable_viewpoints.append({
                     "image_id": viewpoint["image_id"],
