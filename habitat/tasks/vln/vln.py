@@ -221,7 +221,6 @@ class AdjacentViewpointSensor(Sensor):
             target_vector
         )
 
-
         rot = heading_to_rotation(angle)
         opposite_angle = 2 * np.pi - angle
         target_angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
@@ -274,9 +273,9 @@ class AdjacentViewpointSensor(Sensor):
             scan=episode.scan,
             curr_viewpoint=episode.curr_viewpoint
             )
-        navigable_viewpoints = []
+        navigable_viewpoints = [adjacent_viewpoints[0]]
         print("Adjacent viewpoints ", adjacent_viewpoints)
-        for viewpoint in adjacent_viewpoints:
+        for viewpoint in adjacent_viewpoints[1:]:
             target_pos = viewpoint["start_position"]
             if self._is_navigable(target_pos):
                 navigable_viewpoints.append(viewpoint)
