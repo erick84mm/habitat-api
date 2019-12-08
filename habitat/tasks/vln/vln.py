@@ -276,14 +276,15 @@ class AdjacentViewpointSensor(Sensor):
             curr_viewpoint=episode.curr_viewpoint
             )
         navigable_viewpoints = [adjacent_viewpoints[0]]
-        #print("Adjacent viewpoints ", adjacent_viewpoints)
+        print("Adjacent viewpoints ", adjacent_viewpoints)
         for viewpoint in adjacent_viewpoints[1:]:
             target_pos = viewpoint["start_position"]
-            #print("processing Viewpoint %s" % viewpoint["image_id"])
+            print("processing Viewpoint %s" % viewpoint["image_id"])
             rel_rot = self._get_relative_rotation(target_pos)
             if rel_rot:
                 viewpoint["start_rotation"] = rel_rot
                 navigable_viewpoints.append(viewpoint)
+        print("\nNavigable viewpoints", navigable_viewpoints)
         return navigable_viewpoints
 
 
