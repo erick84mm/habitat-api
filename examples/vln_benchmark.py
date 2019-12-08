@@ -48,7 +48,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
                 agent.reset()
                 observations = self._env.reset()
                 print("*"*20 + "Starting new episode" + "*"*20,
-                    self._env._current_episode.curr_viewpoint, observations)
+                    self._env._current_episode.curr_viewpoint)
                 while not self._env.episode_over:
                     action = agent.act(
                         observations,
