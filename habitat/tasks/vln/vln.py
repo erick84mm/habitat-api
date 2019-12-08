@@ -222,6 +222,8 @@ class AdjacentViewpointSensor(Sensor):
         )
 
         rot = heading_to_rotation(angle)
+        print("Processing angle %s with rotation " % str(angle), rot)
+        print("\n")
         opposite_angle = 2 * np.pi - angle
         target_angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
 
