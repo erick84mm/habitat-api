@@ -76,9 +76,10 @@ class VLNRandomBenchmark(habitat.Benchmark):
                         "episode": self._env._current_episode
                         }
                     )
-                    if action["action"] == "MOVE_FORWARD":
-                        elapsed_steps += 1
                         
+                    if elapsed_steps == 0 or action["action"] == "MOVE_FORWARD":
+                        elapsed_steps += 1
+
                     prev_state = self._env._sim.get_agent_state()
                     prev_image_id = self._env._current_episode.curr_viewpoint.image_id
                     prev_heading = observations["heading"]
@@ -198,6 +199,50 @@ class RandomDiscreteAgent(habitat.Agent):
         else:
             action = "TURN_RIGHT"
         return {"action": action, "action_args": action_args}
+
+class ShortestPathAgent(habitat.Agent):
+    def __init__(self, success_distance, goal_sensor_uuid):
+        self.dist_threshold_to_stop = success_distance
+        self.goal_sensor_uuid = goal_sensor_uuid
+
+    def reset(self):
+        pass
+
+    def is_goal_reached(self, observations):
+        dist = observations[self.goal_sensor_uuid][0]
+        return dist <= self.dist_threshold_to_stop
+
+    def get_relative_heading(self):
+        return 0
+
+    def get_relative_elevation(self):
+        return 0
+
+    def act(self, observations, goal):
+        action = ""
+        action_args = {}
+        navigable_locations = observations["adjacentViewpoints"]
+        step_size = np.pi/6.0 # default step in R2R
+        # Check if the goal is visible
+        rel_heading = 0.0 # this is the relative heading
+        rel_elevation = 0.0 # this is the relative elevation or altitute
+
+        if rel_heading > step_size:
+              action = "TURN_RIGHT" # Turn right
+              action_args = {"num_steps": abs(int(rel_heading / step_size))}
+        elif rel_heading < -step_size:
+              action = "TURN_LEFT" # Turn left
+              action_args = {"num_steps": abs(int(rel_heading / step_size))}
+        elif rel_elevation > step_size:
+              action = "LOOK_UP" # Look up
+              action_args = {"num_steps": abs(int(rel_elevation / step_size))}
+        elif rel_elevation < -step_size:
+              action = "LOOK_DOWN" # Look down
+              action_args = {"num_steps": abs(int(rel_elevation / step_size))}
+        else:
+              action = "MOVE_FORWARD" # Move forward
+        return {"action": action, "action_args": action_args}
+
 
 class seq2seqAgent(habitat.Agent):
     def __init__(self, success_distance, goal_sensor_uuid, encoder, decoder):
