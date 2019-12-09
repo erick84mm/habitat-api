@@ -292,6 +292,7 @@ class AdjacentViewpointSensor(Sensor):
             )
 
         agent_state = self._sim.get_agent_state()
+        rot = [agent_state.rotation.real] + agent_state.rotation.imag.tolist()
         navigable_viewpoints = [
             {
                 "image_id": curr_viewpoint_id,
@@ -309,8 +310,7 @@ class AdjacentViewpointSensor(Sensor):
                     "image_id": viewpoint["image_id"],
                     "start_position":
                         viewpoint["start_position"],
-                    "start_rotation":
-                        agent_state.rotation
+                    "start_rotation": rot
                 })
         #print("\nNavigable viewpoints", navigable_viewpoints)
         return navigable_viewpoints
