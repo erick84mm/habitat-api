@@ -250,7 +250,7 @@ class AdjacentViewpointSensor(Sensor):
             scan = kwargs["scan"]
             curr_viewpoint = kwargs["curr_viewpoint"]
             scan_inf = self._connectivity[scan]
-            viewpoint_inf = scan_inf["viewpoints"][curr_viewpoint.image_id]
+            viewpoint_inf = ["viewpoints"][curr_viewpoint.image_id]
             observations.append(
                     {
                         "image_id": curr_viewpoint.image_id,
@@ -285,7 +285,7 @@ class AdjacentViewpointSensor(Sensor):
     ):
         adjacent_viewpoints = self._get_observation_space(
             scan=episode.scan,
-            curr_viewpoint=episode.curr_viewpoint.image_id
+            curr_viewpoint=episode.curr_viewpoint
             )
         navigable_viewpoints = [adjacent_viewpoints[0]]
         #print("Adjacent viewpoints ", adjacent_viewpoints)
