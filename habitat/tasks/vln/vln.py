@@ -88,10 +88,10 @@ class ViewpointData:
             "rotation": self.view_point.rotation,
             }
     def get_position(self):
-        return view_point.position
+        return self.view_point.position
 
     def get_rotation(self):
-        return view_point.rotation
+        return self.view_point.rotation
 
 
 
