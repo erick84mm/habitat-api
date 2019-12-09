@@ -3,6 +3,19 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
+import json
+import os
+import sys
+import numpy as np
+import random
+import time
+
+import torch
+import torch.nn as nn
+import torch.distributions as D
+from torch.autograd import variable
+from torch import optim
+from torch.nn.functional as F
 
 import argparse
 import habitat
@@ -112,7 +125,6 @@ class RandomAgent(habitat.Agent):
             action = "MOVE_FORWARD"
         return {"action": action, "action_args": action_args}
 
-
 class RandomDiscreteAgent(habitat.Agent):
     def __init__(self, success_distance, goal_sensor_uuid):
         self.dist_threshold_to_stop = success_distance
@@ -153,6 +165,18 @@ class RandomDiscreteAgent(habitat.Agent):
         else:
             action = "TURN_RIGHT"
         return {"action": action, "action_args": action_args}
+
+class seq2seqAgent(habitat.Agent):
+    def __init__(self, success_distance, goal_sensor_uuid, encoder, decoder):
+        self.dist_threshold_to_stop = success_distance
+        self.goal_sensor_uuid = goal_sensor_uuid
+        self.encoder = encoder
+        self.decoder = decoder
+        self.criterion = nn.CrossEntropyLoss()
+
+
+
+
 
 def main():
     parser = argparse.ArgumentParser()
