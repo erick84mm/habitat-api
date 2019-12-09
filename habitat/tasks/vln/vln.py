@@ -220,7 +220,7 @@ class AdjacentViewpointSensor(Sensor):
         v2_u = self._unit_vector(v2)
         return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
-    def _get_relative_rotation(self, target_pos, restricted=True):
+    def _is_navigable(self, target_pos, restricted=True):
         '''
         For a viewpoint to be accessible it has to be within the
         horizontal field of View HFOV for the restricted rotation.
@@ -250,33 +250,24 @@ class AdjacentViewpointSensor(Sensor):
         #print("Angle %s, target angle %s, opposite angle %s" % (str(angle), str(target_angle), str(opposite_angle)))
         if restricted:
             if angle <= target_angle or opposite_angle <= target_angle:
-                    return rot
-            return None
-        return rot
+                    return True
+            return False
+        return True
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
         print("Running _get_observation_space")
         observations = []
         if kwargs and 'scan' in kwargs:
             scan = kwargs["scan"]
-            curr_viewpoint = kwargs["curr_viewpoint"]
+            curr_viewpoint_id = kwargs["curr_viewpoint"]
             scan_inf = self._connectivity[scan]
-            viewpoint_inf = scan_inf["viewpoints"][curr_viewpoint.image_id]
-            observations.append(
-                    {
-                        "image_id": curr_viewpoint.image_id,
-                        "start_position":
-                            curr_viewpoint.get_position(),
-                        "start_rotation":
-                            curr_viewpoint.get_rotation()
-                    }
-            )
+            viewpoint_inf = scan_inf["viewpoints"][curr_viewpoint_id]
             for i in range(len(viewpoint_inf["visible"])):
                 if viewpoint_inf["included"] \
                 and viewpoint_inf["unobstructed"][i] \
                 and viewpoint_inf["visible"][i]:
                     adjacent_viewpoint_name = scan_inf["idxtoid"][str(i)]
-                    if adjacent_viewpoint_name != curr_viewpoint.image_id:
+                    if adjacent_viewpoint_name != curr_viewpoint_id:
                         adjacent_viewpoint = \
                             scan_inf["viewpoints"][adjacent_viewpoint_name]
                         if adjacent_viewpoint["included"]:
@@ -294,23 +285,32 @@ class AdjacentViewpointSensor(Sensor):
     def get_observation(
         self, observations, episode, *args: Any, **kwargs: Any
     ):
-        print("Running get_observation", episode.curr_viewpoint.image_id)
-        adjacent_viewpoints = self._get_observation_space(
+        curr_viewpoint_id = episode.curr_viewpoint.image_id
+        near_viewpoints = self._get_observation_space(
             scan=episode.scan,
-            curr_viewpoint=episode.curr_viewpoint
+            curr_viewpoint=curr_viewpoint_id
             )
-        navigable_viewpoints = [adjacent_viewpoints[0]]
+
+        agent_state = self._sim.get_agent_state()
+        navigable_viewpoints = [
+            {
+                "image_id": curr_viewpoint_id,
+                "start_position": agent_state.position,
+                "start_rotation": agent_state.rotation,
+            }
+        ]
         #print("Adjacent viewpoints ", adjacent_viewpoints)
-        for viewpoint in adjacent_viewpoints[1:]:
+        for viewpoint in near_viewpoints:
             target_pos = viewpoint["start_position"]
             #print("processing Viewpoint %s" % viewpoint["image_id"])
-            rel_rot = self._get_relative_rotation(target_pos)
-            if rel_rot:
+
+            if _is_navigable(target_pos):
                 navigable_viewpoints.append({
                     "image_id": viewpoint["image_id"],
                     "start_position":
                         viewpoint["start_position"],
-                    "start_rotation": rel_rot,
+                    "start_rotation":
+                        agent_state.rotation
                 })
         #print("\nNavigable viewpoints", navigable_viewpoints)
         return navigable_viewpoints
