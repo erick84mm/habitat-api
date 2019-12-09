@@ -9,6 +9,7 @@ import sys
 import numpy as np
 import random
 import time
+import pprint
 
 import torch
 import torch.nn as nn
@@ -94,8 +95,8 @@ class VLNRandomBenchmark(habitat.Benchmark):
                         "new_rot": state.rotation,
                         "new_image_id": image_id
                         })
-                        
-                print(action_history)
+
+                pprint(action_history)
                 metrics = self._env.get_metrics()
                 for m, v in metrics.items():
                     agg_metrics[m] += v
