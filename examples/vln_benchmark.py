@@ -76,8 +76,8 @@ class VLNRandomBenchmark(habitat.Benchmark):
                         "episode": self._env._current_episode
                         }
                     )
-                        
-                    if elapsed_steps == 0 or action["action"] == "MOVE_FORWARD":
+
+                    if elapsed_steps == 0 or action["action"] == "TELEPORT":
                         elapsed_steps += 1
 
                     prev_state = self._env._sim.get_agent_state()
@@ -212,16 +212,32 @@ class ShortestPathAgent(habitat.Agent):
         dist = observations[self.goal_sensor_uuid][0]
         return dist <= self.dist_threshold_to_stop
 
-    def get_relative_heading(self):
-        return 0
 
-    def get_relative_elevation(self):
+    def _quat_to_xy_heading_vector(self, quat):
+        return heading_vector
+
+    def get_relative_heading(self, posA, rotA, posB):
+        direction_vector = np.array([0, 0, -1])
+        heading_vector = quaternion_rotate_vector(rotA, direction_vector)
+        target_vector = np.array(posA) - np.array(posB)
+
+        angle = self._angle_between(
+            heading_vector,
+            target_vector
+        )
+
+        return angle
+
+    def get_relative_elevation(self, posA, posB):
         return 0
 
     def act(self, observations, goal):
         action = ""
         action_args = {}
         navigable_locations = observations["adjacentViewpoints"]
+        posA = navigable_locations[0]["start_position"]
+        rotA = navigable_locations[0]["start_rotation"]
+
         step_size = np.pi/6.0 # default step in R2R
         # Check if the goal is visible
         rel_heading = 0.0 # this is the relative heading
