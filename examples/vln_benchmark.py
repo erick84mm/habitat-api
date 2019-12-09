@@ -177,8 +177,8 @@ class RandomDiscreteAgent(habitat.Agent):
             if num_steps > 0:
                 action_args = {"num_steps": num_steps}
 
-        # After going forward 5 times stop.
-        elif elapsed_steps >= 5:
+        # After going forward 6 times stop. 0 counts in R2R.
+        elif elapsed_steps >= 6:
             # Stop action after 5 tries.
             action = "STOP"
         elif len(observations["adjacentViewpoints"]) > 1:
