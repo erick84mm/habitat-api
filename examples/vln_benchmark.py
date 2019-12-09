@@ -75,21 +75,26 @@ class VLNRandomBenchmark(habitat.Benchmark):
                         }
                     )
                     prev_state = self._env._sim.get_agent_state()
+                    prev_image_id = self._env._current_episode.curr_viewpoint
                     #print("Taking action %s from %s \n" % (action["action"], self._env._current_episode.curr_viewpoint))
                     observations = self._env.step(action)
                     #print("Result of Action in position %s\n" %  self._env._current_episode.curr_viewpoint)
                     state = self._env._sim.get_agent_state()
+                    image_id = self._env._current_episode.curr_viewpoint
                     #print("Current position", state.position)
                     #print("Current rotation", state.rotation)
                     #print("\n\n")
 
                     action_history.append({
                         "action": action["action"],
+                        "prev_image_id": prev_image_id,
                         "prev_pos": prev_state.position,
                         "prev_rot": prev_state.rotation,
                         "new_pos": state.position,
                         "new_rot": state.rotation,
+                        "new_image_id": image_id
                         })
+                        
                 print(action_history)
                 metrics = self._env.get_metrics()
                 for m, v in metrics.items():
