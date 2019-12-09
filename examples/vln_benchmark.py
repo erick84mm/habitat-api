@@ -64,10 +64,11 @@ class VLNRandomBenchmark(habitat.Benchmark):
                 action_history = []
                 print("*"*20 + "Starting new episode" + "*"*20,
                     self._env._current_episode.curr_viewpoint.image_id)
+                elapsed_steps = 0
                 while not self._env.episode_over:
                     action = agent.act(
                         observations,
-                        self._env._elapsed_steps,
+                        elapsed_steps,
                         self._env._sim.previous_step_collided,
                         )
                     action["action_args"].update(
@@ -75,6 +76,9 @@ class VLNRandomBenchmark(habitat.Benchmark):
                         "episode": self._env._current_episode
                         }
                     )
+                    if action["action"] == "MOVE_FORWARD":
+                        elapsed_steps += 1
+                        
                     prev_state = self._env._sim.get_agent_state()
                     prev_image_id = self._env._current_episode.curr_viewpoint.image_id
                     prev_heading = observations["heading"]
@@ -171,6 +175,8 @@ class RandomDiscreteAgent(habitat.Agent):
             num_steps = random.randint(0,11)
             if num_steps > 0:
                 action_args = {"num_steps": num_steps}
+
+        # After going forward 5 times stop.
         elif elapsed_steps >= 5:
             # Stop action after 5 tries.
             action = "STOP"
