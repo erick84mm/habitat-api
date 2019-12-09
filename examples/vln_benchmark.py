@@ -88,6 +88,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
                     #print("Current rotation", state.rotation)
                     #print("\n\n")
 
+                    print("Target path ", self._env._current_episode.path)
                     action_history.append({
                         "action": action["action"],
                         "prev_image_id": prev_image_id,
