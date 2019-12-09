@@ -297,7 +297,7 @@ class AdjacentViewpointSensor(Sensor):
             {
                 "image_id": curr_viewpoint_id,
                 "start_position": agent_state.position,
-                "start_rotation": agent_state.rotation,
+                "start_rotation": rot,
             }
         ]
         #print("Adjacent viewpoints ", adjacent_viewpoints)
