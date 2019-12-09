@@ -53,6 +53,7 @@ class R2RDatasetV1(Dataset):
         self.train_vocab: VocabDict = []
         self.trainval_vocab: VocabDict = []
         self.connectivity = {}
+        print(config.SPLIT)
 
         if config is None:
             return
