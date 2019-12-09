@@ -78,15 +78,12 @@ class VLNRandomBenchmark(habitat.Benchmark):
                     prev_state = self._env._sim.get_agent_state()
                     prev_image_id = self._env._current_episode.curr_viewpoint
                     prev_heading = observations["heading"]
-                    print(observations.keys())
-                    prev_distToGoal = observations["distance_to_goal"]
                     #print("Taking action %s from %s \n" % (action["action"], self._env._current_episode.curr_viewpoint))
                     observations = self._env.step(action)
                     #print("Result of Action in position %s\n" %  self._env._current_episode.curr_viewpoint)
                     state = self._env._sim.get_agent_state()
                     image_id = self._env._current_episode.curr_viewpoint
                     heading = observations["heading"]
-                    distToGoal = observations["distance_to_goal"]
                     #print("Current position", state.position)
                     #print("Current rotation", state.rotation)
                     #print("\n\n")
@@ -95,12 +92,10 @@ class VLNRandomBenchmark(habitat.Benchmark):
                         "action": action["action"],
                         "prev_image_id": prev_image_id,
                         "prev_heading": prev_heading,
-                        "prev_distToGoal": prev_distToGoal,
                         "prev_pos": prev_state.position,
                         "prev_rot": prev_state.rotation,
                         "new_image_id": image_id,
                         "new_heading": heading,
-                        "distToGoal": distToGoal,
                         "new_pos": state.position,
                         "new_rot": state.rotation,
                         })
