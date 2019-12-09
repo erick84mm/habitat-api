@@ -250,7 +250,7 @@ class AdjacentViewpointSensor(Sensor):
             scan = kwargs["scan"]
             curr_viewpoint = kwargs["curr_viewpoint"]
             scan_inf = self._connectivity[scan]
-            viewpoint_inf = ["viewpoints"][curr_viewpoint.image_id]
+            viewpoint_inf = scan_inf["viewpoints"][curr_viewpoint.image_id]
             observations.append(
                     {
                         "image_id": curr_viewpoint.image_id,
