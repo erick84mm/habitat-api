@@ -129,7 +129,6 @@ def build_vocab(path, splits=['train'], min_count=5, start_vocab=base_vocab):
 
 
 def serialize_r2r(config, splits=["train"], force=False) -> None:
-    print("serialize starting")
     json_file_path = config.DATA_PATH[:-3]
     connectivity = load_connectivity(config.CONNECTIVITY_PATH)
     # Building both vocabularies Train and TrainVAL
@@ -140,7 +139,6 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
     for split in splits:
         habitat_episodes = []
         if force or not path.exists(config.DATA_PATH.format(split=split)):
-            print("path doesn't exists, creating dataset")
             data = load_dataset(split,
                                 json_file_path.format(split=split))
             for episode in data:
