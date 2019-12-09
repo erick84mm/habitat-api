@@ -76,11 +76,12 @@ class R2RDatasetV1(Dataset):
         )
 
         for ep_index, r2r_episode in enumerate(deserialized["episodes"]):
+
             r2r_episode["curr_viewpoint"] = ViewpointData(
                 image_id=r2r_episode["goals"][0],
                 view_point=AgentState(
-                    position=episode.start_position,
-                    rotation=episode.start_rotation)
+                    position=r2r_episode["start_position"] ,
+                    rotation=r2r_episode["start_rotation"] )
                 )
 
             episode = VLNEpisode(**r2r_episode)
