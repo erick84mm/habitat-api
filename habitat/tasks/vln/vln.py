@@ -414,7 +414,7 @@ class DistanceToGoal(Measure):
     def reset_metric(self, episode, *args: Any, **kwargs: Any):
         self._previous_position = self._sim.get_agent_state().position.tolist()
         self._start_end_episode_distance = self._sim.geodesic_distance(
-            self._previous_position, episode.goals[0].position
+            self._previous_position, episode.goals[0].view_point.position
         )
         self._agent_episode_distance = 0.0
         self._metric = None
@@ -428,7 +428,7 @@ class DistanceToGoal(Measure):
         current_position = self._sim.get_agent_state().position.tolist()
 
         distance_to_target = self._sim.geodesic_distance(
-            current_position, episode.goals[0].position
+            current_position, episode.goals[0].view_point.position
         )
 
         self._agent_episode_distance += self._euclidean_distance(
