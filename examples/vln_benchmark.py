@@ -116,6 +116,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
                 for m, v in metrics.items():
                     agg_metrics[m] += v
                 count_episodes += 1
+                print(count_episodes)
 
             avg_metrics = {k: v / count_episodes for k, v in agg_metrics.items()}
 
