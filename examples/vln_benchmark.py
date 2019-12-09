@@ -178,6 +178,7 @@ class RandomDiscreteAgent(habitat.Agent):
             # Turn right until we can go forward
             action = "TELEPORT"
             pos = observations["adjacentViewpoints"][1]["start_position"]
+
             # Keeping the same rotation as the previous step
             rot = observations["adjacentViewpoints"][0]["start_rotation"]
             image_id = observations["adjacentViewpoints"][1]["image_id"]

@@ -183,18 +183,22 @@ class AdjacentViewpointSensor(Sensor):
     def __init__(
         self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
     ):
+        print("Running init")
         self._sim = sim
         connectivity_path = getattr(config, "CONNECTIVITY_PATH", "")
         self._connectivity = self._load_connectivity(connectivity_path)
         super().__init__(config=config)
 
     def _get_uuid(self, *args: Any, **kwargs: Any):
+        print("Running _get_uuid")
         return "adjacentViewpoints"
 
     def _get_sensor_type(self, *args: Any, **kwargs: Any):
+        print("Running _get_sensor_type")
         return SensorTypes.NULL  # Missing sensor type
 
     def _load_connectivity(self, path):
+        print("Running _load_connectivity")
         data = {}
         if path:
             with open(path) as f:
@@ -251,6 +255,7 @@ class AdjacentViewpointSensor(Sensor):
         return rot
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
+        print("Running _get_observation_space")
         observations = []
         if kwargs and 'scan' in kwargs:
             scan = kwargs["scan"]
@@ -289,6 +294,7 @@ class AdjacentViewpointSensor(Sensor):
     def get_observation(
         self, observations, episode, *args: Any, **kwargs: Any
     ):
+        print("Running get_observation", episode.curr_viewpoint.image_id)
         adjacent_viewpoints = self._get_observation_space(
             scan=episode.scan,
             curr_viewpoint=episode.curr_viewpoint
