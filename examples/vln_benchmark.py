@@ -15,7 +15,7 @@ import torch.nn as nn
 import torch.distributions as D
 from torch.autograd import variable
 from torch import optim
-from torch.nn.functional as F
+import torch.nn.functional as F
 
 import argparse
 import habitat
