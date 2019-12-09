@@ -79,13 +79,13 @@ class ViewpointData:
     radius: Optional[float] = None
 
     def __str__(self):
-        return image_id
+        return self.image_id
 
     def __repr__(self):
         return {
-            "image_id": image_id,
-            "position": view_point.position,
-            "rotation": view_point.rotation,
+            "image_id": self.image_id,
+            "position": self.view_point.position,
+            "rotation": self.view_point.rotation,
             }
 
 
