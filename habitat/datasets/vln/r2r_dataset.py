@@ -16,6 +16,7 @@ from habitat.core.simulator import AgentState
 from habitat.datasets.utils import VocabDict
 from habitat.tasks.vln.vln import VLNEpisode, InstructionData, ViewpointData
 from habitat.datasets.vln.r2r_utils import serialize_r2r
+from habitat.tasks.utils import heading_to_rotation
 
 DEFAULT_SCENE_PATH_PREFIX = "data/scene_datasets/"
 
@@ -75,7 +76,13 @@ class R2RDatasetV1(Dataset):
         )
 
         for ep_index, r2r_episode in enumerate(deserialized["episodes"]):
-            r2r_episode["curr_viewpoint"] = r2r_episode["goals"][0]
+            r2r_episode["curr_viewpoint"] = ViewpointData(
+                image_id=episode.goals[0],
+                view_point=AgentState(
+                    position=episode.start_position,
+                    rotation=episode.start_rotation)
+                )
+
             episode = VLNEpisode(**r2r_episode)
 
             if scenes_dir is not None:
@@ -88,8 +95,8 @@ class R2RDatasetV1(Dataset):
                 instruction=episode.instruction
             )
 
+            scan = episode.scan
             for v_index, viewpoint in enumerate(episode.goals):
-                scan = episode.scan
                 viewpoint_dic = self.connectivity[scan]["viewpoints"][viewpoint]
                 pos = viewpoint_dic["start_position"]
                 rot = viewpoint_dic["start_rotation"]

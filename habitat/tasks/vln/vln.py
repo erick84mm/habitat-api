@@ -118,7 +118,7 @@ class VLNEpisode(Episode):
         default=None, validator=not_none_validator
     )
     scan: str = None
-    curr_viewpoint: Optional[str] = None
+    curr_viewpoint: Optional[ViewpointData] = None
 
 
 
@@ -250,14 +250,14 @@ class AdjacentViewpointSensor(Sensor):
             scan = kwargs["scan"]
             curr_viewpoint = kwargs["curr_viewpoint"]
             scan_inf = self._connectivity[scan]
-            viewpoint_inf = scan_inf["viewpoints"][curr_viewpoint]
+            viewpoint_inf = scan_inf["viewpoints"][curr_viewpoint.image_id]
             observations.append(
                     {
-                        "image_id": curr_viewpoint,
+                        "image_id": curr_viewpoint.image_id,
                         "start_position":
-                            viewpoint_inf["start_position"],
+                            curr_viewpoint.start_position,
                         "start_rotation":
-                            viewpoint_inf["start_rotation"]
+                            curr_viewpoint.start_rotation
                     }
             )
             for i in range(len(viewpoint_inf["visible"])):
@@ -265,7 +265,7 @@ class AdjacentViewpointSensor(Sensor):
                 and viewpoint_inf["unobstructed"][i] \
                 and viewpoint_inf["visible"][i]:
                     adjacent_viewpoint_name = scan_inf["idxtoid"][str(i)]
-                    if adjacent_viewpoint_name != curr_viewpoint:
+                    if adjacent_viewpoint_name != curr_viewpoint.image_id:
                         adjacent_viewpoint = \
                             scan_inf["viewpoints"][adjacent_viewpoint_name]
                         if adjacent_viewpoint["included"]:
@@ -285,7 +285,7 @@ class AdjacentViewpointSensor(Sensor):
     ):
         adjacent_viewpoints = self._get_observation_space(
             scan=episode.scan,
-            curr_viewpoint=episode.curr_viewpoint
+            curr_viewpoint=episode.curr_viewpoint.image_id
             )
         navigable_viewpoints = [adjacent_viewpoints[0]]
         #print("Adjacent viewpoints ", adjacent_viewpoints)
@@ -298,7 +298,7 @@ class AdjacentViewpointSensor(Sensor):
                     "image_id": viewpoint["image_id"],
                     "start_position":
                         viewpoint["start_position"],
-                    "start_rotation": rel_rot
+                    "start_rotation": rel_rot,
                 })
         #print("\nNavigable viewpoints", navigable_viewpoints)
         return navigable_viewpoints
@@ -475,8 +475,12 @@ class TeleportAction(SimulatorTaskAction):
 
         if kwargs and "episode" in kwargs:
             last_viewpoint = kwargs["episode"].curr_viewpoint
-            kwargs["episode"].curr_viewpoint = target.image_id
-
+            kwargs["episode"].curr_viewpoint = ViewpointData(
+                            image_id=target.image_id,
+                            view_point=AgentState(
+                                position=position,
+                                rotation=rotation)
+                            )
             #print("Teleporting from %s to %s \n" % (
             #     last_viewpoint,
             #     target.image_id

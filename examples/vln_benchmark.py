@@ -63,7 +63,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
                 observations = self._env.reset()
                 action_history = []
                 print("*"*20 + "Starting new episode" + "*"*20,
-                    self._env._current_episode.curr_viewpoint)
+                    self._env._current_episode.curr_viewpoint.image_id)
                 while not self._env.episode_over:
                     action = agent.act(
                         observations,
@@ -76,14 +76,14 @@ class VLNRandomBenchmark(habitat.Benchmark):
                         }
                     )
                     prev_state = self._env._sim.get_agent_state()
-                    prev_image_id = self._env._current_episode.curr_viewpoint
+                    prev_image_id = self._env._current_episode.curr_viewpoint.image_id
                     prev_heading = observations["heading"]
                     prev_nav_locations = observations["adjacentViewpoints"]
-                    #print("Taking action %s from %s \n" % (action["action"], self._env._current_episode.curr_viewpoint))
+                    #print("Taking action %s from %s \n" % (action["action"], self._env._current_episode.curr_viewpoint.image_id))
                     observations = self._env.step(action)
-                    #print("Result of Action in position %s\n" %  self._env._current_episode.curr_viewpoint)
+                    #print("Result of Action in position %s\n" %  self._env._current_episode.curr_viewpoint.image_id)
                     state = self._env._sim.get_agent_state()
-                    image_id = self._env._current_episode.curr_viewpoint
+                    image_id = self._env._current_episode.curr_viewpoint.image_id
                     heading = observations["heading"]
                     nav_locations = observations["adjacentViewpoints"]
                     #print("Current position", state.position)
@@ -178,7 +178,8 @@ class RandomDiscreteAgent(habitat.Agent):
             # Turn right until we can go forward
             action = "TELEPORT"
             pos = observations["adjacentViewpoints"][1]["start_position"]
-            rot = observations["adjacentViewpoints"][1]["start_rotation"]
+            # Keeping the same rotation as the previous step
+            rot = observations["adjacentViewpoints"][0]["start_rotation"]
             image_id = observations["adjacentViewpoints"][1]["image_id"]
 
             viewpoint = ViewpointData(
