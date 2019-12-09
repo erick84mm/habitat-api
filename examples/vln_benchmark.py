@@ -88,7 +88,6 @@ class VLNRandomBenchmark(habitat.Benchmark):
                     #print("Current rotation", state.rotation)
                     #print("\n\n")
 
-                    print("Target path ", str(self._env._current_episode.goals))
                     action_history.append({
                         "action": action["action"],
                         "prev_image_id": prev_image_id,
@@ -101,6 +100,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
                         "new_rot": state.rotation,
                         })
 
+                print("Target path ", [str(goal) for goal in self._env._current_episode.goals])
                 pprint(action_history)
                 metrics = self._env.get_metrics()
                 for m, v in metrics.items():
