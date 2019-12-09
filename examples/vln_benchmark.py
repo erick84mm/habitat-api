@@ -60,6 +60,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
             while count_episodes < num_episodes:
                 agent.reset()
                 observations = self._env.reset()
+                action_history = []
                 print("*"*20 + "Starting new episode" + "*"*20,
                     self._env._current_episode.curr_viewpoint)
                 while not self._env.episode_over:
@@ -73,15 +74,23 @@ class VLNRandomBenchmark(habitat.Benchmark):
                         "episode": self._env._current_episode
                         }
                     )
-
-                    print("Taking action %s from %s \n" % (action["action"], self._env._current_episode.curr_viewpoint))
+                    prev_state = self._env._sim.get_agent_state()
+                    #print("Taking action %s from %s \n" % (action["action"], self._env._current_episode.curr_viewpoint))
                     observations = self._env.step(action)
-                    print("Result of Action in position %s\n" %  self._env._current_episode.curr_viewpoint)
+                    #print("Result of Action in position %s\n" %  self._env._current_episode.curr_viewpoint)
                     state = self._env._sim.get_agent_state()
-                    print("Current position", state.position)
-                    print("Current rotation", state.rotation)
-                    print("\n\n")
+                    #print("Current position", state.position)
+                    #print("Current rotation", state.rotation)
+                    #print("\n\n")
 
+                    action_history.append({
+                        "action": action["action"],
+                        "prev_pos": prev_state.position,
+                        "prev_rot": prev_state.rotation,
+                        "new_pos": state.position,
+                        "new_rot": state.rotation,
+                        })
+                print(action_history)
                 metrics = self._env.get_metrics()
                 for m, v in metrics.items():
                     agg_metrics[m] += v
