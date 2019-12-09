@@ -9,7 +9,7 @@ import sys
 import numpy as np
 import random
 import time
-import pprint
+from pprint import pprint
 
 import torch
 import torch.nn as nn
