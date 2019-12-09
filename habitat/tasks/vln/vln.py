@@ -78,6 +78,16 @@ class ViewpointData:
     view_point: AgentState = None
     radius: Optional[float] = None
 
+    def __str__(self):
+        return image_id
+
+    def __repr__(self):
+        return {
+            "image_id": image_id,
+            "position": view_point.position,
+            "rotation": view_point.rotation,
+            }
+
 
 
 @attr.s(auto_attribs=True, kw_only=True)
