@@ -87,6 +87,12 @@ class ViewpointData:
             "position": self.view_point.position,
             "rotation": self.view_point.rotation,
             }
+    def get_position(self):
+        return view_point.position
+
+    def get_rotation(self):
+        return view_point.rotation
+
 
 
 
@@ -255,9 +261,9 @@ class AdjacentViewpointSensor(Sensor):
                     {
                         "image_id": curr_viewpoint.image_id,
                         "start_position":
-                            curr_viewpoint.start_position,
+                            curr_viewpoint.get_position(),
                         "start_rotation":
-                            curr_viewpoint.start_rotation
+                            curr_viewpoint.get_rotation()
                     }
             )
             for i in range(len(viewpoint_inf["visible"])):
