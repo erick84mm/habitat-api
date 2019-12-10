@@ -324,6 +324,7 @@ class ShortestPathAgent(habitat.Agent):
         """ Returns the angle in radians between vectors 'v1' and 'v2'"""
         v1_u = self._unit_vector(v1)
         v2_u = self._unit_vector(v2)
+        print("dot product", np.dot(v1_u, v2_u))
         return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
     def get_relative_heading(self, posA, rotA, posB):
