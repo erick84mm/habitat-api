@@ -326,7 +326,7 @@ class ShortestPathAgent(habitat.Agent):
 
     def get_relative_heading(self, posA, rotA, posB):
         direction_vector = np.array([0, 0, -1])
-        quat = quaternion_from_coeff(rotA)
+        quat = quaternion_from_coeff(rotA).inverse()
         print("Initial Position ", posA)
         print("Initial Rotation ", rotA)
         print("Target Position ", posB)
