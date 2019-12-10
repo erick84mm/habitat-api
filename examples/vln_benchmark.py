@@ -175,7 +175,7 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                         }
                     )
 
-                    if elapsed_steps == 0 or action["action"] == "TELEPORT":
+                    if action["action"] == "TELEPORT":
                         if goal_idx < last_goal_idx:
                             goal_idx += 1
                         else:
