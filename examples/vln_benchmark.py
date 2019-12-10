@@ -338,6 +338,7 @@ class ShortestPathAgent(habitat.Agent):
         horizon_vector = np.array([np.cos(adjusted_heading), 0, -np.sin(adjusted_heading)])
         target_vector = np.array(posB) - np.array(posA)
         target_vector[1] = 0
+        print(np.linalg.norm(target_vector), horizon_vector)
         angle = np.dot(np.linalg.norm(target_vector), horizon_vector)
 
         return angle
