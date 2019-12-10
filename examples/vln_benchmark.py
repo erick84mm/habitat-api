@@ -328,16 +328,12 @@ class ShortestPathAgent(habitat.Agent):
     def get_relative_heading(self, posA, rotA, posB):
         direction_vector = np.array([0, 0, -1])
         quat = quaternion_from_coeff(rotA).inverse()
-        print("Initial Position ", posA)
-        print("Initial Rotation ", rotA)
-        print("Target Position ", posB)
-        print("quartenion ", quat)
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
         heading = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
         adjusted_heading = np.pi/2.0 - heading
-        horizon_vector = np.array([np.cos(adjusted_heading), 0, -np.sin(adjusted_heading)])
+        horizon_vector = np.array([np.cos(adjusted_heading), np.sin(adjusted_heading), 0])
         target_vector = np.array(posB) - np.array(posA)
-        target_vector[1] = 0
+        target_vector[2] = 0
         angle = np.dot(self._unit_vector(target_vector), horizon_vector)
 
         return angle
@@ -371,6 +367,23 @@ class ShortestPathAgent(habitat.Agent):
             print("The relative heading is %s\n" % str(rel_heading))
             print("The relative elevation is %s\n" % str(rel_elevation))
 
+            is_visible = False
+            for location in navigable_locations:
+                if location["image_id"] == goal.image_id:
+                    is_visible = True
+                    break
+
+            if is_visible:
+                action = "TELEPORT" # Move forward
+                pos = posB
+                rot = rotA
+                image_id = goal.image_id
+                viewpoint = ViewpointData(
+                    image_id=image_id,
+                    view_point=AgentState(position=pos, rotation=rot)
+                )
+                action_args.update({"target": viewpoint})
+
             if rel_heading < -step_size:
                   action = "TURN_RIGHT" # Turn right
                   action_args = {"num_steps": abs(int(rel_heading / step_size))}
@@ -384,15 +397,8 @@ class ShortestPathAgent(habitat.Agent):
                   action = "LOOK_DOWN" # Look down
                   action_args = {"num_steps": abs(int(rel_elevation / step_size))}
             else:
-                  action = "TELEPORT" # Move forward
-                  pos = posB
-                  rot = rotA
-                  image_id = goal.image_id
-                  viewpoint = ViewpointData(
-                      image_id=image_id,
-                      view_point=AgentState(position=pos, rotation=rot)
-                  )
-                  action_args.update({"target": viewpoint})
+
+
             print(action, action_args)
         return {"action": action, "action_args": action_args}
 
