@@ -345,7 +345,7 @@ class ShortestPathAgent(habitat.Agent):
         angle =  self._angle_between(
             heading_vector,
             target_vector,
-        ))
+        )
 
         angle2 =  self._angle_between(
             heading_vector,
