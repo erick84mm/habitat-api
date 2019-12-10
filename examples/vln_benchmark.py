@@ -314,8 +314,15 @@ class ShortestPathAgent(habitat.Agent):
         dist = observations[self.goal_sensor_uuid][0]
         return dist <= self.dist_threshold_to_stop
 
-    def _quat_to_xy_heading_vector(self, quat):
-        return heading_vector
+    def _unit_vector(self, vector):
+        """ Returns the unit vector of the vector.  """
+        return vector / np.linalg.norm(vector)
+
+    def _angle_between(self,v1, v2):
+        """ Returns the angle in radians between vectors 'v1' and 'v2'"""
+        v1_u = self._unit_vector(v1)
+        v2_u = self._unit_vector(v2)
+        return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
     def get_relative_heading(self, posA, rotA, posB):
         direction_vector = np.array([0, 0, -1])
