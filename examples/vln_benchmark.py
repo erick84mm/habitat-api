@@ -332,11 +332,12 @@ class ShortestPathAgent(habitat.Agent):
         heading = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
 
         print("The heading is %s" % str(heading))
+        print("heading vector", heading_vector)
 
         adjusted_heading = np.pi/2.0 - heading
         horizon_vector = np.array([np.cos(heading), np.sin(heading), 0])
         target_vector = np.array(posB) - np.array(posA)
-        target_vector[2] = 0
+        target_vector[1] = 0
         angle = np.dot(self._unit_vector(target_vector), horizon_vector)
         angle = self._angle_between(
             heading_vector,
