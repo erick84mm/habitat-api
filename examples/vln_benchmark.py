@@ -343,6 +343,10 @@ class ShortestPathAgent(habitat.Agent):
         target_vector_2d = [target_vector[0], target_vector[2]]
 
         angle = np.dot(rotated_heading, target_vector_2d)
+        print("This is the angle between", self._angle_between(
+            heading_vector,
+            target_vector,
+        ))
         print("this is the angle %s" % str(angle))
         #angle = self._angle_between(
         #    heading_vector,
