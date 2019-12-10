@@ -26,6 +26,7 @@ from collections import defaultdict
 from typing import Dict, Optional
 from habitat.core.agent import Agent
 from habitat.tasks.vln.vln import ViewpointData
+from habitat.tasks.utils import quaternion_rotate_vector
 from habitat.core.simulator import (
     AgentState,
 )
