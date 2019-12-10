@@ -163,6 +163,8 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                 elapsed_steps = 0
                 goal_idx = 1
                 last_goal_idx = len(self._env._current_episode.goals) - 1
+
+                print("Target path ", [str(goal) for goal in self._env._current_episode.goals])
                 while not self._env.episode_over:
                     goal_viewpoint = self._env._current_episode.goals[goal_idx]
 
@@ -211,7 +213,6 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                         "nav_locations": nav_locations,
                         })
 
-                print("Target path ", [str(goal) for goal in self._env._current_episode.goals])
                 pprint(action_history)
                 metrics = self._env.get_metrics()
                 pprint(metrics)
