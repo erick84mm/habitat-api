@@ -76,6 +76,7 @@ class R2RDatasetV1(Dataset):
         )
 
         for ep_index, r2r_episode in enumerate(deserialized["episodes"]):
+            print(r2r_episode.keys())
             if r2r_episode["heading"] > np.pi:
                 r2r_episode["heading"] = \
                     -2 * np.pi - r2r_episode["heading"]
