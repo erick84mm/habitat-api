@@ -334,9 +334,9 @@ class ShortestPathAgent(habitat.Agent):
         print("The heading is %s" % str(heading))
 
         adjusted_heading = np.pi/2.0 - heading
-        horizon_vector = np.array([np.cos(heading), 0, -np.sin(heading)])
+        horizon_vector = np.array([np.cos(heading), np.sin(heading), 0])
         target_vector = np.array(posB) - np.array(posA)
-        target_vector[1] = 0
+        target_vector[2] = 0
         angle = np.dot(self._unit_vector(target_vector), horizon_vector)
 
         return angle
