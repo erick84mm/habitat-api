@@ -367,22 +367,7 @@ class ShortestPathAgent(habitat.Agent):
             print("The relative heading is %s\n" % str(rel_heading))
             print("The relative elevation is %s\n" % str(rel_elevation))
 
-            is_visible = False
-            for location in navigable_locations:
-                if location["image_id"] == goal.image_id:
-                    is_visible = True
-                    break
 
-            if is_visible:
-                action = "TELEPORT" # Move forward
-                pos = posB
-                rot = rotA
-                image_id = goal.image_id
-                viewpoint = ViewpointData(
-                    image_id=image_id,
-                    view_point=AgentState(position=pos, rotation=rot)
-                )
-                action_args.update({"target": viewpoint})
 
             if rel_heading < -step_size:
                   action = "TURN_RIGHT" # Turn right
@@ -397,6 +382,24 @@ class ShortestPathAgent(habitat.Agent):
                   action = "LOOK_DOWN" # Look down
                   action_args = {"num_steps": abs(int(rel_elevation / step_size))}
             else:
+                is_visible = False
+                for location in navigable_locations:
+                    if location["image_id"] == goal.image_id:
+                        is_visible = True
+                        break
+
+                if is_visible:
+                    action = "TELEPORT" # Move forward
+                    pos = posB
+                    rot = rotA
+                    image_id = goal.image_id
+                    viewpoint = ViewpointData(
+                        image_id=image_id,
+                        view_point=AgentState(position=pos, rotation=rot)
+                    )
+                    action_args.update({"target": viewpoint})
+                else:
+                    print("this is an error in the system")
 
 
             print(action, action_args)
