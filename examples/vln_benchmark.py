@@ -332,7 +332,7 @@ class ShortestPathAgent(habitat.Agent):
         print("Target Position ", posB)
         print("quartenion ", quat)
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
-        target_vector = np.array(posA) - np.array(posB)
+        target_vector = np.array(posB) - np.array(posA)
 
         angle = self._angle_between(
             heading_vector,
@@ -351,12 +351,13 @@ class ShortestPathAgent(habitat.Agent):
         action = ""
         action_args = {}
         navigable_locations = observations["adjacentViewpoints"]
-        posA = navigable_locations[0]["start_position"]
-        rotA = navigable_locations[0]["start_rotation"]
-        posB = goal.get_position()
+
         if goal.image_id == navigable_locations[0]["image_id"]:
             action = "STOP"
         else:
+            posA = navigable_locations[0]["start_position"]
+            rotA = navigable_locations[0]["start_rotation"]
+            posB = goal.get_position()
             # default step in R2R
             step_size = np.pi/6.0
             # Check if the goal is visible
