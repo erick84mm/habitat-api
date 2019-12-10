@@ -338,16 +338,18 @@ class ShortestPathAgent(habitat.Agent):
         adjusted_heading = np.pi/2.0 - heading
         horizon_vector = np.array([np.cos(heading), np.sin(heading), 0])
         target_vector = np.array(posB) - np.array(posA)
-        target_vector[1] = 0
+        #target_vector[1] = 0
         rotated_heading = [-heading_vector[2], heading_vector[0]]
         target_vector_2d = [target_vector[0], target_vector[2]]
 
         angle = np.dot(rotated_heading, target_vector_2d)
+        angle2 = np.dot(heading_vector, target_vector)
         print("This is the angle between", self._angle_between(
             heading_vector,
             target_vector,
         ))
         print("this is the angle %s" % str(angle))
+        print("Another angle %s" % str(angle2))
         #angle = self._angle_between(
         #    heading_vector,
         #    target_vector,
