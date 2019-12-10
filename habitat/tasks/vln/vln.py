@@ -275,7 +275,8 @@ class AdjacentViewpointSensor(Sensor):
                                         adjacent_viewpoint["start_rotation"]
                                 }
                             )
-        return observations
+        # In VLN the observations are from left to right but here is backwards.
+        return observations[::1]
 
     def get_observation(
         self, observations, episode, *args: Any, **kwargs: Any
