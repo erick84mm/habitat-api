@@ -362,7 +362,7 @@ class ShortestPathAgent(habitat.Agent):
             rel_elevation = self.get_relative_elevation(posA, posB)
 
             print("The relative heading is %s\n" % str(rel_heading))
-            print("The relative rotation is %s\n" % str(rel_rotation))
+            print("The relative elevation is %s\n" % str(rel_elevation))
 
             if rel_heading > step_size:
                   action = "TURN_RIGHT" # Turn right
