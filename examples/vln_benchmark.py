@@ -341,7 +341,7 @@ class ShortestPathAgent(habitat.Agent):
         rotated_heading = [-heading_vector[2], heading_vector[0]]
         target_vector_2d = [target_vector[0], target_vector[2]]
 
-        angle = np.dot(rotated_heading, target_vector_2d)
+        angle = np.arccos(np.dot(rotated_heading, target_vector_2d))
         print("this is the angle %s" % str(angle))
         #angle = self._angle_between(
         #    heading_vector,
