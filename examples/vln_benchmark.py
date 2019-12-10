@@ -330,10 +330,13 @@ class ShortestPathAgent(habitat.Agent):
         quat = quaternion_from_coeff(rotA).inverse()
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
         heading = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
+
+        print("The heading is %s" % str(heading))
+
         adjusted_heading = np.pi/2.0 - heading
-        horizon_vector = np.array([np.cos(adjusted_heading), np.sin(adjusted_heading), 0])
+        horizon_vector = np.array([np.cos(heading), 0, -np.sin(heading)])
         target_vector = np.array(posB) - np.array(posA)
-        target_vector[2] = 0
+        target_vector[1] = 0
         angle = np.dot(self._unit_vector(target_vector), horizon_vector)
 
         return angle
