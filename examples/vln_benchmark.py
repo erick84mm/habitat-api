@@ -122,6 +122,103 @@ class VLNRandomBenchmark(habitat.Benchmark):
 
             return avg_metrics
 
+class VLNShortestPathBenchmark(habitat.Benchmark):
+    def evaluate(
+            self, agent: Agent, num_episodes: Optional[int] = None
+        ) -> Dict[str, float]:
+            r"""..
+
+            :param agent: agent to be evaluated in environment.
+            :param num_episodes: count of number of episodes for which the
+                evaluation should be run.
+            :return: dict containing metrics tracked by environment.
+            """
+
+            if num_episodes is None:
+                num_episodes = len(self._env.episodes)
+            else:
+                assert num_episodes <= len(self._env.episodes), (
+                    "num_episodes({}) is larger than number of episodes "
+                    "in environment ({})".format(
+                        num_episodes, len(self._env.episodes)
+                    )
+                )
+
+            assert num_episodes > 0, "num_episodes should be greater than 0"
+
+            agg_metrics: Dict = defaultdict(float)
+
+            count_episodes = 0
+            while count_episodes < num_episodes:
+                agent.reset()
+                observations = self._env.reset()
+                action_history = []
+                print("*"*20 + "Starting new episode" + "*"*20,
+                    self._env._current_episode.curr_viewpoint.image_id)
+                elapsed_steps = 0
+                goal_idx = 1
+                last_goal_idx = len(self._env._current_episode.goals) - 1
+                while not self._env.episode_over:
+                    goal_viewpoint = self._env._current_episode.goals[goal_idx]
+
+                    action = agent.act(
+                        observations,
+                        goal_viewpoint,
+                        )
+                    action["action_args"].update(
+                        {
+                        "episode": self._env._current_episode
+                        }
+                    )
+
+                    if elapsed_steps == 0 or action["action"] == "TELEPORT":
+                        if goal_idx < last_goal_idx:
+                            goal_idx += 1
+                        else:
+                            goal_idx = -1
+
+                    prev_state = self._env._sim.get_agent_state()
+                    prev_image_id = self._env._current_episode.curr_viewpoint.image_id
+                    prev_heading = observations["heading"]
+                    prev_nav_locations = observations["adjacentViewpoints"]
+                    #print("Taking action %s from %s \n" % (action["action"], self._env._current_episode.curr_viewpoint.image_id))
+                    observations = self._env.step(action)
+                    #print("Result of Action in position %s\n" %  self._env._current_episode.curr_viewpoint.image_id)
+                    state = self._env._sim.get_agent_state()
+                    image_id = self._env._current_episode.curr_viewpoint.image_id
+                    heading = observations["heading"]
+                    nav_locations = observations["adjacentViewpoints"]
+                    #print("Current position", state.position)
+                    #print("Current rotation", state.rotation)
+                    #print("\n\n")
+
+                    action_history.append({
+                        "action": action["action"],
+                        "prev_image_id": prev_image_id,
+                        "prev_heading": prev_heading,
+                        "prev_pos": prev_state.position,
+                        "prev_rot": prev_state.rotation,
+                        "prev_nav_locations": prev_nav_locations,
+                        "new_image_id": image_id,
+                        "new_heading": heading,
+                        "new_pos": state.position,
+                        "new_rot": state.rotation,
+                        "nav_locations": nav_locations,
+                        })
+
+                print("Target path ", [str(goal) for goal in self._env._current_episode.goals])
+                pprint(action_history)
+                metrics = self._env.get_metrics()
+                pprint(metrics)
+                for m, v in metrics.items():
+                    agg_metrics[m] += v
+                count_episodes += 1
+                print(count_episodes)
+
+            avg_metrics = {k: v / count_episodes for k, v in agg_metrics.items()}
+
+            return avg_metrics
+
 class RandomAgent(habitat.Agent):
     def __init__(self, success_distance, goal_sensor_uuid):
         self.dist_threshold_to_stop = success_distance
@@ -179,7 +276,7 @@ class RandomDiscreteAgent(habitat.Agent):
                 action_args = {"num_steps": num_steps}
 
         # After going forward 6 times stop. 0 counts in R2R.
-        elif elapsed_steps >= 6:
+        elif elapsed_steps >= 5:
             # Stop action after 5 tries.
             action = "STOP"
         elif len(observations["adjacentViewpoints"]) > 1:
@@ -213,7 +310,6 @@ class ShortestPathAgent(habitat.Agent):
         dist = observations[self.goal_sensor_uuid][0]
         return dist <= self.dist_threshold_to_stop
 
-
     def _quat_to_xy_heading_vector(self, quat):
         return heading_vector
 
@@ -230,7 +326,10 @@ class ShortestPathAgent(habitat.Agent):
         return angle
 
     def get_relative_elevation(self, posA, posB):
-        return 0
+        x = posA[0] - posB[0]
+        y = posA[1] - posB[1]
+        z = posA[2] - posB[2]
+        return np.arctan2(y, np.sqrt(x**2 + z**2)))
 
     def act(self, observations, goal):
         action = ""
@@ -238,26 +337,44 @@ class ShortestPathAgent(habitat.Agent):
         navigable_locations = observations["adjacentViewpoints"]
         posA = navigable_locations[0]["start_position"]
         rotA = navigable_locations[0]["start_rotation"]
+        posB = goal.get_position()
 
-        step_size = np.pi/6.0 # default step in R2R
-        # Check if the goal is visible
-        rel_heading = 0.0 # this is the relative heading
-        rel_elevation = 0.0 # this is the relative elevation or altitute
-
-        if rel_heading > step_size:
-              action = "TURN_RIGHT" # Turn right
-              action_args = {"num_steps": abs(int(rel_heading / step_size))}
-        elif rel_heading < -step_size:
-              action = "TURN_LEFT" # Turn left
-              action_args = {"num_steps": abs(int(rel_heading / step_size))}
-        elif rel_elevation > step_size:
-              action = "LOOK_UP" # Look up
-              action_args = {"num_steps": abs(int(rel_elevation / step_size))}
-        elif rel_elevation < -step_size:
-              action = "LOOK_DOWN" # Look down
-              action_args = {"num_steps": abs(int(rel_elevation / step_size))}
+        if goal.image_id == navigable_locations[0]["image_id"]:
+            action = "STOP"
         else:
-              action = "MOVE_FORWARD" # Move forward
+            # default step in R2R
+            step_size = np.pi/6.0
+            # Check if the goal is visible
+            rel_heading = self.get_relative_heading(posA, rotA, posB)
+            # this is the relative elevation or altitute
+            rel_elevation = self.get_relative_elevation(posA, posB)
+
+            print("The relative heading is %s\n" % str(rel_heading))
+            print("The relative rotation is %s\n" % str(rel_rotation))
+
+            if rel_heading > step_size:
+                  action = "TURN_RIGHT" # Turn right
+                  action_args = {"num_steps": abs(int(rel_heading / step_size))}
+            elif rel_heading < -step_size:
+                  action = "TURN_LEFT" # Turn left
+                  action_args = {"num_steps": abs(int(rel_heading / step_size))}
+            elif rel_elevation > step_size:
+                  action = "LOOK_UP" # Look up
+                  action_args = {"num_steps": abs(int(rel_elevation / step_size))}
+            elif rel_elevation < -step_size:
+                  action = "LOOK_DOWN" # Look down
+                  action_args = {"num_steps": abs(int(rel_elevation / step_size))}
+            else:
+                  action = "TELEPORT" # Move forward
+                  pos = posB
+                  rot = rotA
+                  image_id = goal.image_id
+                  viewpoint = ViewpointData(
+                      image_id=image_id,
+                      view_point=AgentState(position=pos, rotation=rot)
+                  )
+                  action_args.update({"target": viewpoint})
+            print(action, action_args)
         return {"action": action, "action_args": action_args}
 
 
@@ -283,9 +400,16 @@ def main():
     )
     args = parser.parse_args()
 
-    agent = RandomDiscreteAgent(3.0, "SPL")
-    benchmark = VLNRandomBenchmark(args.task_config)
+    #agent = RandomDiscreteAgent(3.0, "SPL")
+    #benchmark = VLNRandomBenchmark(args.task_config)
+    #metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
+
+
+    agent = ShortestPathAgent(3.0, "SPL")
+    benchmark = VLNShortestPathBenchmark(args.task_config)
     metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
+
+
 
     for k, v in metrics.items():
         print("{}: {:.3f}".format(k, v))
