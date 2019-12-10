@@ -348,6 +348,11 @@ class ShortestPathAgent(habitat.Agent):
             heading_vector,
             target_vector,
         ))
+
+        print("This is the angle between", self._angle_between(
+            rotated_heading,
+            target_vector_2d,
+        ))
         print("this is the angle %s" % str(angle))
         print("Another angle %s" % str(angle2))
         #angle = self._angle_between(
