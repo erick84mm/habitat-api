@@ -365,6 +365,7 @@ class ShortestPathAgent(habitat.Agent):
         action_args = {}
         navigable_locations = observations["adjacentViewpoints"]
         print("The goal is ", goal.image_id)
+        print("Episode heading", observations["heading"])
         print("Goal position", goal.get_position())
         print("Goal rotation", goal.get_rotation())
         if goal.image_id == navigable_locations[0]["image_id"]:
