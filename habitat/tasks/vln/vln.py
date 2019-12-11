@@ -591,8 +591,6 @@ class LookUpAction(SimulatorTaskAction):
 
 @registry.register_task_action
 class LookDownAction(SimulatorTaskAction):
-    name: str = "LOOK_DOWN"
-
     def step(self, *args: Any, **kwargs: Any):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
