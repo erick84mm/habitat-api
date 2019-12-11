@@ -169,6 +169,27 @@ class HeadingSensor(Sensor):
 
         return self._quat_to_xy_heading(rotation_world_agent.inverse())
 
+@registry.register_sensor
+class OrientationSensor(Sensor):
+    def __init__(
+            self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
+        ):
+            self._sim = sim
+            super().__init__(config=config)
+
+    def _get_uuid(self, *args: Any, **kwargs: Any):
+        return "orientation"
+
+    def _get_sensor_type(self, *args: Any, **kwargs: Any) -> SensorTypes:
+        return SensorTypes.POSITION
+
+    def _get_observation_space(self, *args: Any, **kwargs: Any) -> Space:
+        return 0
+
+    def get_observation(self, sim_obs, *args: Any, **kwargs: Any) -> Any:
+        obs = sim_obs.get(self.uuid, None)
+        print(obs)
+        return 0
 
 @registry.register_sensor
 class AdjacentViewpointSensor(Sensor):
