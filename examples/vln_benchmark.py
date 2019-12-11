@@ -338,11 +338,7 @@ class ShortestPathAgent(habitat.Agent):
         y = target_vector[1]
         target_vector[1] = 0
         target_length = np.linalg.norm(np.array([target_vector[0], -target_vector[2]]))
-        print("The elevation is", np.arctan2(y, target_length))
-        x = posA[0] - posB[0]
-        y = posA[1] - posB[1]
-        z = posA[2] - posB[2]
-        return np.arctan2(y, np.sqrt(x**2 + z**2))
+        return np.arctan2(y, target_length)
 
     def act(self, observations, goal):
         action = ""
