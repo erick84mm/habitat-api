@@ -35,6 +35,7 @@ from habitat.tasks.utils import (
     heading_to_rotation,
 )
 from habitat.utils.visualizations import fog_of_war, maps
+from habitat.utils.geometric_utils import quaternion_to_list
 
 cv2 = try_cv2_import()
 
@@ -309,7 +310,8 @@ class AdjacentViewpointSensor(Sensor):
             )
 
         agent_state = self._sim.get_agent_state()
-        rot =  agent_state.rotation.imag.tolist() + [agent_state.rotation.real]
+        rot = quaternion_to_list(agent_state["sensor_states"]["rgb"].rotation)
+
         navigable_viewpoints = [
             {
                 "image_id": curr_viewpoint_id,

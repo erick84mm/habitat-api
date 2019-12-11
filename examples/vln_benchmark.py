@@ -34,7 +34,6 @@ from habitat.tasks.utils import (
 from habitat.core.simulator import (
     AgentState,
 )
-from habitat.utils.geometric_utils import quaternion_to_list
 
 
 class VLNRandomBenchmark(habitat.Benchmark):
@@ -339,8 +338,7 @@ class ShortestPathAgent(habitat.Agent):
         y = target_vector[1]
         target_vector[1] = 0
         target_length = np.linalg.norm(np.array([target_vector[0], -target_vector[2]]))
-        quat = quaternion_to_list(rotA)
-        print(np.arcsin(2*quat[0]*quat[1] + 2*quat[2]*quat[3]))
+        print(np.arcsin(2*rotA[0]*rotA[1] + 2*rotA[2]*rotA[3]))
         return np.arctan2(y, target_length)
 
     def act(self, observations, goal):
