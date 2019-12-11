@@ -334,9 +334,12 @@ class ShortestPathAgent(habitat.Agent):
         return angle
 
     def get_relative_elevation(self, posA, rotA, posB):
+        direction_vector = np.array([0, 0, -1])
         quat = quaternion_from_coeff(rotA)
         start_pos = quaternion_rotate_vector(quat.inverse(), posA)
         start_pos_no_inv = quaternion_rotate_vector(quat, posA)
+        heading_vector = quaternion_rotate_vector(quat.inverse(), direction_vector)
+        print("heading vector", heading_vector)
         target_vector = np.array(posB) - np.array(posA)
         target_vector_2 = np.array(posB) - np.array(start_pos)
         target_vector_3 = np.array(posB) - np.array(start_pos_no_inv)
