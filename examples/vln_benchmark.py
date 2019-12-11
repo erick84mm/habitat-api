@@ -185,6 +185,7 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                             goal_idx = -1
 
                     prev_state = self._env._sim.get_agent_state()
+                    print(prev_state)
                     prev_image_id = self._env._current_episode.curr_viewpoint.image_id
                     prev_heading = observations["heading"]
                     prev_nav_locations = observations["adjacentViewpoints"]
