@@ -341,6 +341,8 @@ class ShortestPathAgent(habitat.Agent):
         print("Arc sin", np.arcsin(2*rotA[0]*rotA[2] + 2*-rotA[1]*rotA[3]))
         print("Plus", np.arctan2(y+rotA[1], target_length))
         print("just rotA", np.arctan2(rotA[1], target_length))
+        print("Y as -z + rot", np.arctan2(-target_vector[2]-rotA[2], target_length))
+        print("Y = -z", np.arctan2(-target_vector[2], target_length))
         return np.arctan2(y, target_length)
 
     def act(self, observations, goal):
