@@ -334,15 +334,27 @@ class ShortestPathAgent(habitat.Agent):
         return angle
 
     def get_relative_elevation(self, posA, rotA, posB):
+        quat = quaternion_from_coeff(rotA)
+        start_pos = quaternion_rotate_vector(quat.inverse(), posA)
+        start_pos_no_inv = quaternion_rotate_vector(quat, posA)
         target_vector = np.array(posB) - np.array(posA)
+        target_vector_2 = np.array(posB) - np.array(start_pos)
+        target_vector_3 = np.array(posB) - np.array(start_pos_no_inv)
         y = target_vector[1]
+        y_2 = target_vector_2[1]
+        y_3 = target_vector_3[1]
         target_vector[1] = 0
         target_length = np.linalg.norm(np.array([target_vector[0], -target_vector[2]]))
+        target_length_2 = np.linalg.norm(np.array([target_vector_2[0], -target_vector_2[2]]))
+        target_length_3 = np.linalg.norm(np.array([target_vector_3[0], -target_vector_3[2]]))
+
         print("Arc sin", np.arcsin(2*rotA[0]*rotA[2] + 2*-rotA[1]*rotA[3]))
         print("Plus", np.arctan2(y+rotA[1], target_length))
         print("just rotA", np.arctan2(rotA[1], target_length))
         print("Y as -z + rot", np.arctan2(-target_vector[2]-rotA[2], target_length))
         print("Y = -z", np.arctan2(-target_vector[2], target_length))
+        print("inverse pos", np.arctan2(y_2, target_length_2))
+        print("no inverse pos", np.arctan2(y_3, target_length_3))
         return np.arctan2(y, target_length)
 
     def act(self, observations, goal):
