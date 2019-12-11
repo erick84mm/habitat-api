@@ -525,7 +525,7 @@ class MoveForwardAction(SimulatorTaskAction):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
         """
-        if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 0:
+        if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 1:
             for _ in range(kwargs["num_steps"] - 1):
                 self._sim.step(HabitatSimActions.MOVE_FORWARD)
         return self._sim.step(HabitatSimActions.MOVE_FORWARD)
@@ -540,7 +540,7 @@ class TurnLeftAction(SimulatorTaskAction):
         ``step``.
         """
         # Right and left are inverted in MatterportSIM
-        if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 0:
+        if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 1:
             for _ in range(kwargs["num_steps"] - 1):
                 self._sim.step(HabitatSimActions.TURN_RIGHT)
         return self._sim.step(HabitatSimActions.TURN_RIGHT)
@@ -555,7 +555,7 @@ class TurnRightAction(SimulatorTaskAction):
         ``step``.
         """
 
-        if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 0:
+        if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 1:
             for _ in range(kwargs["num_steps"] - 1):
                 self._sim.step(HabitatSimActions.TURN_LEFT)
         return self._sim.step(HabitatSimActions.TURN_LEFT)
@@ -583,7 +583,7 @@ class LookUpAction(SimulatorTaskAction):
         ``step``.
         """
 
-        if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 0:
+        if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 1:
             for _ in range(kwargs["num_steps"] - 1):
                 self._sim.step(HabitatSimActions.LOOK_UP)
         return self._sim.step(HabitatSimActions.LOOK_UP)
@@ -598,8 +598,7 @@ class LookDownAction(SimulatorTaskAction):
         ``step``.
         """
         print("We are running the look down in the simulator")
-        if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 0:
-            print("num_steps in kwargs", kwargs)
+        if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 1:
             for _ in range(kwargs["num_steps"] - 1):
                 self._sim.step(HabitatSimActions.LOOK_DOWN)
         return self._sim.step(HabitatSimActions.LOOK_DOWN)
