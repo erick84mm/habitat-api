@@ -333,7 +333,7 @@ class ShortestPathAgent(habitat.Agent):
 
         return angle
 
-    def get_relative_elevation(self, posA, posB):
+    def get_relative_elevation(self, posA, rotA, posB):
         target_vector = np.array(posB) - np.array(posA)
         y = target_vector[1]
         target_vector[1] = 0

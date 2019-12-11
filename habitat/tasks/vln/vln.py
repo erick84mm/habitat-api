@@ -533,6 +533,8 @@ class MoveForwardAction(SimulatorTaskAction):
 
 @registry.register_task_action
 class TurnLeftAction(SimulatorTaskAction):
+    name: str = "TURN_LEFT"
+
     def step(self, *args: Any, **kwargs: Any):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
@@ -576,6 +578,8 @@ class StopAction(SimulatorTaskAction):
 
 @registry.register_task_action
 class LookUpAction(SimulatorTaskAction):
+    name: str = "LOOK_UP"
+
     def step(self, *args: Any, **kwargs: Any):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
@@ -589,6 +593,8 @@ class LookUpAction(SimulatorTaskAction):
 
 @registry.register_task_action
 class LookDownAction(SimulatorTaskAction):
+    name: str = "LOOK_DOWN"
+
     def step(self, *args: Any, **kwargs: Any):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
