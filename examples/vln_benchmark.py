@@ -334,6 +334,11 @@ class ShortestPathAgent(habitat.Agent):
         return angle
 
     def get_relative_elevation(self, posA, posB):
+        target_vector = np.array(posB) - np.array(posA)
+        y = target_vector[1]
+        target_vector[1] = 0
+        target_length = np.linalg.norm(target_vector)
+        print("The elevation is", np.arctan2(y, target_length))
         x = posA[0] - posB[0]
         y = posA[1] - posB[1]
         z = posA[2] - posB[2]
