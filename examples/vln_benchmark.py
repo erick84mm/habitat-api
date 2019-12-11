@@ -344,7 +344,7 @@ class ShortestPathAgent(habitat.Agent):
         target_vector_2d = [target_vector[0], target_vector[2]]
         print(np.arctan2(target_vector[2], target_vector[0]) - np.arctan2(heading_vector[0], -heading_vector[2]))
         print(np.arctan2(op_target_vector[2], op_target_vector[0]) - np.arctan2(heading_vector[0], -heading_vector[2]))
-        print(np.arctan2(target_vector[2], target_vector[0]) - np.arctan2(heading_vector[0], -heading_vector[2]) + heading)
+        print(np.arctan2(target_vector[0], -target_vector[2]) - np.arctan2(heading_vector[0], -heading_vector[2]))
         angle =  self._angle_between(
             heading_vector,
             target_vector,
