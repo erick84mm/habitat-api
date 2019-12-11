@@ -35,7 +35,7 @@ from habitat.tasks.utils import (
     heading_to_rotation,
 )
 from habitat.utils.visualizations import fog_of_war, maps
-from habitat.utils.geometric_utils import quaternion_to_list
+from habitat.utils.geometry_utils import quaternion_to_list
 
 cv2 = try_cv2_import()
 
