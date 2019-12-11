@@ -183,7 +183,7 @@ class OrientationSensor(Sensor):
     def _get_sensor_type(self, *args: Any, **kwargs: Any) -> SensorTypes:
         return SensorTypes.POSITION
 
-    def _get_observation_space(self, *args: Any, **kwargs: Any) -> Space:
+    def _get_observation_space(self, *args: Any, **kwargs: Any) -> Any:
         return 0
 
     def get_observation(self, sim_obs, *args: Any, **kwargs: Any) -> Any:
