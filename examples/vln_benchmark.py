@@ -34,6 +34,7 @@ from habitat.tasks.utils import (
 from habitat.core.simulator import (
     AgentState,
 )
+from habitat.utils.geometric_utils import quaternion_to_list
 
 
 class VLNRandomBenchmark(habitat.Benchmark):
@@ -185,7 +186,6 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                             goal_idx = -1
 
                     prev_state = self._env._sim.get_agent_state()
-                    print(prev_state)
                     prev_image_id = self._env._current_episode.curr_viewpoint.image_id
                     prev_heading = observations["heading"]
                     prev_nav_locations = observations["adjacentViewpoints"]
@@ -334,11 +334,13 @@ class ShortestPathAgent(habitat.Agent):
 
         return angle
 
-    def get_relative_elevation(self, posA, posB):
+    def get_relative_elevation(self, posA, rotA, posB):
         target_vector = np.array(posB) - np.array(posA)
         y = target_vector[1]
         target_vector[1] = 0
         target_length = np.linalg.norm(np.array([target_vector[0], -target_vector[2]]))
+        quat = quaternion_to_list(rotA)
+        print(np.arcsin(2*quat[0]*quat[1] + 2*quat[2]*quat[3]))
         return np.arctan2(y, target_length)
 
     def act(self, observations, goal):
@@ -360,7 +362,7 @@ class ShortestPathAgent(habitat.Agent):
             # Check if the goal is visible
             rel_heading = self.get_relative_heading(posA, rotA, posB)
             # this is the relative elevation or altitute
-            rel_elevation = self.get_relative_elevation(posA, posB)
+            rel_elevation = self.get_relative_elevation(posA, rotA, posB)
 
             print("The relative heading is %s\n" % str(rel_heading))
             print("The relative elevation is %s\n" % str(rel_elevation))
