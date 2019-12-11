@@ -588,7 +588,7 @@ class LookUpAction(SimulatorTaskAction):
                 self._sim.step(HabitatSimActions.LOOK_UP)
         return self._sim.step(HabitatSimActions.LOOK_UP)
 
-
+'''
 @registry.register_task_action
 class LookDownAction(SimulatorTaskAction):
     def step(self, *args: Any, **kwargs: Any):
@@ -600,7 +600,7 @@ class LookDownAction(SimulatorTaskAction):
             for _ in range(kwargs["num_steps"] - 1):
                 self._sim.step(HabitatSimActions.LOOK_DOWN)
         return self._sim.step(HabitatSimActions.LOOK_DOWN)
-
+'''
 
 @registry.register_task(name="VLN-v1")
 class VLNTask(EmbodiedTask):
