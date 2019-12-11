@@ -316,36 +316,14 @@ class ShortestPathAgent(habitat.Agent):
         dist = observations[self.goal_sensor_uuid][0]
         return dist <= self.dist_threshold_to_stop
 
-    def _unit_vector(self, vector):
-        """ Returns the unit vector of the vector.  """
-        return vector / np.linalg.norm(vector)
-
-    def _angle_between(self,v1, v2):
-        """ Returns the angle in radians between vectors 'v1' and 'v2'"""
-        v1_u = self._unit_vector(v1)
-        v2_u = self._unit_vector(v2)
-        print("dot product", np.dot(v1_u, v2_u))
-        return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
-
-
-
     def get_relative_heading(self, posA, rotA, posB):
         direction_vector = np.array([0, 0, -1])
         quat = quaternion_from_coeff(rotA).inverse()
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
-        heading = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
-
-        print("The heading is %s" % str(heading))
-        print("heading vector", heading_vector)
-
-        adjusted_heading = np.pi/2.0 - heading
         target_vector = np.array(posB) - np.array(posA)
-        op_target_vector = np.array(posA) - np.array(posB)
-        #target_vector[1] = 0
-        rotated_heading = [-heading_vector[2], heading_vector[0]]
-        target_vector_2d = [target_vector[0], target_vector[2]]
 
-        angle = np.arctan2(target_vector[0], -target_vector[2]) - np.arctan2(heading_vector[0], -heading_vector[2])
+        angle = np.arctan2(target_vector[0], -target_vector[2]) - \
+                np.arctan2(heading_vector[0], -heading_vector[2])
 
         # Get an angle in the interval [-pi, pi]
         if angle > np.pi:
@@ -353,29 +331,6 @@ class ShortestPathAgent(habitat.Agent):
         elif angle <= -np.pi:
             angle += 2 * np.pi
 
-
-
-        print(np.arctan2(target_vector[2], target_vector[0]) - np.arctan2(heading_vector[0], -heading_vector[2]))
-        print(np.arctan2(op_target_vector[2], op_target_vector[0]) - np.arctan2(heading_vector[0], -heading_vector[2]))
-        print(np.arctan2(target_vector[0], -target_vector[2]) - np.arctan2(heading_vector[0], -heading_vector[2]))
-        #angle =  self._angle_between(
-        #    heading_vector,
-        #    target_vector,
-        #)
-
-        angle2 =  self._angle_between(
-            heading_vector,
-            op_target_vector,
-        )
-
-        print("this is the angle 1", angle)
-
-        print("this is the angle 2", angle2)
-
-        #angle = self._angle_between(
-        #    heading_vector,
-        #    target_vector,
-        #)
         return angle
 
     def get_relative_elevation(self, posA, posB):
