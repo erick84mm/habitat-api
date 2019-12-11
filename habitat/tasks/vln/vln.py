@@ -599,7 +599,7 @@ class LookDownAction(SimulatorTaskAction):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
         """
-
+        print("We are running the look down in the simulator")
         if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 0:
             for _ in range(kwargs["num_steps"] - 1):
                 self._sim.step(HabitatSimActions.LOOK_DOWN)
