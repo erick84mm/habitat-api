@@ -338,7 +338,9 @@ class ShortestPathAgent(habitat.Agent):
         y = target_vector[1]
         target_vector[1] = 0
         target_length = np.linalg.norm(np.array([target_vector[0], -target_vector[2]]))
-        print(np.arcsin(2*rotA[0]*rotA[2] + 2*-rotA[1]*rotA[3]))
+        print("Arc sin", np.arcsin(2*rotA[0]*rotA[2] + 2*-rotA[1]*rotA[3]))
+        print("Plus", np.arctan2(y+rotA[1], target_length))
+        print("just rotA", np.arctan2(rotA[1], target_length))
         return np.arctan2(y, target_length)
 
     def act(self, observations, goal):
