@@ -327,6 +327,8 @@ class ShortestPathAgent(habitat.Agent):
         print("dot product", np.dot(v1_u, v2_u))
         return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
+
+
     def get_relative_heading(self, posA, rotA, posB):
         direction_vector = np.array([0, 0, -1])
         quat = quaternion_from_coeff(rotA).inverse()
@@ -342,13 +344,24 @@ class ShortestPathAgent(habitat.Agent):
         #target_vector[1] = 0
         rotated_heading = [-heading_vector[2], heading_vector[0]]
         target_vector_2d = [target_vector[0], target_vector[2]]
+
+        angle = np.arctan2(target_vector[0], -target_vector[2]) - np.arctan2(heading_vector[0], -heading_vector[2])
+
+        # Get an angle in the interval [-pi, pi]
+        if angle > np.pi:
+            angle -= 2 * np.pi
+        elif angle <= -np.pi:
+            angle += 2 * np.pi
+
+
+
         print(np.arctan2(target_vector[2], target_vector[0]) - np.arctan2(heading_vector[0], -heading_vector[2]))
         print(np.arctan2(op_target_vector[2], op_target_vector[0]) - np.arctan2(heading_vector[0], -heading_vector[2]))
         print(np.arctan2(target_vector[0], -target_vector[2]) - np.arctan2(heading_vector[0], -heading_vector[2]))
-        angle =  self._angle_between(
-            heading_vector,
-            target_vector,
-        )
+        #angle =  self._angle_between(
+        #    heading_vector,
+        #    target_vector,
+        #)
 
         angle2 =  self._angle_between(
             heading_vector,
