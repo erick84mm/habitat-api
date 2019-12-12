@@ -369,6 +369,7 @@ class ShortestPathAgent(habitat.Agent):
         print("no inverse pos", np.arctan2(y_3, target_length_3))
         print("inverse with posB - heading", np.arctan2(y_4, target_length_4))
         print("posB - heading", np.arctan2(y_5, target_length_5))
+        print("Matterport", np.arctan2(y, target_length) - heading_vector[1])
         return np.arctan2(y, target_length)
 
     def act(self, observations, goal):
