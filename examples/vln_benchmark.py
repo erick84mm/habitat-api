@@ -339,13 +339,20 @@ class ShortestPathAgent(habitat.Agent):
         start_pos = quaternion_rotate_vector(quat.inverse(), posA)
         start_pos_no_inv = quaternion_rotate_vector(quat, posA)
         heading_vector = quaternion_rotate_vector(quat.inverse(), direction_vector)
+        heading_vector_2 = quaternion_rotate_vector(quat, direction_vector)
         print("heading vector", heading_vector)
         target_vector = np.array(posB) - np.array(posA)
         target_vector_2 = np.array(posB) - np.array(start_pos)
         target_vector_3 = np.array(posB) - np.array(start_pos_no_inv)
+        target_vector_4 = np.array(posB) - np.array(heading_vector)
+        target_vector_5 = np.array(posB) - np.array(heading_vector_2)
         y = target_vector[1]
         y_2 = target_vector_2[1] + heading_vector[1]
         y_3 = target_vector_3[1] + heading_vector[1]
+        y_4 = target_vector_4[1]
+        y_5 = target_vector_5[1]
+        y_6 = target_vector_3[1] + heading_vector[1]
+        y_7 = target_vector_3[1] + heading_vector[1]
         target_vector[1] = 0
         target_length = np.linalg.norm(np.array([target_vector[0], -target_vector[2]]))
         target_length_2 = np.linalg.norm(np.array([target_vector_2[0], -target_vector_2[2]]))
@@ -358,6 +365,8 @@ class ShortestPathAgent(habitat.Agent):
         print("Y = -z", np.arctan2(-target_vector[2], target_length))
         print("inverse pos", np.arctan2(y_2, target_length_2))
         print("no inverse pos", np.arctan2(y_3, target_length_3))
+        print("inverse with posB - heading", np.arctan2(y_4, target_length_4))
+        print("posB - heading", np.arctan2(y_5, target_length_5))
         return np.arctan2(y, target_length)
 
     def act(self, observations, goal):
