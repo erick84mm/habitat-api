@@ -344,8 +344,8 @@ class ShortestPathAgent(habitat.Agent):
         target_vector_2 = np.array(posB) - np.array(start_pos)
         target_vector_3 = np.array(posB) - np.array(start_pos_no_inv)
         y = target_vector[1]
-        y_2 = target_vector_2[1]
-        y_3 = target_vector_3[1]
+        y_2 = target_vector_2[1] + heading_vector[1]
+        y_3 = target_vector_3[1] + heading_vector[1]
         target_vector[1] = 0
         target_length = np.linalg.norm(np.array([target_vector[0], -target_vector[2]]))
         target_length_2 = np.linalg.norm(np.array([target_vector_2[0], -target_vector_2[2]]))
