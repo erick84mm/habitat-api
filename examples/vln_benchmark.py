@@ -158,6 +158,7 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
             agg_metrics: Dict = defaultdict(float)
 
             count_episodes = 0
+            images = []
             while count_episodes < num_episodes:
                 agent.reset()
                 observations = self._env.reset()
@@ -169,6 +170,8 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                 elapsed_steps = 0
                 goal_idx = 1
                 last_goal_idx = len(self._env._current_episode.goals) - 1
+                images.append(observations["rgb"])
+                observations["images"] = images
 
                 print("Target path ", [str(goal) for goal in self._env._current_episode.goals])
                 while not self._env.episode_over:
@@ -196,6 +199,9 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                     prev_nav_locations = observations["adjacentViewpoints"]
                     #print("Taking action %s from %s \n" % (action["action"], self._env._current_episode.curr_viewpoint.image_id))
                     observations = self._env.step(action)
+
+                    images.append(observations["rgb"])
+                    observations["images"] = images
                     #print("Result of Action in position %s\n" %  self._env._current_episode.curr_viewpoint.image_id)
                     state = self._env._sim.get_agent_state()
                     image_id = self._env._current_episode.curr_viewpoint.image_id
@@ -413,11 +419,11 @@ class ShortestPathAgent(habitat.Agent):
                     print("The relative heading is %s\n" % str(rel_heading))
                     print("The relative elevation is %s\n" % str(rel_elevation))
                     pprint(navigable_locations)
-                    image = observations["rgb"]
-                    image =  image[:,:, [2,1,0]]
-                    print(image)
-                    cv2.imshow("RGB", image)
-                    cv2.waitKey(0)
+                    for ob in observations["images"]:
+                        image = ob
+                        image =  image[:,:, [2,1,0]]
+                        cv2.imshow("RGB", image)
+                        cv2.waitKey(0)
 
             print(action, action_args)
         return {"action": action, "action_args": action_args}
