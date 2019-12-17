@@ -397,7 +397,7 @@ class ShortestPathAgent(habitat.Agent):
             # Check if the goal is visible
             rel_heading = self.get_relative_heading(posA, rotA, posB)
             # this is the relative elevation or altitute
-            rel_elevation = self.get_relative_elevation(posA, rotA, cameraA, posB)
+            rel_elevation = self.get_relative_elevation(posA, rotA, camA, posB)
 
             print("The relative heading is %s\n" % str(rel_heading))
             print("The relative elevation is %s\n" % str(rel_elevation))
