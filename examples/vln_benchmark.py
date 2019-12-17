@@ -163,6 +163,7 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                 agent.reset()
                 observations = self._env.reset()
                 action_history = []
+                images = []
                 print("*"*20 + "Starting new episode" + "*"*20,
                     self._env._current_episode.curr_viewpoint.image_id)
                 if observations and "heading" in observations:
