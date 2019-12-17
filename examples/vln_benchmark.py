@@ -414,7 +414,7 @@ class ShortestPathAgent(habitat.Agent):
                   action = "LOOK_UP" # Look up
                   action_args = {"num_steps": abs(int(rel_elevation / step_size))}
             elif rel_elevation < -step_size:
-                  action = "LOOK_DOWN" # Look down
+                  action = "LOOK_UP" # Look down
                   action_args = {"num_steps": abs(int(rel_elevation / step_size))}
             else:
                 is_visible = False
