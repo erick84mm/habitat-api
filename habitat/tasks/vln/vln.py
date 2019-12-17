@@ -359,9 +359,6 @@ class SPL(Measure):
             current_position, episode.goals[-1].view_point.position
         )
 
-        print("SPL metric", current_position, episode.goals[-1].view_point.position)
-        print("distance to target", distance_to_target)
-
         if (
             hasattr(task, "is_stop_called") and
             task.is_stop_called and
@@ -372,8 +369,6 @@ class SPL(Measure):
         self._agent_episode_distance += self._euclidean_distance(
             current_position, self._previous_position
         )
-        print("agent_episode_distance", self._agent_episode_distance)
-        print("start_end_episode_distance", self._start_end_episode_distance)
         self._previous_position = current_position
 
         self._metric = ep_success * (
