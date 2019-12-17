@@ -417,8 +417,6 @@ class ShortestPathAgent(habitat.Agent):
                     image =  image[:,:, [2,1,0]]
                     print(image)
                     cv2.imshow("RGB", image)
-                    cv2.imshow("RGB", image)
-                    cv2.imshow("RGB", image)
                     cv2.waitKey(0)
 
             print(action, action_args)
