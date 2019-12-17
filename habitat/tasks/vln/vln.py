@@ -128,7 +128,6 @@ class VLNEpisode(Episode):
     curr_viewpoint: Optional[ViewpointData] = None
 
 
-
 @registry.register_sensor
 class HeadingSensor(Sensor):
     r"""Sensor for observing the agent's heading in the global coordinate
@@ -152,7 +151,7 @@ class HeadingSensor(Sensor):
         return SensorTypes.HEADING
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
-        return spaces.Box(low=0, high=2 * np.pi, shape=(1,), dtype=np.float)
+        return spaces.Box(low=-np.pi, high=np.pi, shape=(1,), dtype=np.float)
 
     def _quat_to_xy_heading(self, quat):
         direction_vector = np.array([0, 0, -1])
@@ -169,6 +168,7 @@ class HeadingSensor(Sensor):
         rotation_world_agent = agent_state.rotation
 
         return self._quat_to_xy_heading(rotation_world_agent.inverse())
+
 
 @registry.register_sensor
 class AdjacentViewpointSensor(Sensor):
