@@ -255,6 +255,10 @@ class AdjacentViewpointSensor(Sensor):
         if kwargs and 'scan' in kwargs:
             scan = kwargs["scan"]
             curr_viewpoint_id = kwargs["curr_viewpoint"]
+
+            print("Getting observations for scan %s" % scan)
+            print("Getting observations for viewpoint %s" % curr_viewpoint_id)
+            
             scan_inf = self._connectivity[scan]
             viewpoint_inf = scan_inf["viewpoints"][curr_viewpoint_id]
             for i in range(len(viewpoint_inf["visible"])):
