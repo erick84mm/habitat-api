@@ -364,6 +364,7 @@ class ShortestPathAgent(habitat.Agent):
         if goal.image_id == navigable_locations[0]["image_id"]:
             action = "STOP"
         else:
+            print("The goal is: %s", goal.image_id)
             posA = navigable_locations[0]["start_position"]
             rotA = navigable_locations[0]["start_rotation"]
             camA = navigable_locations[0]["camera_rotation"]
@@ -375,8 +376,8 @@ class ShortestPathAgent(habitat.Agent):
             # this is the relative elevation or altitute
             rel_elevation = self.get_relative_elevation(posA, rotA, camA, posB)
 
-            print("The relative heading is %s\n" % str(rel_heading))
-            print("The relative elevation is %s\n" % str(rel_elevation))
+            print("The relative heading to the goal is %s" % str(rel_heading))
+            print("The relative elevation to the goal is %s" % str(rel_elevation))
 
             if rel_heading > step_size:
                   action = "TURN_RIGHT" # Turn right
