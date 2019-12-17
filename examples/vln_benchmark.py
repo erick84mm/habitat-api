@@ -163,6 +163,13 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                 agent.reset()
                 observations = self._env.reset()
                 action_history = []
+
+                for im in images:
+                    image = im
+                    image =  image[:,:, [2,1,0]]
+                    cv2.imshow("RGB", image)
+                    cv2.waitKey(0)
+
                 images = []
                 print("*"*20 + "Starting new episode" + "*"*20,
                     self._env._current_episode.curr_viewpoint.image_id)
@@ -212,19 +219,7 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                     nav_locations = observations["adjacentViewpoints"]
                     #print("Current position", state.position)
                     #print("Current rotation", state.rotation)
-                    print({
-                        "action": action["action"],
-                        "prev_image_id": prev_image_id,
-                        "prev_heading": prev_heading,
-                        "prev_pos": prev_state.position,
-                        "prev_rot": prev_state.rotation,
-                        "prev_nav_locations": prev_nav_locations,
-                        "new_image_id": image_id,
-                        "new_heading": heading,
-                        "new_pos": state.position,
-                        "new_rot": state.rotation,
-                        "nav_locations": nav_locations,
-                        })
+
 
                     action_history.append({
                         "action": action["action"],
