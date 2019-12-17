@@ -9,6 +9,7 @@ import sys
 import numpy as np
 import random
 import time
+import cv2
 from pprint import pprint
 
 import torch
@@ -398,12 +399,10 @@ class ShortestPathAgent(habitat.Agent):
 
                 if is_visible:
                     action = "TELEPORT" # Move forward
-                    pos = posB
-                    rot = rotA
                     image_id = goal.image_id
                     viewpoint = ViewpointData(
                         image_id=image_id,
-                        view_point=AgentState(position=pos, rotation=rot)
+                        view_point=AgentState(position=posB, rotation=rotA)
                     )
                     action_args.update({"target": viewpoint})
                 else:
@@ -411,6 +410,8 @@ class ShortestPathAgent(habitat.Agent):
                     print("The relative heading is %s\n" % str(rel_heading))
                     print("The relative elevation is %s\n" % str(rel_elevation))
                     pprint(navigable_locations)
+                    image = observations["rgb"]
+                    cv2.imshow("RGB", image[:,:, [2,1,0]])
 
             print(action, action_args)
         return {"action": action, "action_args": action_args}
