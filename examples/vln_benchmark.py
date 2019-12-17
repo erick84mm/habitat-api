@@ -34,6 +34,9 @@ from habitat.tasks.utils import (
 from habitat.core.simulator import (
     AgentState,
 )
+from habitat.utils.geometry_utils import (
+    angle_between_quaternions,
+)
 
 
 class VLNRandomBenchmark(habitat.Benchmark):
@@ -333,7 +336,7 @@ class ShortestPathAgent(habitat.Agent):
 
         return angle
 
-    def get_relative_elevation(self, posA, rotA, posB):
+    def get_relative_elevation(self, posA, rotA, cameraA, posB):
         direction_vector = np.array([0, 0, -1])
         quat = quaternion_from_coeff(rotA)
         start_pos = quaternion_rotate_vector(quat.inverse(), posA)
@@ -341,6 +344,7 @@ class ShortestPathAgent(habitat.Agent):
         heading_vector = quaternion_rotate_vector(quat.inverse(), direction_vector)
         heading_vector_2 = quaternion_rotate_vector(quat, direction_vector)
         print("heading vector", heading_vector)
+        print("angle between quaternions", angle_between_quaternions(rotA, cameraA))
         target_vector = np.array(posB) - np.array(posA)
         target_vector_2 = np.array(posB) - np.array(start_pos)
         target_vector_3 = np.array(posB) - np.array(start_pos_no_inv)
@@ -385,13 +389,14 @@ class ShortestPathAgent(habitat.Agent):
         else:
             posA = navigable_locations[0]["start_position"]
             rotA = navigable_locations[0]["start_rotation"]
+            camA = navigable_locations[0]["camera_rotation"]
             posB = goal.get_position()
             # default step in R2R
             step_size = np.pi/6.0
             # Check if the goal is visible
             rel_heading = self.get_relative_heading(posA, rotA, posB)
             # this is the relative elevation or altitute
-            rel_elevation = self.get_relative_elevation(posA, rotA, posB)
+            rel_elevation = self.get_relative_elevation(posA, rotA, cameraA, posB)
 
             print("The relative heading is %s\n" % str(rel_heading))
             print("The relative elevation is %s\n" % str(rel_elevation))
