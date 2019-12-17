@@ -412,6 +412,7 @@ class ShortestPathAgent(habitat.Agent):
                     pprint(navigable_locations)
                     image = observations["rgb"]
                     cv2.imshow("RGB", image[:,:, [2,1,0]])
+                    time.sleep(1000)
 
             print(action, action_args)
         return {"action": action, "action_args": action_args}
