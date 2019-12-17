@@ -114,8 +114,6 @@ def heading_to_rotation(heading):
     return [quat.real] + quat.imag.tolist()
 '''
 def heading_to_rotation(heading):
-    if heading < 0:
-        heading = np.pi * 2 + heading
     cy = 1
     sy = 0
     cp = np.cos(heading * 0.5)

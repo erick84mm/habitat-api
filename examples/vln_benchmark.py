@@ -179,7 +179,7 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                 elapsed_steps = 0
                 goal_idx = 1
                 last_goal_idx = len(self._env._current_episode.goals) - 1
-                images.append(observations["rgb"])
+                images.append(observations["rgb"][:,:,[2,1,0]])
                 observations["images"] = images
 
                 print("Target path ", [str(goal) for goal in self._env._current_episode.goals])
@@ -210,7 +210,7 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                     #print("Taking action %s from %s \n" % (action["action"], self._env._current_episode.curr_viewpoint.image_id))
                     observations = self._env.step(action)
 
-                    images.append(observations["rgb"])
+                    images.append(observations["rgb"][:,:,[2,1,0]])
                     observations["images"] = images
                     #print("Result of Action in position %s\n" %  self._env._current_episode.curr_viewpoint.image_id)
                     state = self._env._sim.get_agent_state()
