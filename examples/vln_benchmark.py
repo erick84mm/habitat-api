@@ -360,10 +360,6 @@ class ShortestPathAgent(habitat.Agent):
         action = ""
         action_args = {}
         navigable_locations = observations["adjacentViewpoints"]
-        print("The goal is ", goal.image_id)
-        print("Episode heading", observations["heading"])
-        print("Goal position", goal.get_position())
-        print("Goal rotation", goal.get_rotation())
         if goal.image_id == navigable_locations[0]["image_id"]:
             action = "STOP"
         else:
@@ -380,8 +376,6 @@ class ShortestPathAgent(habitat.Agent):
 
             print("The relative heading is %s\n" % str(rel_heading))
             print("The relative elevation is %s\n" % str(rel_elevation))
-
-
 
             if rel_heading > step_size:
                   action = "TURN_RIGHT" # Turn right
@@ -413,8 +407,9 @@ class ShortestPathAgent(habitat.Agent):
                     )
                     action_args.update({"target": viewpoint})
                 else:
-                    print("this is an error in the system")
-
+                    print("Target position not visible, This is an error in the system")
+                    print("The relative heading is %s\n" % str(rel_heading))
+                    print("The relative elevation is %s\n" % str(rel_elevation))
 
             print(action, action_args)
         return {"action": action, "action_args": action_args}
