@@ -372,7 +372,8 @@ class SPL(Measure):
         self._agent_episode_distance += self._euclidean_distance(
             current_position, self._previous_position
         )
-
+        print("agent_episode_distance", self._agent_episode_distance)
+        print("start_end_episode_distance", self._start_end_episode_distance)
         self._previous_position = current_position
 
         self._metric = ep_success * (
