@@ -359,6 +359,9 @@ class SPL(Measure):
             current_position, episode.goals[-1].view_point.position
         )
 
+        print("SPL metric", current_position, episode.goals[-1].view_point.position)
+        print("distance to target", distance_to_target)
+
         if (
             hasattr(task, "is_stop_called") and
             task.is_stop_called and
