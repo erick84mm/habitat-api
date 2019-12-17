@@ -340,42 +340,15 @@ class ShortestPathAgent(habitat.Agent):
         direction_vector = np.array([0, 0, -1])
         quat = quaternion_from_coeff(rotA)
         camera_quat = quaternion_from_coeff(cameraA)
-        start_pos = quaternion_rotate_vector(quat.inverse(), posA)
-        start_pos_no_inv = quaternion_rotate_vector(quat, posA)
-        heading_vector = quaternion_rotate_vector(quat.inverse(), direction_vector)
-        heading_vector_2 = quaternion_rotate_vector(quat, direction_vector)
-        print("heading vector", heading_vector)
-        print("angle between quaternions", angle_between_quaternions(quat, camera_quat))
-        target_vector = np.array(posB) - np.array(posA)
-        target_vector_2 = np.array(posB) - np.array(start_pos)
-        target_vector_3 = np.array(posB) - np.array(start_pos_no_inv)
-        target_vector_4 = np.array(posB) - np.array(heading_vector)
-        target_vector_5 = np.array(posB) - np.array(heading_vector_2)
-        y = target_vector[1]
-        y_2 = target_vector_2[1] + heading_vector[1]
-        y_3 = target_vector_3[1] + heading_vector[1]
-        y_4 = target_vector_4[1]
-        y_5 = target_vector_5[1]
-        y_6 = target_vector_3[1] + heading_vector[1]
-        y_7 = target_vector_3[1] + heading_vector[1]
-        target_vector[1] = 0
-        target_length = np.linalg.norm(np.array([target_vector[0], -target_vector[2]]))
-        target_length_2 = np.linalg.norm(np.array([target_vector_2[0], -target_vector_2[2]]))
-        target_length_3 = np.linalg.norm(np.array([target_vector_3[0], -target_vector_3[2]]))
-        target_length_4 = np.linalg.norm(np.array([target_vector_4[0], -target_vector_4[2]]))
-        target_length_5 = np.linalg.norm(np.array([target_vector_5[0], -target_vector_5[2]]))
-        print("definite?", np.arctan2(heading_vector[1], target_length))
-        print("Arc sin", np.arcsin(2*rotA[0]*rotA[2] + 2*-rotA[1]*rotA[3]))
-        print("Plus", np.arctan2(y+rotA[1], target_length))
-        print("just rotA", np.arctan2(rotA[1], target_length))
-        print("Y as -z + rot", np.arctan2(-target_vector[2]-rotA[2], target_length))
-        print("Y = -z", np.arctan2(-target_vector[2], target_length))
-        print("inverse pos", np.arctan2(y_2, target_length_2))
-        print("no inverse pos", np.arctan2(y_3, target_length_3))
-        print("inverse with posB - heading", np.arctan2(y_4, target_length_4))
-        print("posB - heading", np.arctan2(y_5, target_length_5))
-        print("Matterport", np.arctan2(y, target_length) - start_pos[1])
-        return np.arctan2(y, target_length)
+        angle = angle_between_quaternions(quat, camera_quat)
+
+        rot_vector = quaternion_rotate_vector(quat, direction_vector)
+        camera_vector = quaternion_rotate_vector(camera_quat, direction_vector)
+        camera_y = -camera_vector[2]
+        rot_y = -rot_vector[2]
+        if  camera_y < rot_y:
+            return -angle
+        return angle
 
     def act(self, observations, goal):
         action = ""
