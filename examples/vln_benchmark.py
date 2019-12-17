@@ -410,6 +410,7 @@ class ShortestPathAgent(habitat.Agent):
                     print("Target position %s not visible, This is an error in the system" % goal.image_id)
                     print("The relative heading is %s\n" % str(rel_heading))
                     print("The relative elevation is %s\n" % str(rel_elevation))
+                    pprint(navigable_locations)
 
             print(action, action_args)
         return {"action": action, "action_args": action_args}
