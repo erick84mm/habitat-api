@@ -407,7 +407,7 @@ class ShortestPathAgent(habitat.Agent):
                     )
                     action_args.update({"target": viewpoint})
                 else:
-                    print("Target position not visible, This is an error in the system")
+                    print("Target position %s not visible, This is an error in the system" % goal.image_id)
                     print("The relative heading is %s\n" % str(rel_heading))
                     print("The relative elevation is %s\n" % str(rel_elevation))
 
