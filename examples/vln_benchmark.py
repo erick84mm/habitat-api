@@ -348,10 +348,10 @@ class ShortestPathAgent(habitat.Agent):
                 np.arctan2(heading_vector[0], -heading_vector[2])
 
         # Get an angle in the interval [-pi, pi]
-        if angle > np.pi:
-            angle -= 2 * np.pi
-        elif angle <= -np.pi:
-            angle += 2 * np.pi
+        #if angle > np.pi:
+        #    angle -= 2 * np.pi
+        #elif angle <= -np.pi:
+        #    angle += 2 * np.pi
 
         return angle
 
