@@ -150,7 +150,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                     viewpoint = episode["path"][0]
                     scan = episode["scan"]
                     distance = 0
-                    heading = normalize_heading(episode["heading"])
+                    heading = episode["heading"]
                     if "distance" in episode:
                         distance = episode["distance"]
                     habitat_episode = {
