@@ -105,10 +105,24 @@ def polar_to_cartesian(phi, rho=1):
     y = rho * np.sin(phi)
     return x, y
 
-
+'''
 def heading_to_rotation(heading):
     x, y = polar_to_cartesian(heading)
     heading_vector = [y, 0, -x]
     rotation_matrix = np.array([[-x, 0, -y], [0, -1, 0], [-y, 0, x]])
     quat = rotation_to_quaternion(rotation_matrix)
     return [quat.real] + quat.imag.tolist()
+'''
+def heading_to_rotation(heading):
+    cy = 1
+    sy = 0
+    cp = np.cos(heading * 0.5)
+    sp = np.sin(heading * 0.5)
+    cr = 1
+    sr = 0
+    w = cy * cp * cr + sy * sp * sr
+    x = cy * cp * sr - sy * sp * cr
+    y = sy * cp * sr + cy * sp * cr
+    z = sy * cp * cr - cy * sp * sr
+    coeffs = [x,y,z,w]
+    return  coeffs
