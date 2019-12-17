@@ -167,6 +167,7 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                     self._env._current_episode.curr_viewpoint.image_id)
                 if observations and "heading" in observations:
                     print("Episode heading: %s" % observations["heading"])
+
                 elapsed_steps = 0
                 goal_idx = 1
                 last_goal_idx = len(self._env._current_episode.goals) - 1
@@ -194,6 +195,7 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                             goal_idx = -1
 
                     prev_state = self._env._sim.get_agent_state()
+
                     prev_image_id = self._env._current_episode.curr_viewpoint.image_id
                     prev_heading = observations["heading"]
                     prev_nav_locations = observations["adjacentViewpoints"]
@@ -209,7 +211,19 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                     nav_locations = observations["adjacentViewpoints"]
                     #print("Current position", state.position)
                     #print("Current rotation", state.rotation)
-                    #print("\n\n")
+                    print({
+                        "action": action["action"],
+                        "prev_image_id": prev_image_id,
+                        "prev_heading": prev_heading,
+                        "prev_pos": prev_state.position,
+                        "prev_rot": prev_state.rotation,
+                        "prev_nav_locations": prev_nav_locations,
+                        "new_image_id": image_id,
+                        "new_heading": heading,
+                        "new_pos": state.position,
+                        "new_rot": state.rotation,
+                        "nav_locations": nav_locations,
+                        })
 
                     action_history.append({
                         "action": action["action"],
