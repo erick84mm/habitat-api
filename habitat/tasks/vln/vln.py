@@ -265,10 +265,8 @@ class AdjacentViewpointSensor(Sensor):
                 print("Checking viewpoint %s" % scan_inf["idxtoid"][str(i)])
                 print("Included", viewpoint_inf["included"])
                 print("unobstructed", viewpoint_inf["unobstructed"][i])
-                print("visible", viewpoint_inf["visible"][i])
                 if viewpoint_inf["included"] \
-                and viewpoint_inf["unobstructed"][i] \
-                and viewpoint_inf["visible"][i]:
+                and viewpoint_inf["unobstructed"][i]:
                     adjacent_viewpoint_name = scan_inf["idxtoid"][str(i)]
                     if adjacent_viewpoint_name != curr_viewpoint_id:
                         adjacent_viewpoint = \
