@@ -389,16 +389,16 @@ class ShortestPathAgent(habitat.Agent):
 
             if rel_heading > step_size:
                   action = "TURN_RIGHT" # Turn right
-                  action_args = {"num_steps": abs(int(rel_heading / step_size))}
+                  #action_args = {"num_steps": abs(int(rel_heading / step_size))}
             elif rel_heading < -step_size:
                   action = "TURN_LEFT" # Turn left
-                  action_args = {"num_steps": abs(int(rel_heading / step_size))}
+                  #action_args = {"num_steps": abs(int(rel_heading / step_size))}
             elif rel_elevation > step_size:
                   action = "LOOK_UP" # Look up
-                  action_args = {"num_steps": abs(int(rel_elevation / step_size))}
+                  #action_args = {"num_steps": abs(int(rel_elevation / step_size))}
             elif rel_elevation < -step_size:
                   action = "LOOK_DOWN" # Look down
-                  action_args = {"num_steps": abs(int(rel_elevation / step_size))}
+                  #action_args = {"num_steps": abs(int(rel_elevation / step_size))}
             else:
                 is_visible = False
                 for location in navigable_locations:
