@@ -548,11 +548,11 @@ class TurnLeftAction(SimulatorTaskAction):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
         """
-        # Right and left are inverted in MatterportSIM
+        # Right and left are inverted in MatterportSIM ???
         if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 1:
             for _ in range(kwargs["num_steps"] - 1):
-                self._sim.step(HabitatSimActions.TURN_RIGHT)
-        return self._sim.step(HabitatSimActions.TURN_RIGHT)
+                self._sim.step(HabitatSimActions.TURN_LEFT)
+        return self._sim.step(HabitatSimActions.TURN_LEFT)
 
 
 @registry.register_task_action
@@ -566,8 +566,8 @@ class TurnRightAction(SimulatorTaskAction):
 
         if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 1:
             for _ in range(kwargs["num_steps"] - 1):
-                self._sim.step(HabitatSimActions.TURN_LEFT)
-        return self._sim.step(HabitatSimActions.TURN_LEFT)
+                self._sim.step(HabitatSimActions.TURN_RIGHT)
+        return self._sim.step(HabitatSimActions.TURN_RIGHT)
 
 
 @registry.register_task_action
