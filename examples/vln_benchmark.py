@@ -164,6 +164,8 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                 action_history = []
                 print("*"*20 + "Starting new episode" + "*"*20,
                     self._env._current_episode.curr_viewpoint.image_id)
+                if observations and "heading" in observations:
+                    print("Episode heading: %s" % observations["heading"])
                 elapsed_steps = 0
                 goal_idx = 1
                 last_goal_idx = len(self._env._current_episode.goals) - 1
