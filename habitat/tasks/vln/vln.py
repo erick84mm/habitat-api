@@ -309,7 +309,8 @@ class AdjacentViewpointSensor(Sensor):
                     "image_id": viewpoint["image_id"],
                     "start_position":
                         viewpoint["start_position"],
-                    "start_rotation": rot
+                    "start_rotation": agent_rot,
+                    "camera_rotation": camera_rot,
                 })
         #print("\nNavigable viewpoints", navigable_viewpoints)
         return navigable_viewpoints
