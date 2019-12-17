@@ -410,6 +410,7 @@ class ShortestPathAgent(habitat.Agent):
                     print("The relative heading is %s\n" % str(rel_heading))
                     print("The relative elevation is %s\n" % str(rel_elevation))
                     pprint(navigable_locations)
+                    print(observations)
                     image = observations["rgb"]
                     cv2.imshow("RGB", image[:,:, [2,1,0]])
                     time.sleep(1000)
