@@ -350,10 +350,10 @@ class ShortestPathAgent(habitat.Agent):
         rot_z = rot_vector[1]  # base vector always looking up front
         target_z = target_vector[1]  # the base pos vector
         if  camera_z < rot_z:
-            print( np.arctan2(target_z, numpy.linalg.norm([target_vector[0], -target_vector[2]])) + angle)
+            print( np.arctan2(target_z, np.linalg.norm([target_vector[0], -target_vector[2]])) + angle)
             return -angle
 
-        print( np.arctan2(target_z, numpy.linalg.norm([target_vector[0], -target_vector[2]])) - angle)
+        print( np.arctan2(target_z, np.linalg.norm([target_vector[0], -target_vector[2]])) - angle)
         return angle
 
     def act(self, observations, goal):
