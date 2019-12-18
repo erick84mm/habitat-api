@@ -347,7 +347,7 @@ class ShortestPathAgent(habitat.Agent):
         phi = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
         phi_prime = cartesian_to_polar(-target_vector[2], target_vector[0])[1]
 
-        print(phi, phi_prime, phi_prime-phi)
+        print(phi, phi_prime, phi_prime+phi, phi_prime-phi, 2 * np.pi - phi_prime+phi , 2 * np.pi - phi_prime-phi)
         angle = np.arctan2(target_vector[0], -target_vector[2]) - \
                 np.arctan2(heading_vector[0], -heading_vector[2])
 
