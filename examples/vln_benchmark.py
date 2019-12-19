@@ -209,7 +209,7 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                     prev_nav_locations = observations["adjacentViewpoints"]
                     #print("Taking action %s from %s \n" % (action["action"], self._env._current_episode.curr_viewpoint.image_id))
                     observations = self._env.step(action)
-                    print(observations["adjacentViewpoints"])
+                    pprint(observations["adjacentViewpoints"])
                     images.append(observations["rgb"][:,:,[2,1,0]])
                     observations["images"] = images
                     #print("Result of Action in position %s\n" %  self._env._current_episode.curr_viewpoint.image_id)
