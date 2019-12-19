@@ -365,8 +365,8 @@ class ShortestPathAgent(habitat.Agent):
         target_vector[1] = 0
         normed_target_dir = np.linalg.norm(target_vector)
         target_angle = cartesian_to_polar(-target_vector[2], target_vector[0])[1]
-        rel_heading = np.arctan2(target_vector[0] * camera_vector[1] + target_vector[2] * camera_vector[0],
-                        target_vector[0] * camera_vector[0] - target_vector[2] * camera_vector[1]);
+        rel_heading = np.arctan2(target_vector[0] * camera_vector[1] - (-target_vector[2] * camera_vector[0]),
+                        target_vector[0] * camera_vector[0] +  (-target_vector[2] * camera_vector[1]));
         print("dot product", np.dot(normed_target_dir, camera_vector))
 
         print( "rel heading", rel_heading)
