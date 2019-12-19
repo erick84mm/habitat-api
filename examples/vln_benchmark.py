@@ -352,7 +352,7 @@ class ShortestPathAgent(habitat.Agent):
         quat = quaternion_from_coeff(rotA).inverse()
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
         heading_angle = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
-        adjusted_heading = 2 * np.pi - heading_angle
+        adjusted_heading = 2 * np.pi - self.normalize_angle(heading_angle)
         camera_vector = np.array([
                 np.cos(adjusted_heading),
                 np.sin(adjusted_heading),
