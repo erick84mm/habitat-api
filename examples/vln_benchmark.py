@@ -327,9 +327,10 @@ class RandomDiscreteAgent(habitat.Agent):
         return {"action": action, "action_args": action_args}
 
 class ShortestPathAgent(habitat.Agent):
-    def __init__(self, success_distance, goal_sensor_uuid):
+    def __init__(self, success_distance, goal_sensor_uuid, half_visible_angle=0):
         self.dist_threshold_to_stop = success_distance
         self.goal_sensor_uuid = goal_sensor_uuid
+        self.half_visible_angle = half_visible_angle
 
     def reset(self):
         pass
@@ -373,10 +374,6 @@ class ShortestPathAgent(habitat.Agent):
         print("heading_angle", heading_angle, self.normalize_angle(heading_angle))
         print(self.normalize_angle(heading_angle) - self.normalize_angle(target_angle))
         print(self.normalize_angle(target_angle) - self.normalize_angle(heading_angle) )
-
-        angle = np.arctan2(target_vector[0], -target_vector[2]) - \
-                np.arctan2(heading_vector[0], -heading_vector[2])
-
         angle = self.normalize_angle(target_angle) - self.normalize_angle(heading_angle)
         # Get an angle in the interval [-pi, pi]
         #if angle > np.pi:
@@ -384,7 +381,7 @@ class ShortestPathAgent(habitat.Agent):
         #elif angle <= -np.pi:
         #    angle += 2 * np.pi
 
-        return angle
+        return angle - self.half_visible_angle
 
     def get_relative_elevation(self, posA, rotA, cameraA, posB):
         direction_vector = np.array([0, 0, -1])
@@ -498,7 +495,7 @@ def main():
     #metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
 
 
-    agent = ShortestPathAgent(3.0, "SPL")
+    agent = ShortestPathAgent(3.0, "SPL", half_visible_angle=0.698132)
     benchmark = VLNShortestPathBenchmark(args.task_config)
     metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
 
