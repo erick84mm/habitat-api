@@ -128,6 +128,10 @@ def build_vocab(path, splits=['train'], min_count=5, start_vocab=base_vocab):
     return vocab, word2idx_dict
 
 def normalize_heading(heading):
+    # Matterport goes from 0 to 2pi going clock wise.
+    # Habitat goes from 0 - pi going counter clock wise.
+    # Also habitat goes from 0 to - pi clock wise.
+    
     if heading > np.pi:
         return 2 * np.pi - heading
     return -heading

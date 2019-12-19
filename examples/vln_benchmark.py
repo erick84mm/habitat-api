@@ -340,17 +340,16 @@ class ShortestPathAgent(habitat.Agent):
 
     def get_relative_heading(self, posA, rotA, posB):
         direction_vector = np.array([0, 0, -1])
-        quat = quaternion_from_coeff(rotA)
-        heading_vector = quaternion_rotate_vector(quat.inverse(), direction_vector)
-        heading_vector_no_inverse = quaternion_rotate_vector(quat, direction_vector)
+        quat = quaternion_from_coeff(rotA).inverse()
+        heading_vector = quaternion_rotate_vector(quat, direction_vector)
+        heading_angle = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
+
         target_vector = np.array(posB) - np.array(posA)
+        target_angle = cartesian_to_polar(-target_vector[2], target_vector[0])[1]
 
-        phi_not_inverse = cartesian_to_polar(-heading_vector_no_inverse[2], heading_vector_no_inverse[0])[1]
-        phi = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
-        phi_prime = cartesian_to_polar(-target_vector[2], target_vector[0])[1]
+        print("target_angle", target_angle)
+        print("heading_angle", heading_angle)
 
-        print(phi, phi_prime, phi_prime+phi, phi_prime-phi, 2 * np.pi - phi_prime+phi , 2 * np.pi - phi_prime-phi)
-        print(phi_not_inverse, phi_prime+phi_not_inverse, phi_not_inverse-phi_prime)
         angle = np.arctan2(target_vector[0], -target_vector[2]) - \
                 np.arctan2(heading_vector[0], -heading_vector[2])
 
