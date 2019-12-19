@@ -354,8 +354,8 @@ class ShortestPathAgent(habitat.Agent):
         heading_angle = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
         adjusted_heading = 2 * np.pi - self.normalize_angle(heading_angle)
         camera_vector = np.array([
-                np.cos(adjusted_heading),
-                np.sin(adjusted_heading),
+                np.cos(self.normalize_angle(heading_angle)),
+                np.sin(self.normalize_angle(heading_angle)),
                 0
                 ])
 
