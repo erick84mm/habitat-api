@@ -368,8 +368,6 @@ class ShortestPathAgent(habitat.Agent):
 
         print("dot product", np.dot(unit_target_vector, camera_vector))
 
-        print( "rel heading", rel_heading)
-
         print("target_angle", target_angle, self.normalize_angle(target_angle))
         print("heading_angle", heading_angle, self.normalize_angle(heading_angle))
         print(self.normalize_angle(heading_angle) - self.normalize_angle(target_angle))
