@@ -354,7 +354,7 @@ class ShortestPathAgent(habitat.Agent):
         heading_angle = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
 
         target_vector = np.array(posB) - np.array(posA)
-        target_angle = cartesian_to_polar(-target_vector[2], target_vector[0])[1]
+        target_angle = 2 * np.pi - cartesian_to_polar(-target_vector[2], target_vector[0])[1]
 
         print("target_angle", target_angle, self.normalize_angle(target_angle))
         print("heading_angle", heading_angle, self.normalize_angle(heading_angle))
