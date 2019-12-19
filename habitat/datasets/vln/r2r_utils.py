@@ -129,8 +129,8 @@ def build_vocab(path, splits=['train'], min_count=5, start_vocab=base_vocab):
 
 def normalize_heading(heading):
     if heading > np.pi:
-        return -2 * np.pi - heading
-    return heading
+        return 2 * np.pi - heading
+    return -heading
 
 def serialize_r2r(config, splits=["train"], force=False) -> None:
     json_file_path = config.DATA_PATH[:-3]
@@ -150,7 +150,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                     viewpoint = episode["path"][0]
                     scan = episode["scan"]
                     distance = 0
-                    heading = episode["heading"]
+                    heading = normalize_heading(episode["heading"])
                     if "distance" in episode:
                         distance = episode["distance"]
                     habitat_episode = {
