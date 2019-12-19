@@ -338,6 +338,15 @@ class ShortestPathAgent(habitat.Agent):
         dist = observations[self.goal_sensor_uuid][0]
         return dist <= self.dist_threshold_to_stop
 
+    def normalize_angle(angle):
+        # Matterport goes from 0 to 2pi going clock wise.
+        # Habitat goes from 0 - pi going counter clock wise.
+        # Also habitat goes from 0 to - pi clock wise.
+
+        if angle > np.pi:
+            return 2 * np.pi - angle
+        return -angle
+
     def get_relative_heading(self, posA, rotA, posB):
         direction_vector = np.array([0, 0, -1])
         quat = quaternion_from_coeff(rotA).inverse()
@@ -349,10 +358,12 @@ class ShortestPathAgent(habitat.Agent):
 
         print("target_angle", target_angle)
         print("heading_angle", heading_angle)
+        print(normalize_angle(heading_angle) - normalize_angle(target_angle))
 
         angle = np.arctan2(target_vector[0], -target_vector[2]) - \
                 np.arctan2(heading_vector[0], -heading_vector[2])
 
+        angle = normalize_angle(heading_angle) - normalize_angle(target_angle)
         # Get an angle in the interval [-pi, pi]
         #if angle > np.pi:
         #    angle -= 2 * np.pi
