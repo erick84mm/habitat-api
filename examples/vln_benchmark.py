@@ -343,7 +343,7 @@ class ShortestPathAgent(habitat.Agent):
         # Habitat goes from 0 - pi going counter clock wise.
         # Also habitat goes from 0 to - pi clock wise.
 
-        if angle > np.pi:
+        if angle < np.pi:
             return 2 * np.pi - angle
         return -angle
 
