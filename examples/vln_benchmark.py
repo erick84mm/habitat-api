@@ -495,7 +495,7 @@ def main():
     #metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
 
 
-    agent = ShortestPathAgent(3.0, "SPL", half_visible_angle=0.698132)
+    agent = ShortestPathAgent(3.0, "SPL", half_visible_angle=0.785398)
     benchmark = VLNShortestPathBenchmark(args.task_config)
     metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
 
