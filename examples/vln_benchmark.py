@@ -343,7 +343,7 @@ class ShortestPathAgent(habitat.Agent):
         # Habitat goes from 0 - pi going counter clock wise.
         # Also habitat goes from 0 to - pi clock wise.
 
-        if angle < np.pi and angle >= 0:
+        if 0 <= angle < np.pi:
             return 2 * np.pi - angle
         return -angle
 
@@ -358,13 +358,13 @@ class ShortestPathAgent(habitat.Agent):
 
         print("target_angle", target_angle, self.normalize_angle(target_angle))
         print("heading_angle", heading_angle, self.normalize_angle(heading_angle))
-        print(self.normalize_angle(heading_angle) - self.normalize_angle(target_angle))
-        print(self.normalize_angle(target_angle) - self.normalize_angle(heading_angle) )
+        print(self.normalize_angle(heading_angle) - target_angle)
+        print(target_angle - self.normalize_angle(heading_angle) )
 
         angle = np.arctan2(target_vector[0], -target_vector[2]) - \
                 np.arctan2(heading_vector[0], -heading_vector[2])
 
-        angle = self.normalize_angle(target_angle) - self.normalize_angle(heading_angle)
+        angle = target_angle - self.normalize_angle(heading_angle)
         # Get an angle in the interval [-pi, pi]
         #if angle > np.pi:
         #    angle -= 2 * np.pi
