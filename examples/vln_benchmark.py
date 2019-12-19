@@ -338,7 +338,7 @@ class ShortestPathAgent(habitat.Agent):
         dist = observations[self.goal_sensor_uuid][0]
         return dist <= self.dist_threshold_to_stop
 
-    def normalize_angle(angle):
+    def normalize_angle(self, angle):
         # Matterport goes from 0 to 2pi going clock wise.
         # Habitat goes from 0 - pi going counter clock wise.
         # Also habitat goes from 0 to - pi clock wise.
@@ -358,12 +358,12 @@ class ShortestPathAgent(habitat.Agent):
 
         print("target_angle", target_angle)
         print("heading_angle", heading_angle)
-        print(normalize_angle(heading_angle) - normalize_angle(target_angle))
+        print(self.normalize_angle(heading_angle) - self.normalize_angle(target_angle))
 
         angle = np.arctan2(target_vector[0], -target_vector[2]) - \
                 np.arctan2(heading_vector[0], -heading_vector[2])
 
-        angle = normalize_angle(heading_angle) - normalize_angle(target_angle)
+        angle = self.normalize_angle(heading_angle) - self.normalize_angle(target_angle)
         # Get an angle in the interval [-pi, pi]
         #if angle > np.pi:
         #    angle -= 2 * np.pi
