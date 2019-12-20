@@ -251,28 +251,14 @@ class AdjacentViewpointSensor(Sensor):
         ]
         # The target vector and target angle are in inverse matterport format.
         target_vector = np.array(posB) - np.array(posA)
-        target_angle = cartesian_to_polar(-target_vector[2], target_vector[0])[1]
-        # Convert to Matterport format 0 - 2 pi and then substract.
-        # Both values should be positive
-        # This calculates the value of the angle to the left of the current heading.
-        angle = self.normalize_angle(target_angle) - self.normalize_angle(heading)
 
         y = target_vector[0] * camera_horizon_vec[1] + \
             target_vector[2] * camera_horizon_vec[0]
         x = target_vector[0] * camera_horizon_vec[0] - \
             target_vector[2] * camera_horizon_vec[1]
 
-
-        # target_dir.x*camera_horizon_dir.y - target_dir.y*camera_horizon_dir.x,
-        #            target_dir.x*camera_horizon_dir.x + target_dir.y*camera_horizon_dir.y
         rel_heading = np.arctan2(x, y)
 
-        target_norm = np.linalg.norm(target_vector)
-        norm_target_vector = target_vector / target_norm
-
-        target_vector[1] = 0
-        target_norm_2 = np.linalg.norm(target_vector)
-        norm_target_vector_2 = target_vector / target_norm_2
 
         print("viewpoint", curr_viewpoint)
         print("matterport rel_heading between -pi and pi", rel_heading)
@@ -289,7 +275,7 @@ class AdjacentViewpointSensor(Sensor):
         print("Heading difference", angle)
         print("Heading - visible angle", angle - half_visible_angle)
         '''
-        return angle
+        return rel_heading
 
     def get_rel_elevation(self, posA, rotA, cameraA, posB):
         direction_vector = np.array([0, 0, -1])
