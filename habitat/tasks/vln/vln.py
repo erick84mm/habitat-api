@@ -163,7 +163,7 @@ class HeadingSensor(Sensor):
         return -angle
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
-        return spaces.Box(low=0, high=2 * np.pi, shape=(1,), dtype=np.float)
+        return spaces.Box(low=-np.pi, high=np.pi, shape=(1,), dtype=np.float)
 
     def _quat_to_xy_heading(self, quat):
         direction_vector = np.array([0, 0, -1])
@@ -179,7 +179,7 @@ class HeadingSensor(Sensor):
         agent_state = self._sim.get_agent_state()
         rotation_world_agent = agent_state.rotation
         angle = self._quat_to_xy_heading(rotation_world_agent.inverse())
-        return self._normalize_angle(angle)
+        return angle # This is the habitat heading!
 
 
 @registry.register_sensor
@@ -232,6 +232,7 @@ class AdjacentViewpointSensor(Sensor):
         # Matterport goes from 0 to 2pi going clock wise.
         # Habitat goes from 0 - pi going counter clock wise.
         # Also habitat goes from 0 to - pi clock wise.
+        # This method normalizes to Matterport heading format.
 
         if 0 <= angle < np.pi:
             return 2 * np.pi - angle
@@ -245,18 +246,28 @@ class AdjacentViewpointSensor(Sensor):
         half_visible_angle: radians
         '''
         direction_vector = np.array([0, 0, -1])
+        # Inverse is necesary, because habitat is a mirror.
         quat = quaternion_from_coeff(rotA).inverse()
+
+        # The heading vector and heading angle are in habitat format
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
         heading_angle = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
+
+        # The target vector and target angle are in habitat format
         target_vector = np.array(posB) - np.array(posA)
         target_angle = cartesian_to_polar(-target_vector[2], target_vector[0])[1]
+
+        # Convert to Matterport format 0 - 2 pi and then substract.
+        # Both values should be positive
         angle = self.normalize_angle(target_angle) - self.normalize_angle(heading_angle)
+
+
         print("Target heading ", self.normalize_angle(target_angle))
         print("Heading normalized", heading_angle, self.normalize_angle(heading_angle))
         print("Heading difference", angle)
         print("Heading - visible angle", angle - half_visible_angle)
 
-        return angle - half_visible_angle
+        return angle
 
     def get_rel_elevation(self, posA, rotA, cameraA, posB):
         direction_vector = np.array([0, 0, -1])
