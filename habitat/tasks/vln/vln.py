@@ -36,6 +36,9 @@ from habitat.tasks.utils import (
 )
 from habitat.utils.visualizations import fog_of_war, maps
 from habitat.utils.geometry_utils import quaternion_to_list
+from habitat.utils.geometry_utils import (
+    angle_between_quaternions,
+)
 
 cv2 = try_cv2_import()
 
@@ -225,7 +228,7 @@ class AdjacentViewpointSensor(Sensor):
             return 2 * np.pi - angle
         return -angle
 
-    def get_relative_heading(self, posA, rotA, posB, half_visible_angle):
+    def get_rel_heading(self, posA, rotA, posB, half_visible_angle):
         direction_vector = np.array([0, 0, -1])
         quat = rotA.inverse()
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
@@ -236,27 +239,25 @@ class AdjacentViewpointSensor(Sensor):
 
         return angle - half_visible_angle
 
-    def _is_navigable(self, target_pos, restricted=True):
-        '''
-        For a viewpoint to be accessible it has to be within the
-        horizontal field of View HFOV for the restricted rotation.
+    def get_rel_elevation(self, posA, rotA, cameraA, posB):
+        direction_vector = np.array([0, 0, -1])
+        quat = quaternion_from_coeff(rotA)
+        camera_quat = quaternion_from_coeff(cameraA)
+        angle = angle_between_quaternions(quat, camera_quat)
 
-        This function returns the rotation if the target position is
-        accessible from the curr_viewpoint given the previous
-        condition.
-        '''
-        agent_state = self._sim.get_agent_state()
-        posA = agent_state.position
-        rotA = agent_state.rotation
-        angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
+        target_vector = np.array(posB) - np.array(posA)
+        rot_vector = quaternion_rotate_vector(quat, direction_vector)
+        camera_vector = quaternion_rotate_vector(camera_quat, direction_vector)
 
-        rel_heading = self.get_relative_heading(posA, rotA, target_pos, angle)
+        camera_z = camera_vector[1]  # looking down or up
+        rot_z = rot_vector[1]  # base vector always looking up front
+        target_z = target_vector[1]  # the base pos vector
+        target_norm = np.linalg.norm([target_vector[0], -target_vector[2]])
+        relative_angle = np.arctan2(target_z, target_norm)
 
-        if restricted:
-            if -angle <= rel_heading <= angle:
-                    return True
-            return False
-        return True
+        if  target_z < camera_z:
+            return relative_angle + angle
+        return relative_angle - angle
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
         observations = []
@@ -302,8 +303,12 @@ class AdjacentViewpointSensor(Sensor):
             )
 
         agent_state = self._sim.get_agent_state()
+        # The camera has to be inverted so it matches the real point
+        agent_pos = agent_state.position
         camera_rot = quaternion_to_list(agent_state.sensor_states["rgb"].rotation.inverse())
         agent_rot = quaternion_to_list(agent_state.rotation.inverse())
+        angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
+
 
         navigable_viewpoints = [
             {
@@ -311,21 +316,40 @@ class AdjacentViewpointSensor(Sensor):
                 "start_position": agent_state.position,
                 "start_rotation": agent_rot,
                 "camera_rotation": camera_rot,
+                "rel_heading": 0,
+                "rel_elevation": 0,
             }
         ]
         #print("Adjacent viewpoints ", adjacent_viewpoints)
         for viewpoint in near_viewpoints:
+            image_id = viewpoint["image_id"]
             target_pos = viewpoint["start_position"]
+            rel_heading = self.get_rel_heading(
+                    agent_pos,
+                    agent_rot,
+                    target_pos,
+                    angle
+            )
+            rel_elevation = self.get_rel_elevation(
+                    agent_pos,
+                    agent_rot,
+                    camera_rot,
+                    target_pos
+            )
             #print("processing Viewpoint %s" % viewpoint["image_id"])
+            restricted = True
+            if -angle <= heading <= angle:
+                restricted = False
 
-            if self._is_navigable(target_pos):
-                navigable_viewpoints.append({
-                    "image_id": viewpoint["image_id"],
-                    "start_position":
-                        viewpoint["start_position"],
-                    "start_rotation": agent_rot,
-                    "camera_rotation": camera_rot,
-                })
+            navigable_viewpoints.append({
+                "image_id": image_id,
+                "start_position": target_pos,
+                "start_rotation": agent_rot,
+                "camera_rotation": camera_rot,
+                "rel_heading": rel_heading,
+                "rel_elevation": rel_elevation,
+                "restricted": restricted
+            })
         #print("\nNavigable viewpoints", navigable_viewpoints)
         return navigable_viewpoints
 

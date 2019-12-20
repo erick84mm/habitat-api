@@ -339,51 +339,6 @@ class ShortestPathAgent(habitat.Agent):
         dist = observations[self.goal_sensor_uuid][0]
         return dist <= self.dist_threshold_to_stop
 
-    def normalize_angle(self, angle):
-        # Matterport goes from 0 to 2pi going clock wise.
-        # Habitat goes from 0 - pi going counter clock wise.
-        # Also habitat goes from 0 to - pi clock wise.
-
-        if 0 <= angle < np.pi:
-            return 2 * np.pi - angle
-        return -angle
-
-    def get_relative_heading(self, posA, rotA, posB):
-        direction_vector = np.array([0, 0, -1])
-        quat = quaternion_from_coeff(rotA).inverse()
-        heading_vector = quaternion_rotate_vector(quat, direction_vector)
-        heading_angle = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
-        target_vector = np.array(posB) - np.array(posA)
-        target_angle = cartesian_to_polar(-target_vector[2], target_vector[0])[1]
-        angle = self.normalize_angle(target_angle) - self.normalize_angle(heading_angle)
-        # Get an angle in the interval [-pi, pi]
-        #if angle > np.pi:
-        #    angle -= 2 * np.pi
-        #elif angle <= -np.pi:
-        #    angle += 2 * np.pi
-
-        return angle - self.half_visible_angle
-
-    def get_relative_elevation(self, posA, rotA, cameraA, posB):
-        direction_vector = np.array([0, 0, -1])
-        quat = quaternion_from_coeff(rotA)
-        camera_quat = quaternion_from_coeff(cameraA)
-        angle = angle_between_quaternions(quat, camera_quat)
-
-        target_vector = np.array(posB) - np.array(posA)
-        rot_vector = quaternion_rotate_vector(quat, direction_vector)
-        camera_vector = quaternion_rotate_vector(camera_quat, direction_vector)
-
-        camera_z = camera_vector[1]  # looking down or up
-        rot_z = rot_vector[1]  # base vector always looking up front
-        target_z = target_vector[1]  # the base pos vector
-        target_norm = np.linalg.norm([target_vector[0], -target_vector[2]])
-        relative_angle = np.arctan2(target_z, target_norm)
-
-        if  target_z < camera_z:
-            return relative_angle + angle
-        return relative_angle - angle
-
     def act(self, observations, goal):
         action = ""
         action_args = {}
@@ -392,58 +347,56 @@ class ShortestPathAgent(habitat.Agent):
             action = "STOP"
         else:
             print("The goal is: %s", goal.image_id)
-            posA = navigable_locations[0]["start_position"]
-            rotA = navigable_locations[0]["start_rotation"]
-            camA = navigable_locations[0]["camera_rotation"]
-            posB = goal.get_position()
-            # default step in R2R
             step_size = np.pi/6.0
-            # Check if the goal is visible
-            rel_heading = self.get_relative_heading(posA, rotA, posB)
-            # this is the relative elevation or altitute
-            rel_elevation = self.get_relative_elevation(posA, rotA, camA, posB)
+            goal_location = None
+            for location in navigable_locations:
+                if location["image_id"] == goal.image_id:
+                    goal_location = location
+                    break
 
-            print("The relative heading to the goal is %s" % str(rel_heading))
-            print("The relative elevation to the goal is %s" % str(rel_elevation))
-            print("The heading is", observations["heading"])
+            if goal_location:
+                # default step in R2R
+                # Check if the goal is visible
+                rel_heading = goal_location["rel_heading"]
+                # this is the relative elevation or altitute
+                rel_elevation = goal_location["rel_elevation"]
 
-            if rel_heading > step_size:
-                  action = "TURN_RIGHT" # Turn right
-                  #action_args = {"num_steps": abs(int(rel_heading / step_size))}
-            elif rel_heading < -step_size:
-                  action = "TURN_LEFT" # Turn left
-                  #action_args = {"num_steps": abs(int(rel_heading / step_size))}
-            elif rel_elevation > step_size:
-                  action = "LOOK_UP" # Look up
-                  #action_args = {"num_steps": abs(int(rel_elevation / step_size))}
-            elif rel_elevation < -step_size:
-                  action = "LOOK_DOWN" # Look down
-                  #action_args = {"num_steps": abs(int(rel_elevation / step_size))}
-            else:
-                is_visible = False
-                for location in navigable_locations:
-                    if location["image_id"] == goal.image_id:
-                        is_visible = True
-                        break
+                print("The relative heading to the goal is %s" % str(rel_heading))
+                print("The relative elevation to the goal is %s" % str(rel_elevation))
+                print("The heading is", observations["heading"])
 
-                if is_visible:
+                if rel_heading > step_size:
+                    action = "TURN_RIGHT" # Turn right
+                      #action_args = {"num_steps": abs(int(rel_heading / step_size))}
+                elif rel_heading < -step_size:
+                    action = "TURN_LEFT" # Turn left
+                      #action_args = {"num_steps": abs(int(rel_heading / step_size))}
+                elif rel_elevation > step_size:
+                    action = "LOOK_UP" # Look up
+                      #action_args = {"num_steps": abs(int(rel_elevation / step_size))}
+                elif rel_elevation < -step_size:
+                    action = "LOOK_DOWN" # Look down
+                      #action_args = {"num_steps": abs(int(rel_elevation / step_size))}
+                else:
                     action = "TELEPORT" # Move forward
                     image_id = goal.image_id
+                    posB = goal_location["start_position"]
+                    rotA = navigable_locations[0]["start_rotation"]
                     viewpoint = ViewpointData(
                         image_id=image_id,
                         view_point=AgentState(position=posB, rotation=rotA)
                     )
                     action_args.update({"target": viewpoint})
-                else:
-                    print("Target position %s not visible, This is an error in the system" % goal.image_id)
-                    print("The relative heading is %s\n" % str(rel_heading))
-                    print("The relative elevation is %s\n" % str(rel_elevation))
-                    pprint(navigable_locations)
-                    for ob in observations["images"]:
-                        image = ob
-                        image =  image[:,:, [2,1,0]]
-                        cv2.imshow("RGB", image)
-                        cv2.waitKey(0)
+            else:
+                print("Target position %s not visible, This is an error in the system" % goal.image_id)
+                print("The relative heading is %s\n" % str(rel_heading))
+                print("The relative elevation is %s\n" % str(rel_elevation))
+                pprint(navigable_locations)
+                for ob in observations["images"]:
+                    image = ob
+                    image =  image[:,:, [2,1,0]]
+                    cv2.imshow("RGB", image)
+                    cv2.waitKey(0)
 
             print(action, action_args)
         return {"action": action, "action_args": action_args}
