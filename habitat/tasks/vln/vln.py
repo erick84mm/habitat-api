@@ -255,12 +255,15 @@ class AdjacentViewpointSensor(Sensor):
 
         # The target vector and target angle are in habitat format
         target_vector = np.array(posB) - np.array(posA)
-        target_angle = cartesian_to_polar(-target_vector[2], target_vector[0])[1]
+        target_vector[1] = 0
+        target_norm = np.linalg.norm(target_vector)
+        normed_target_vector = target_vector / target_norm
+        target_angle = cartesian_to_polar(-normed_target_vector[2], normed_target_vector[0])[1]
 
         # Convert to Matterport format 0 - 2 pi and then substract.
         # Both values should be positive
         # This calculates the value of the angle to the left of the current heading.
-        angle = self.normalize_angle(target_angle) + self.normalize_angle(heading_angle)
+        angle = self.normalize_angle(target_angle) - self.normalize_angle(heading_angle)
 
         print("viewpoint", curr_viewpoint)
         print("Target heading ", self.normalize_angle(target_angle))
