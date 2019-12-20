@@ -244,7 +244,7 @@ class AdjacentViewpointSensor(Sensor):
         heading = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
 
         adjusted_heading = 2 * np.pi - self.normalize_angle(heading)
-        camara_horizon_vec = [
+        camera_horizon_vec = [
             np.cos(adjusted_heading),
             np.sin(adjusted_heading),
             0
