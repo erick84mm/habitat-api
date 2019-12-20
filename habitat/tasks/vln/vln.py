@@ -275,7 +275,7 @@ class AdjacentViewpointSensor(Sensor):
         print("Heading difference", angle)
         print("Heading - visible angle", angle - half_visible_angle)
         '''
-        return rel_heading
+        return self.normalize_angle(rel_heading)
 
     def get_rel_elevation(self, posA, rotA, cameraA, posB):
         direction_vector = np.array([0, 0, -1])
