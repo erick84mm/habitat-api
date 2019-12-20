@@ -95,6 +95,9 @@ def quaternion_from_coeff(coeffs: np.ndarray) -> np.quaternion:
 
 
 def cartesian_to_polar(x, y):
+    # rho is the norm (for unit vectors should be 1)
+    # phi is the angle in between the x = 0 and the vector.
+    # y determines phi sign
     rho = np.sqrt(x ** 2 + y ** 2)
     phi = np.arctan2(y, x)
     return rho, phi

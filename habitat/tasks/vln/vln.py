@@ -130,7 +130,6 @@ class VLNEpisode(Episode):
     scan: str = None
     curr_viewpoint: Optional[ViewpointData] = None
 
-
 @registry.register_sensor
 class HeadingSensor(Sensor):
     r"""Sensor for observing the agent's heading in the global coordinate
@@ -153,15 +152,6 @@ class HeadingSensor(Sensor):
     def _get_sensor_type(self, *args: Any, **kwargs: Any):
         return SensorTypes.HEADING
 
-    def _normalize_angle(self, angle):
-        # Matterport goes from 0 to 2pi going clock wise.
-        # Habitat goes from 0 - pi going counter clock wise.
-        # Also habitat goes from 0 to - pi clock wise.
-
-        if 0 <= angle < np.pi:
-            return 2 * np.pi - angle
-        return -angle
-
     def _get_observation_space(self, *args: Any, **kwargs: Any):
         return spaces.Box(low=-np.pi, high=np.pi, shape=(1,), dtype=np.float)
 
@@ -178,8 +168,8 @@ class HeadingSensor(Sensor):
     ):
         agent_state = self._sim.get_agent_state()
         rotation_world_agent = agent_state.rotation
-        angle = self._quat_to_xy_heading(rotation_world_agent.inverse())
-        return angle # This is the habitat heading!
+
+        return self._quat_to_xy_heading(rotation_world_agent.inverse())
 
 
 @registry.register_sensor
