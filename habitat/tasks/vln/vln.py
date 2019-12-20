@@ -302,8 +302,8 @@ class AdjacentViewpointSensor(Sensor):
             )
 
         agent_state = self._sim.get_agent_state()
-        camera_rot = quaternion_to_list(agent_state.sensor_states["rgb"].rotation)
-        agent_rot = quaternion_to_list(agent_state.rotation)
+        camera_rot = quaternion_to_list(agent_state.sensor_states["rgb"].rotation.inverse())
+        agent_rot = quaternion_to_list(agent_state.rotation.inverse())
 
         navigable_viewpoints = [
             {
