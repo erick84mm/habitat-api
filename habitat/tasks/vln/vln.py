@@ -257,13 +257,13 @@ class AdjacentViewpointSensor(Sensor):
         y = target_vector[0] * camera_horizon_vec[0] + \
             (-target_vector[2] * camera_horizon_vec[1])
 
-        rel_heading = np.arctan2(x, y)
+        rel_heading = np.arctan2(y, x)
 
 
         print("viewpoint", curr_viewpoint)
         print("heading", heading)
         print("adjusted heading", adjusted_heading)
-        #print("matterport rel_heading between -pi and pi", rel_heading)
+        print("matterport rel_heading between -pi and pi", rel_heading)
         #print("normalized matterport rel_heading between -pi and pi", self.normalize_angle(rel_heading))
         '''
         print("rotations", quat, quaternion_from_coeff(rotA))
