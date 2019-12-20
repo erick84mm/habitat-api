@@ -153,8 +153,17 @@ class HeadingSensor(Sensor):
     def _get_sensor_type(self, *args: Any, **kwargs: Any):
         return SensorTypes.HEADING
 
+    def _normalize_angle(self, angle):
+        # Matterport goes from 0 to 2pi going clock wise.
+        # Habitat goes from 0 - pi going counter clock wise.
+        # Also habitat goes from 0 to - pi clock wise.
+
+        if 0 <= angle < np.pi:
+            return 2 * np.pi - angle
+        return -angle
+
     def _get_observation_space(self, *args: Any, **kwargs: Any):
-        return spaces.Box(low=-np.pi, high=np.pi, shape=(1,), dtype=np.float)
+        return spaces.Box(low=0, high=2 * np.pi, shape=(1,), dtype=np.float)
 
     def _quat_to_xy_heading(self, quat):
         direction_vector = np.array([0, 0, -1])
@@ -169,8 +178,8 @@ class HeadingSensor(Sensor):
     ):
         agent_state = self._sim.get_agent_state()
         rotation_world_agent = agent_state.rotation
-
-        return self._quat_to_xy_heading(rotation_world_agent.inverse())
+        angle = self._quat_to_xy_heading(rotation_world_agent.inverse())
+        return self._normalize_angle(angle)
 
 
 @registry.register_sensor
