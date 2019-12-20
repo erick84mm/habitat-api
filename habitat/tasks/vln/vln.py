@@ -241,7 +241,7 @@ class AdjacentViewpointSensor(Sensor):
         # The heading vector and heading angle are in arctan2 format
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
         heading = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
-        #heading = self.normalize_angle(heading)
+        heading = self.normalize_angle(heading)
 
 
         adjusted_heading = 2 * np.pi - heading
