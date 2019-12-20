@@ -259,9 +259,9 @@ class AdjacentViewpointSensor(Sensor):
         rel_heading = np.arctan2(x, y)
 
 
-        print("viewpoint", curr_viewpoint)
-        print("matterport rel_heading between -pi and pi", rel_heading)
-        print("normalized matterport rel_heading between -pi and pi", self.normalize_angle(rel_heading))
+        #print("viewpoint", curr_viewpoint)
+        #print("matterport rel_heading between -pi and pi", rel_heading)
+        #print("normalized matterport rel_heading between -pi and pi", self.normalize_angle(rel_heading))
         '''
         print("rotations", quat, quaternion_from_coeff(rotA))
         print("heading vectors", heading_vector, quaternion_rotate_vector(quaternion_from_coeff(rotA), direction_vector))
@@ -274,7 +274,7 @@ class AdjacentViewpointSensor(Sensor):
         print("Heading difference", angle)
         print("Heading - visible angle", angle - half_visible_angle)
         '''
-        return rel_heading
+        return -rel_heading
 
     def get_rel_elevation(self, posA, rotA, cameraA, posB):
         direction_vector = np.array([0, 0, -1])
