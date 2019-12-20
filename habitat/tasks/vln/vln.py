@@ -268,6 +268,8 @@ class AdjacentViewpointSensor(Sensor):
         target_vector[1] = 0
         target_norm_2 = np.linalg.norm(target_vector)
         norm_target_vector_2 = target_vector / target_norm_2
+        print("rotations", quat, quaternion_from_coeff(rotA))
+        print("heading vectors", heading_vector, quaternion_rotate_vector(quaternion_from_coeff(rotA), direction_vector))
 
         print("viewpoint", curr_viewpoint)
         print("Target heading ", self.normalize_angle(target_angle))
