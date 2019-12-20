@@ -344,7 +344,7 @@ class AdjacentViewpointSensor(Sensor):
             )
             #print("processing Viewpoint %s" % viewpoint["image_id"])
             restricted = True
-            if -angle <= heading <= angle:
+            if -angle <= rel_heading <= angle:
                 restricted = False
 
             navigable_viewpoints.append({
