@@ -245,7 +245,7 @@ class AdjacentViewpointSensor(Sensor):
         half_visible_angle: radians
         '''
         direction_vector = np.array([0, 0, -1])
-        quat = quaternion_from_coeff(rotA).inverse()
+        quat = quaternion_from_coeff(rotA) #.inverse()
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
         heading_angle = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
         target_vector = np.array(posB) - np.array(posA)
@@ -323,7 +323,6 @@ class AdjacentViewpointSensor(Sensor):
         camera_rot = quaternion_to_list(agent_state.sensor_states["rgb"].rotation)
         agent_rot = quaternion_to_list(agent_state.rotation)
         angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
-
 
         navigable_viewpoints = [
             {
