@@ -360,7 +360,7 @@ class AdjacentViewpointSensor(Sensor):
                     agent_rot,
                     target_pos,
                     angle,
-                    curr_viewpoint_id
+                    image_id
             )
             rel_elevation = self.get_rel_elevation(
                     agent_pos,
