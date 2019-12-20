@@ -237,7 +237,7 @@ class AdjacentViewpointSensor(Sensor):
         '''
         direction_vector = np.array([0, 0, -1])
 
-        quat = quaternion_from_coeff(rotA) #.inverse()
+        quat = quaternion_from_coeff(rotA).inverse()
 
         # The heading vector and heading angle are in arctan2 format
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
@@ -275,7 +275,7 @@ class AdjacentViewpointSensor(Sensor):
         print("Heading difference", angle)
         print("Heading - visible angle", angle - half_visible_angle)
         '''
-        return self.normalize_angle(rel_heading)
+        return rel_heading
 
     def get_rel_elevation(self, posA, rotA, cameraA, posB):
         direction_vector = np.array([0, 0, -1])
