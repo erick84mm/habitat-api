@@ -249,15 +249,20 @@ class AdjacentViewpointSensor(Sensor):
             np.sin(adjusted_heading),
             0
         ]
-        # The target vector and target angle are in inverse matterport format.
-        target_vector = np.array(posB) - np.array(posA)
 
-        x = target_vector[0] * camera_horizon_vec[1] - \
-            (-target_vector[2] * camera_horizon_vec[0])
-        y = target_vector[0] * camera_horizon_vec[0] + \
-            (-target_vector[2] * camera_horizon_vec[1])
+        # This vectors are in habitat format we need to rotate them.
+        rotated_posB = [posB[0], -posB[2], posB[1]]
+        rotated_posA = [posA[0], -posA[2], posA[1]]
+        target_vector = np.array(rotated_posB) - np.array(rotated_posA)
 
-        rel_heading = np.arctan2(y, x)
+        y = target_vector[0] * camera_horizon_vec[1] - \
+            (target_vector[1] * camera_horizon_vec[0])
+        x = target_vector[0] * camera_horizon_vec[0] + \
+            (target_vector[1] * camera_horizon_vec[1])
+
+        # This arctan2 is with respect to matterport
+        # which is the opposite as habitat
+        rel_heading = np.arctan2(x,y)
 
 
         print("viewpoint", curr_viewpoint)
