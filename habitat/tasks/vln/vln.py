@@ -245,7 +245,7 @@ class AdjacentViewpointSensor(Sensor):
         half_visible_angle: radians
         '''
         direction_vector = np.array([0, 0, -1])
-        quat = quaternion_from_coeff(rotA) #.inverse()
+        quat = quaternion_from_coeff(rotA).inverse()
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
         heading_angle = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
         target_vector = np.array(posB) - np.array(posA)
