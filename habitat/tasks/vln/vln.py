@@ -236,13 +236,14 @@ class AdjacentViewpointSensor(Sensor):
         half_visible_angle: radians
         '''
         direction_vector = np.array([0, 0, -1])
-        quat = quaternion_from_coeff(rotA).inverse() 
+        quat = quaternion_from_coeff(rotA).inverse()
 
         # The heading vector and heading angle are in arctan2 format
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
         heading = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
 
-        adjusted_heading = 2 * np.pi - heading
+
+        adjusted_heading = 2 * np.pi - self.normalize_angle(heading)
         camera_horizon_vec = [
             np.cos(adjusted_heading),
             np.sin(adjusted_heading),
@@ -251,15 +252,17 @@ class AdjacentViewpointSensor(Sensor):
         # The target vector and target angle are in inverse matterport format.
         target_vector = np.array(posB) - np.array(posA)
 
-        y = target_vector[0] * camera_horizon_vec[1] + \
-            target_vector[2] * camera_horizon_vec[0]
-        x = target_vector[0] * camera_horizon_vec[0] - \
-            target_vector[2] * camera_horizon_vec[1]
+        y = target_vector[0] * camera_horizon_vec[1] - \
+            (-target_vector[2] * camera_horizon_vec[0])
+        x = target_vector[0] * camera_horizon_vec[0] + \
+            (-target_vector[2] * camera_horizon_vec[1])
 
         rel_heading = np.arctan2(x, y)
 
 
-        #print("viewpoint", curr_viewpoint)
+        print("viewpoint", curr_viewpoint)
+        print("heading", heading)
+        print("adjusted heading", adjusted_heading)
         #print("matterport rel_heading between -pi and pi", rel_heading)
         #print("normalized matterport rel_heading between -pi and pi", self.normalize_angle(rel_heading))
         '''
