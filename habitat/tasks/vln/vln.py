@@ -236,7 +236,7 @@ class AdjacentViewpointSensor(Sensor):
         half_visible_angle: radians
         '''
         direction_vector = np.array([0, 0, -1])
-        quat = quaternion_from_coeff(rotA).inverse()
+        quat = quaternion_from_coeff(rotA).inverse() 
 
         # The heading vector and heading angle are in arctan2 format
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
