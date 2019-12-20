@@ -243,7 +243,6 @@ class AdjacentViewpointSensor(Sensor):
         heading = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
         heading = self.normalize_angle(heading)
 
-
         adjusted_heading = 2 * np.pi - heading
         camera_horizon_vec = [
             np.cos(adjusted_heading),
@@ -253,9 +252,9 @@ class AdjacentViewpointSensor(Sensor):
         # The target vector and target angle are in inverse matterport format.
         target_vector = np.array(posB) - np.array(posA)
 
-        y = target_vector[0] * camera_horizon_vec[1] - \
+        x = target_vector[0] * camera_horizon_vec[1] - \
             (-target_vector[2] * camera_horizon_vec[0])
-        x = target_vector[0] * camera_horizon_vec[0] + \
+        y = target_vector[0] * camera_horizon_vec[0] + \
             (-target_vector[2] * camera_horizon_vec[1])
 
         rel_heading = np.arctan2(x, y)
