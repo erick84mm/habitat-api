@@ -216,6 +216,26 @@ class AdjacentViewpointSensor(Sensor):
         v2_u = self._unit_vector(v2)
         return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
+    def normalize_angle(self, angle):
+        # Matterport goes from 0 to 2pi going clock wise.
+        # Habitat goes from 0 - pi going counter clock wise.
+        # Also habitat goes from 0 to - pi clock wise.
+
+        if 0 <= angle < np.pi:
+            return 2 * np.pi - angle
+        return -angle
+
+    def get_relative_heading(self, posA, rotA, posB, half_visible_angle):
+        direction_vector = np.array([0, 0, -1])
+        quat = quaternion_from_coeff(rotA).inverse()
+        heading_vector = quaternion_rotate_vector(quat, direction_vector)
+        heading_angle = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
+        target_vector = np.array(posB) - np.array(posA)
+        target_angle = cartesian_to_polar(-target_vector[2], target_vector[0])[1]
+        angle = self.normalize_angle(target_angle) - self.normalize_angle(heading_angle)
+
+        return angle - half_visible_angle
+
     def _is_navigable(self, target_pos, restricted=True):
         '''
         For a viewpoint to be accessible it has to be within the
@@ -226,26 +246,14 @@ class AdjacentViewpointSensor(Sensor):
         condition.
         '''
         agent_state = self._sim.get_agent_state()
-        rotation_world_agent = agent_state.rotation
-        heading_vector = self._quat_to_xy_heading_vector(
-                            rotation_world_agent.inverse()
-        )
-        target_vector = np.array(target_pos) - np.array(agent_state.position)
+        posA = agent_state.position
+        rotA = agent_state.rotation
+        angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
 
-        angle = self._angle_between(
-            heading_vector,
-            target_vector
-        )
+        rel_heading = self.get_relative_heading(posA, rotA, target_pos, angle)
 
-        rot = heading_to_rotation(angle)
-        #print("Processing angle %s with rotation " % str(angle), rot)
-        #print("\n")
-        opposite_angle = 2 * np.pi - angle
-        target_angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
-
-        #print("Angle %s, target angle %s, opposite angle %s" % (str(angle), str(target_angle), str(opposite_angle)))
         if restricted:
-            if angle <= target_angle or opposite_angle <= target_angle:
+            if -angle <= rel_heading <= angle:
                     return True
             return False
         return True

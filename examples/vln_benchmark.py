@@ -353,27 +353,8 @@ class ShortestPathAgent(habitat.Agent):
         quat = quaternion_from_coeff(rotA).inverse()
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
         heading_angle = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
-
-        adjusted_heading = 2 * np.pi - self.normalize_angle(heading_angle)
-        camera_vector = np.array([
-                np.cos(adjusted_heading),
-                np.sin(adjusted_heading),
-                0
-                ])
-
-        print(posA, posB, heading_vector)
         target_vector = np.array(posB) - np.array(posA)
         target_angle = cartesian_to_polar(-target_vector[2], target_vector[0])[1]
-        target_norm = np.linalg.norm(target_vector)
-        unit_target_vector = target_vector / target_norm
-        print("adjusted_heading", adjusted_heading)
-
-        print("dot product", np.dot(unit_target_vector, camera_vector))
-
-        print("target_angle", target_angle, self.normalize_angle(target_angle))
-        print("heading_angle", heading_angle, self.normalize_angle(heading_angle))
-        print(self.normalize_angle(heading_angle) - self.normalize_angle(target_angle))
-        print(self.normalize_angle(target_angle) - self.normalize_angle(heading_angle) )
         angle = self.normalize_angle(target_angle) - self.normalize_angle(heading_angle)
         # Get an angle in the interval [-pi, pi]
         #if angle > np.pi:
