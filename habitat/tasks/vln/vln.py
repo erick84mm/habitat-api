@@ -236,7 +236,7 @@ class AdjacentViewpointSensor(Sensor):
         half_visible_angle: radians
         '''
         direction_vector = np.array([0, 0, -1])
-        # Inverse is necesary, because habitat is a mirror.
+
         quat = quaternion_from_coeff(rotA) #.inverse()
 
         # The heading vector and heading angle are in arctan2 format
@@ -266,7 +266,6 @@ class AdjacentViewpointSensor(Sensor):
         # target_dir.x*camera_horizon_dir.y - target_dir.y*camera_horizon_dir.x,
         #            target_dir.x*camera_horizon_dir.x + target_dir.y*camera_horizon_dir.y
         rel_heading = np.arctan2(x, y)
-        print("matterport rel_heading between -pi and pi", rel_heading)
 
         target_norm = np.linalg.norm(target_vector)
         norm_target_vector = target_vector / target_norm
@@ -274,10 +273,13 @@ class AdjacentViewpointSensor(Sensor):
         target_vector[1] = 0
         target_norm_2 = np.linalg.norm(target_vector)
         norm_target_vector_2 = target_vector / target_norm_2
-        print("rotations", quat, quaternion_from_coeff(rotA))
-        print("heading vectors", heading_vector, quaternion_rotate_vector(quaternion_from_coeff(rotA), direction_vector))
 
         print("viewpoint", curr_viewpoint)
+        print("matterport rel_heading between -pi and pi", rel_heading)
+        print("normalized matterport rel_heading between -pi and pi", self.normalize_angle(rel_heading))
+        '''
+        print("rotations", quat, quaternion_from_coeff(rotA))
+        print("heading vectors", heading_vector, quaternion_rotate_vector(quaternion_from_coeff(rotA), direction_vector))
         print("Target heading ", self.normalize_angle(target_angle))
         print("Target angle atan2", target_vector)
         print("Target angle atan2", target_angle)
@@ -286,7 +288,7 @@ class AdjacentViewpointSensor(Sensor):
         print("Heading normalized", heading, self.normalize_angle(heading))
         print("Heading difference", angle)
         print("Heading - visible angle", angle - half_visible_angle)
-
+        '''
         return angle
 
     def get_rel_elevation(self, posA, rotA, cameraA, posB):
