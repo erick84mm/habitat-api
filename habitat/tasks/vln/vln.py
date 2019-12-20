@@ -242,7 +242,7 @@ class AdjacentViewpointSensor(Sensor):
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
         heading = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
 
-        adjusted_heading = 2 * np.pi - self.normalize_angle(heading)
+        adjusted_heading = self.normalize_angle(heading)
         camera_horizon_vec = [
             np.cos(adjusted_heading),
             np.sin(adjusted_heading),
@@ -274,7 +274,7 @@ class AdjacentViewpointSensor(Sensor):
         print("Heading difference", angle)
         print("Heading - visible angle", angle - half_visible_angle)
         '''
-        return -rel_heading
+        return rel_heading
 
     def get_rel_elevation(self, posA, rotA, cameraA, posB):
         direction_vector = np.array([0, 0, -1])
