@@ -239,18 +239,34 @@ class AdjacentViewpointSensor(Sensor):
         # Inverse is necesary, because habitat is a mirror.
         quat = quaternion_from_coeff(rotA).inverse()
 
-        # The heading vector and heading angle are in habitat format
+        # The heading vector and heading angle are in arctan2 format
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
-        heading_angle = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
+        heading = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
 
+        adjusted_heading = 2 * np.pi - self.normalize_angle(heading)
+        camara_horizon_vec = [
+            np.cos(adjusted_heading),
+            np.sin(adjusted_heading),
+            0
+        ]
         # The target vector and target angle are in inverse matterport format.
         target_vector = np.array(posB) - np.array(posA)
         target_angle = cartesian_to_polar(-target_vector[2], target_vector[0])[1]
         # Convert to Matterport format 0 - 2 pi and then substract.
         # Both values should be positive
         # This calculates the value of the angle to the left of the current heading.
-        angle = self.normalize_angle(target_angle) - self.normalize_angle(heading_angle)
+        angle = self.normalize_angle(target_angle) - self.normalize_angle(heading)
 
+        y = target_vector[0] * camera_horizon_vec[1] + \
+            target_vector[2] * camera_horizon_vec[0]
+        x = target_vector[0] * camera_horizon_vec[0] - \
+            target_vector[2] * camera_horizon_vec[1]
+
+
+        # target_dir.x*camera_horizon_dir.y - target_dir.y*camera_horizon_dir.x,
+        #            target_dir.x*camera_horizon_dir.x + target_dir.y*camera_horizon_dir.y
+        rel_heading = np.arctan2(x, y)
+        print("matterport rel_heading between -pi and pi", rel_heading)
 
         target_norm = np.linalg.norm(target_vector)
         norm_target_vector = target_vector / target_norm
@@ -267,7 +283,7 @@ class AdjacentViewpointSensor(Sensor):
         print("Target angle atan2", target_angle)
         print("Target norm vector", norm_target_vector)
         print("Target norm vector 2", norm_target_vector_2)
-        print("Heading normalized", heading_angle, self.normalize_angle(heading_angle))
+        print("Heading normalized", heading, self.normalize_angle(heading))
         print("Heading difference", angle)
         print("Heading - visible angle", angle - half_visible_angle)
 
