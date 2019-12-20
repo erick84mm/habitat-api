@@ -259,10 +259,12 @@ class AdjacentViewpointSensor(Sensor):
 
         # Convert to Matterport format 0 - 2 pi and then substract.
         # Both values should be positive
-        angle = self.normalize_angle(target_angle) - self.normalize_angle(heading_angle)
+        # This calculates the value of the angle to the left of the current heading.
+        angle = self.normalize_angle(target_angle) + self.normalize_angle(heading_angle)
 
 
         print("Target heading ", self.normalize_angle(target_angle))
+        print("Target angle between -pi and pi ", target_angle)
         print("Heading normalized", heading_angle, self.normalize_angle(heading_angle))
         print("Heading difference", angle)
         print("Heading - visible angle", angle - half_visible_angle)
