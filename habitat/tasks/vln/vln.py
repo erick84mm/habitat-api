@@ -242,7 +242,7 @@ class AdjacentViewpointSensor(Sensor):
         heading_vector = quaternion_rotate_vector(quat, direction_vector)
         heading = cartesian_to_polar(-heading_vector[2], heading_vector[0])[1]
 
-        adjusted_heading = self.normalize_angle(heading)
+        adjusted_heading = 2 * np.pi - heading
         camera_horizon_vec = [
             np.cos(adjusted_heading),
             np.sin(adjusted_heading),
