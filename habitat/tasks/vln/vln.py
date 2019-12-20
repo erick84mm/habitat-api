@@ -238,7 +238,7 @@ class AdjacentViewpointSensor(Sensor):
             return 2 * np.pi - angle
         return -angle
 
-    def get_rel_heading(self, posA, rotA, posB, half_visible_angle):
+    def get_rel_heading(self, posA, rotA, posB, half_visible_angle, curr_viewpoint):
         '''
         posA = [x,y,z]
         rotA = [x,y,z,w]
@@ -262,7 +262,7 @@ class AdjacentViewpointSensor(Sensor):
         # This calculates the value of the angle to the left of the current heading.
         angle = self.normalize_angle(target_angle) + self.normalize_angle(heading_angle)
 
-
+        print("viewpoint", curr_viewpoint)
         print("Target heading ", self.normalize_angle(target_angle))
         print("Target angle between -pi and pi ", target_angle)
         print("Heading normalized", heading_angle, self.normalize_angle(heading_angle))
@@ -359,7 +359,8 @@ class AdjacentViewpointSensor(Sensor):
                     agent_pos,
                     agent_rot,
                     target_pos,
-                    angle
+                    angle,
+                    curr_viewpoint_id
             )
             rel_elevation = self.get_rel_elevation(
                     agent_pos,
