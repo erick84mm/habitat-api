@@ -256,13 +256,16 @@ class AdjacentViewpointSensor(Sensor):
         target_vector = np.array(rotated_posB) - np.array(rotated_posA)
 
         y = target_vector[0] * camera_horizon_vec[1] - \
-            (target_vector[1] * camera_horizon_vec[0])
+            target_vector[1] * camera_horizon_vec[0]
         x = target_vector[0] * camera_horizon_vec[0] + \
-            (target_vector[1] * camera_horizon_vec[1])
+            target_vector[1] * camera_horizon_vec[1]
 
         # This arctan2 is with respect to matterport
         # which is the opposite as habitat
         rel_heading = np.arctan2(x,y)
+
+        print("PosB", rotated_posB, posB)
+        print("PosA", rotated_posA, posA)
 
 
         print("viewpoint", curr_viewpoint)
