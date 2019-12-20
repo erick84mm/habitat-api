@@ -346,8 +346,8 @@ class AdjacentViewpointSensor(Sensor):
         camera_rot = quaternion_to_list(agent_state.sensor_states["rgb"].rotation)
         agent_rot = quaternion_to_list(agent_state.rotation)
         angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
-        print("Camera Rotation", camera_rot, agent_state.sensor_states["rgb"].rotation)
-        print("Agent Rotation", agent_rot, agent_state.rotation)
+        #print("Camera Rotation", camera_rot, agent_state.sensor_states["rgb"].rotation)
+        #print("Agent Rotation", agent_rot, agent_state.rotation)
         navigable_viewpoints = [
             {
                 "image_id": curr_viewpoint_id,
