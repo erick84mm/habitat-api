@@ -261,14 +261,20 @@ class AdjacentViewpointSensor(Sensor):
         # This calculates the value of the angle to the left of the current heading.
         angle = self.normalize_angle(target_angle) - self.normalize_angle(heading_angle)
 
+
         target_norm = np.linalg.norm(target_vector)
         norm_target_vector = target_vector / target_norm
+
+        target_vector[1] = 0
+        target_norm_2 = np.linalg.norm(target_vector)
+        norm_target_vector_2 = target_vector / target_norm_2
 
         print("viewpoint", curr_viewpoint)
         print("Target heading ", self.normalize_angle(target_angle))
         print("Target angle atan2", target_vector)
         print("Target angle atan2", target_angle)
         print("Target norm vector", norm_target_vector)
+        print("Target norm vector 2", norm_target_vector_2)
         print("Heading normalized", heading_angle, self.normalize_angle(heading_angle))
         print("Heading difference", angle)
         print("Heading - visible angle", angle - half_visible_angle)
