@@ -237,7 +237,7 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
 
                 #pprint(action_history)
                 metrics = self._env.get_metrics()
-                #pprint(metrics)
+                pprint(metrics)
                 for m, v in metrics.items():
                     agg_metrics[m] += v
                 count_episodes += 1
