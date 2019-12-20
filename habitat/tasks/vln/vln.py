@@ -251,6 +251,10 @@ class AdjacentViewpointSensor(Sensor):
         target_vector = np.array(posB) - np.array(posA)
         target_angle = cartesian_to_polar(-target_vector[2], target_vector[0])[1]
         angle = self.normalize_angle(target_angle) - self.normalize_angle(heading_angle)
+        print("Target heading ", self.normalize_angle(target_angle))
+        print("Heading normalized", self.normalize_angle(heading_angle))
+        print("Heading difference", angle)
+        print("Heading - visible angle", angle - half_visible_angle)
 
         return angle - half_visible_angle
 
