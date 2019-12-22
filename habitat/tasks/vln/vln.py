@@ -281,7 +281,8 @@ class AdjacentViewpointSensor(Sensor):
         camera_z = camera_vector[1]
         target_length = np.linalg.norm([target_vector[0], target_vector[1]])
         rel_elevation = np.arctan2(target_z, target_length)
-
+        
+        print("target vector", target_vector)
         print("elevation_angle", elevation_angle)
         print("rel_elevation", rel_elevation)
 
