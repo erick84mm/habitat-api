@@ -265,7 +265,7 @@ class AdjacentViewpointSensor(Sensor):
         rel_heading = np.arctan2(y, x)
         return rel_heading
 
-    def get_rel_elevation(self, posA, rotA, cameraA, posB):
+    def get_rel_elevation(self, posA, rotA, cameraA, posB, c):
         direction_vector = np.array([0, 0, -1])
         quat = quaternion_from_coeff(rotA)
         rot_vector = quaternion_rotate_vector(quat.inverse(), direction_vector)
@@ -292,6 +292,7 @@ class AdjacentViewpointSensor(Sensor):
         target_length = np.linalg.norm([target_vector[0], target_vector[1]])
         # How to convert habitat z to matterport z?
         rel_elevation = np.arctan2(target_z, target_length) / 2
+        print("viewpoint", c)
         print("rotated_posA", rotated_posA)
         print("rotated_posB", rotated_posB)
         print("target vector", target_vector)
@@ -377,7 +378,8 @@ class AdjacentViewpointSensor(Sensor):
                     agent_pos,
                     agent_rot,
                     camera_rot,
-                    target_pos
+                    target_pos,
+                    image_id
             )
             #print("processing Viewpoint %s" % viewpoint["image_id"])
             restricted = True
