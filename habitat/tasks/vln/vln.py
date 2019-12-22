@@ -274,10 +274,13 @@ class AdjacentViewpointSensor(Sensor):
             camera_quat.inverse(),
             direction_vector
         )
-
         # The value is always positive, we have to determine the direction.
         # Here we have to remove the conjugate from the original quaternion
 
+        q1_inv = np.conjugate(quat)
+        dq = quaternion.as_float_array(q1_inv * camera_quat)
+
+        elevation_angle_2 = 2 * np.arctan2(np.linalg.norm(dq[1:]), np.abs(dq[0]))
         elevation_angle = angle_between_quaternions(quat, camera_quat)
 
         rotated_posB = [posB[0], -posB[2], posB[1]]
@@ -292,6 +295,7 @@ class AdjacentViewpointSensor(Sensor):
         print("rotated_posB", rotated_posB)
         print("target vector", target_vector)
         print("elevation_angle", elevation_angle)
+        print("elevation_angle_2", elevation_angle_2)
         print("rel_elevation", rel_elevation)
 
         if  target_z < camera_z:
