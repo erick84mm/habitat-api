@@ -364,6 +364,7 @@ class ShortestPathAgent(habitat.Agent):
                 print("The relative heading to the goal is %s" % str(rel_heading))
                 print("The relative elevation to the goal is %s" % str(rel_elevation))
                 print("The heading is", observations["heading"])
+                print("The elevation is", observations["elevation"])
 
                 if rel_heading > step_size:
                     action = "TURN_RIGHT" # Turn right

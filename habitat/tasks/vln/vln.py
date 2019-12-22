@@ -333,14 +333,14 @@ class AdjacentViewpointSensor(Sensor):
         camera_z = camera_vector[1]
         target_length = np.linalg.norm([target_vector[0], target_vector[1]])
         # How to convert habitat z to matterport z?
-        rel_elevation = np.arctan2(target_z, target_length) 
-        print("viewpoint", c)
-        print("rotated_posA", rotated_posA)
-        print("rotated_posB", rotated_posB)
-        print("target vector", target_vector)
-        print("elevation_angle", elevation_angle)
-        print("elevation_angle_2", elevation_angle_2)
-        print("rel_elevation", rel_elevation)
+        rel_elevation = np.arctan2(target_z, target_length)
+        #print("viewpoint", c)
+        #print("rotated_posA", rotated_posA)
+        #print("rotated_posB", rotated_posB)
+        #print("target vector", target_vector)
+        #print("elevation_angle", elevation_angle)
+        #print("elevation_angle_2", elevation_angle_2)
+        #print("rel_elevation", rel_elevation)
 
         if  target_z < camera_z:
             return rel_elevation + elevation_angle
