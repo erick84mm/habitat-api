@@ -39,6 +39,7 @@ from habitat.utils.geometry_utils import quaternion_to_list
 from habitat.utils.geometry_utils import (
     angle_between_quaternions,
 )
+import quaternion
 
 cv2 = try_cv2_import()
 
