@@ -252,7 +252,7 @@ class AdjacentViewpointSensor(Sensor):
 
         # This vectors are in habitat format we need to rotate them.
         rotated_posB = [posB[0], -posB[2], posB[1]]
-        rotated_posA = [posA[0], posA[1], posA[2]]
+        rotated_posA = [posA[0], -posA[2], posA[1]]
         target_vector = np.array(rotated_posB) - np.array(rotated_posA)
 
         y = target_vector[0] * camera_horizon_vec[1] - \
