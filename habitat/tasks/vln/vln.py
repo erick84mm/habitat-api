@@ -228,12 +228,11 @@ class AdjacentViewpointSensor(Sensor):
             return 2 * np.pi - angle
         return -angle
 
-    def get_rel_heading(self, posA, rotA, posB, half_visible_angle, curr_viewpoint):
+    def get_rel_heading(self, posA, rotA, posB):
         '''
         posA = [x,y,z]
         rotA = [x,y,z,w]
         posB = [x,y,z]
-        half_visible_angle: radians
         '''
         direction_vector = np.array([0, 0, -1])
         quat = quaternion_from_coeff(rotA).inverse()
@@ -263,29 +262,6 @@ class AdjacentViewpointSensor(Sensor):
         # This arctan2 is with respect to matterport
         # which is the opposite as habitat
         rel_heading = np.arctan2(y, x)
-
-        print("PosB", rotated_posB, posB)
-        print("PosA", rotated_posA, posA)
-        print("target vector", target_vector)
-
-
-        print("viewpoint", curr_viewpoint)
-        print("heading", heading)
-        print("adjusted heading", adjusted_heading)
-        print("matterport rel_heading between -pi and pi", rel_heading)
-        #print("normalized matterport rel_heading between -pi and pi", self.normalize_angle(rel_heading))
-        '''
-        print("rotations", quat, quaternion_from_coeff(rotA))
-        print("heading vectors", heading_vector, quaternion_rotate_vector(quaternion_from_coeff(rotA), direction_vector))
-        print("Target heading ", self.normalize_angle(target_angle))
-        print("Target angle atan2", target_vector)
-        print("Target angle atan2", target_angle)
-        print("Target norm vector", norm_target_vector)
-        print("Target norm vector 2", norm_target_vector_2)
-        print("Heading normalized", heading, self.normalize_angle(heading))
-        print("Heading difference", angle)
-        print("Heading - visible angle", angle - half_visible_angle)
-        '''
         return rel_heading
 
     def get_rel_elevation(self, posA, rotA, cameraA, posB):
@@ -376,9 +352,7 @@ class AdjacentViewpointSensor(Sensor):
             rel_heading = self.get_rel_heading(
                     agent_pos,
                     agent_rot,
-                    target_pos,
-                    angle,
-                    image_id
+                    target_pos
             )
             rel_elevation = self.get_rel_elevation(
                     agent_pos,
