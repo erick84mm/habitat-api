@@ -173,6 +173,48 @@ class HeadingSensor(Sensor):
         return self._quat_to_xy_heading(rotation_world_agent.inverse())
 
 
+
+@registry.register_sensor
+class ElevationSensor(Sensor):
+    r"""Sensor for observing the agent's elevation in the global coordinate
+    frame.
+
+    Args:
+        sim: reference to the simulator for calculating task observations.
+        config: config for the sensor.
+    """
+
+    def __init__(
+        self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
+    ):
+        self._sim = sim
+        super().__init__(config=config)
+
+    def _get_uuid(self, *args: Any, **kwargs: Any):
+        return "elevation"
+
+    def _get_sensor_type(self, *args: Any, **kwargs: Any):
+        return SensorTypes.NULL
+
+    def _get_observation_space(self, *args: Any, **kwargs: Any):
+        return spaces.Box(low=-np.pi, high=np.pi, shape=(1,), dtype=np.float)
+
+    def _angle_between_quat(self, quat, camera_quat):
+
+        q1_inv = np.conjugate(quat)
+        dq = quaternion.as_float_array(q1_inv * camera_quat)
+        return 2 * np.arctan2(np.linalg.norm(dq[1:]), dq[0])
+
+    def get_observation(
+        self, observations, episode, *args: Any, **kwargs: Any
+    ):
+        agent_state = self._sim.get_agent_state()
+        agent_rot = agent_state.rotation
+        camera_rot = agent_state.sensor_states["rgb"].rotation
+
+        return self._angle_between_quat(agent_rot, camera_rot)
+
+
 @registry.register_sensor
 class AdjacentViewpointSensor(Sensor):
     r"""Sensor for observing the adjacent viewpoints near the current
@@ -291,7 +333,7 @@ class AdjacentViewpointSensor(Sensor):
         camera_z = camera_vector[1]
         target_length = np.linalg.norm([target_vector[0], target_vector[1]])
         # How to convert habitat z to matterport z?
-        rel_elevation = np.arctan2(target_z, target_length) / 2
+        rel_elevation = np.arctan2(target_z, target_length) -
         print("viewpoint", c)
         print("rotated_posA", rotated_posA)
         print("rotated_posB", rotated_posB)
