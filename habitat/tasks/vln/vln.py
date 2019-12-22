@@ -203,7 +203,7 @@ class ElevationSensor(Sensor):
 
         q1_inv = np.conjugate(quat)
         dq = quaternion.as_float_array(q1_inv * camera_quat)
-        return 2 * np.arctan2(np.linalg.norm(dq[1:]), dq[0])
+        return 2 * np.arctan2(dq[2], np.linalg.norm(dq[1:]))
 
     def get_observation(
         self, observations, episode, *args: Any, **kwargs: Any
