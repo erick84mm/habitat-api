@@ -21,8 +21,8 @@ def angle_between_quaternions(q1: np.quaternion, q2: np.quaternion) -> float:
 
 def dir_angle_between_quaternions(q1: np.quaternion, q2: np.quaternion) -> float:
 
-    q1_inv = np.conjugate(quat)
-    dq = quaternion.as_float_array(q1_inv * camera_quat)
+    q1_inv = np.conjugate(q1)
+    dq = quaternion.as_float_array(q1_inv * q2)
 
     return np.arctan2(2*dq[0]*dq[1] + 2*dq[2]*dq[3], 1 - 2*dq[1]**2 - 2*dq[3]**2)
 
