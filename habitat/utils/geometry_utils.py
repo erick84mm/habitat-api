@@ -19,6 +19,12 @@ def angle_between_quaternions(q1: np.quaternion, q2: np.quaternion) -> float:
 
     return 2 * np.arctan2(np.linalg.norm(dq[1:]), np.abs(dq[0]))
 
+def dir_angle_between_quaternions(q1: np.quaternion, q2: np.quaternion) -> float:
+
+    q1_inv = np.conjugate(quat)
+    dq = quaternion.as_float_array(q1_inv * camera_quat)
+
+    return np.arctan2(2*dq[0]*dq[1] + 2*dq[2]*dq[3], 1 - 2*dq[1]**2 - 2*dq[3]**2)
 
 def quaternion_from_two_vectors(v0: np.array, v1: np.array) -> np.quaternion:
     r"""Computes the quaternion representation of v1 using v0 as the origin.

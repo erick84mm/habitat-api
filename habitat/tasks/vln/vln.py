@@ -38,6 +38,7 @@ from habitat.utils.visualizations import fog_of_war, maps
 from habitat.utils.geometry_utils import quaternion_to_list
 from habitat.utils.geometry_utils import (
     angle_between_quaternions,
+    dir_angle_between_quaternions,
 )
 import quaternion
 
@@ -199,13 +200,6 @@ class ElevationSensor(Sensor):
     def _get_observation_space(self, *args: Any, **kwargs: Any):
         return spaces.Box(low=-np.pi, high=np.pi, shape=(1,), dtype=np.float)
 
-    def _angle_between_quat(self, quat, camera_quat):
-
-        q1_inv = np.conjugate(quat)
-        dq = quaternion.as_float_array(q1_inv * camera_quat)
-
-        return np.arctan2(2*dq[0]*dq[1] + 2*dq[2]*dq[3], 1 - 2*dq[1]**2 - 2*dq[3]**2)
-
     def get_observation(
         self, observations, episode, *args: Any, **kwargs: Any
     ):
@@ -213,7 +207,7 @@ class ElevationSensor(Sensor):
         agent_rot = agent_state.rotation
         camera_rot = agent_state.sensor_states["rgb"].rotation
 
-        return self._angle_between_quat(agent_rot, camera_rot)
+        return dir_angle_between_quaternions(agent_rot, camera_rot)
 
 
 @registry.register_sensor
@@ -318,14 +312,8 @@ class AdjacentViewpointSensor(Sensor):
             camera_quat.inverse(),
             direction_vector
         )
-        # The value is always positive, we have to determine the direction.
-        # Here we have to remove the conjugate from the original quaternion
 
-        q1_inv = np.conjugate(quat)
-        dq = quaternion.as_float_array(q1_inv * camera_quat)
-
-        elevation_angle_2 = 2 * np.arctan2(np.linalg.norm(dq[1:]), dq[0])
-        elevation_angle = angle_between_quaternions(quat, camera_quat)
+        elevation_angle = dir_angle_between_quaternions(quat, camera_quat)
 
         rotated_posB = [posB[0], -posB[2], posB[1]]
         rotated_posA = [posA[0], -posA[2], posA[1]]
@@ -342,9 +330,6 @@ class AdjacentViewpointSensor(Sensor):
         #print("elevation_angle", elevation_angle)
         #print("elevation_angle_2", elevation_angle_2)
         #print("rel_elevation", rel_elevation)
-
-        if  target_z < camera_z:
-            return rel_elevation + elevation_angle
         return rel_elevation - elevation_angle
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
