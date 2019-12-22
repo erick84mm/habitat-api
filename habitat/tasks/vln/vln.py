@@ -262,10 +262,11 @@ class AdjacentViewpointSensor(Sensor):
 
         # This arctan2 is with respect to matterport
         # which is the opposite as habitat
-        rel_heading = np.arctan2(x,y)
+        rel_heading = np.arctan2(y, x)
 
         print("PosB", rotated_posB, posB)
         print("PosA", rotated_posA, posA)
+        print("target vector", target_vector)
 
 
         print("viewpoint", curr_viewpoint)
