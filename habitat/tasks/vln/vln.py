@@ -267,22 +267,24 @@ class AdjacentViewpointSensor(Sensor):
     def get_rel_elevation(self, posA, rotA, cameraA, posB):
         direction_vector = np.array([0, 0, -1])
         quat = quaternion_from_coeff(rotA).inverse()
-        camera_quat = quaternion_from_coeff(cameraA).inverse()
-        angle = angle_between_quaternions(quat, camera_quat)
-
-        target_vector = np.array(posB) - np.array(posA)
         rot_vector = quaternion_rotate_vector(quat, direction_vector)
+
+        camera_quat = quaternion_from_coeff(cameraA).inverse()
         camera_vector = quaternion_rotate_vector(camera_quat, direction_vector)
 
-        camera_z = camera_vector[1]  # looking down or up
-        rot_z = rot_vector[1]  # base vector always looking up front
-        target_z = target_vector[1]  # the base pos vector
-        target_norm = np.linalg.norm([target_vector[0], -target_vector[2]])
-        relative_angle = np.arctan2(target_z, target_norm)
+        elevation_angle = angle_between_quaternions(quat, camera_quat)
+
+        rotated_posB = [posB[0], -posB[2], posB[1]]
+        rotated_posA = [posA[0], -posA[2], posA[1]]
+        target_vector = np.array(rotated_posB) - np.array(rotated_posA)
+        target_z = target_vector[2]
+        camera_z = camera_vector[1]
+        target_length = np.linalg.norm([target_vector[0], target_vector[1]])
+        rel_elevation = np.arctan2(target_z, target_length)
 
         if  target_z < camera_z:
-            return relative_angle + angle
-        return relative_angle - angle
+            return rel_elevation + elevation_angle
+        return rel_elevation - elevation_angle
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
         observations = []
