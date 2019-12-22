@@ -163,13 +163,13 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                 agent.reset()
                 observations = self._env.reset()
                 action_history = []
-
+                '''
                 for im in images:
                     image = im
                     image =  image[:,:, [2,1,0]]
                     cv2.imshow("RGB", image)
                     cv2.waitKey(0)
-
+                '''
                 images = []
                 print("*"*20 + "Starting new episode" + "*"*20,
                     self._env._current_episode.curr_viewpoint.image_id)
