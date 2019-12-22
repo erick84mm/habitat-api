@@ -211,8 +211,8 @@ class ElevationSensor(Sensor):
         self, observations, episode, *args: Any, **kwargs: Any
     ):
         agent_state = self._sim.get_agent_state()
-        agent_rot = agent_state.rotation
-        camera_rot = agent_state.sensor_states["rgb"].rotation
+        agent_rot = agent_state.rotation.inverse()
+        camera_rot = agent_state.sensor_states["rgb"].rotation.inverse()
 
         return self._angle_between_quat(agent_rot, camera_rot)
 
