@@ -272,6 +272,9 @@ class AdjacentViewpointSensor(Sensor):
         camera_quat = quaternion_from_coeff(cameraA).inverse()
         camera_vector = quaternion_rotate_vector(camera_quat, direction_vector)
 
+        # The value is always positive, we have to determine the direction.
+        # Here we have to remove the conjugate from the original quaternion
+
         elevation_angle = angle_between_quaternions(quat, camera_quat)
 
         rotated_posB = [posB[0], -posB[2], posB[1]]
@@ -280,7 +283,8 @@ class AdjacentViewpointSensor(Sensor):
         target_z = target_vector[2]
         camera_z = camera_vector[1]
         target_length = np.linalg.norm([target_vector[0], target_vector[1]])
-        rel_elevation = np.arctan2(target_z, target_length)
+        # How to convert habitat z to matterport z?
+        rel_elevation = 2 * np.arctan2(target_length, target_z)
         print("rotated_posA", rotated_posA)
         print("rotated_posB", rotated_posB)
         print("target vector", target_vector)
