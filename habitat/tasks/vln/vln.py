@@ -203,7 +203,7 @@ class ElevationSensor(Sensor):
 
         q1_inv = np.conjugate(quat)
         dq = quaternion.as_float_array(q1_inv * camera_quat)
-
+        print("this", np.arctan2(2*dq[0]*dq[1] + 2*dq[2]*dq[3], 1 - 2*dq[1]**2 - 2*dq[3]**2))
 
         return 2 * np.arctan2(np.linalg.norm(dq[1:]), dq[0])
 
@@ -213,11 +213,6 @@ class ElevationSensor(Sensor):
         agent_state = self._sim.get_agent_state()
         agent_rot = agent_state.rotation
         camera_rot = agent_state.sensor_states["rgb"].rotation
-        root_quat = quaternion_from_coeff([0,0,0,1])
-        lower_quat = self._angle_between_quat(root_quat, agent_rot)
-        upper_quat = self._angle_between_quat(root_quat, camera_rot)
-        print("lower quat", lower_quat)
-        print("upper quat", upper_quat)
 
         return self._angle_between_quat(agent_rot, camera_rot)
 
