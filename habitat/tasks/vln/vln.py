@@ -266,16 +266,19 @@ class AdjacentViewpointSensor(Sensor):
 
     def get_rel_elevation(self, posA, rotA, cameraA, posB):
         direction_vector = np.array([0, 0, -1])
-        quat = quaternion_from_coeff(rotA).inverse()
-        rot_vector = quaternion_rotate_vector(quat, direction_vector)
+        quat = quaternion_from_coeff(rotA)
+        rot_vector = quaternion_rotate_vector(quat.inverse(), direction_vector)
 
-        camera_quat = quaternion_from_coeff(cameraA).inverse()
-        camera_vector = quaternion_rotate_vector(camera_quat, direction_vector)
+        camera_quat = quaternion_from_coeff(cameraA)
+        camera_vector = quaternion_rotate_vector(
+            camera_quat.inverse(),
+            direction_vector
+        )
 
         # The value is always positive, we have to determine the direction.
         # Here we have to remove the conjugate from the original quaternion
 
-        elevation_angle = angle_between_quaternions(quat, camera_quat) + np.pi/2
+        elevation_angle = angle_between_quaternions(quat, camera_quat)
 
         rotated_posB = [posB[0], -posB[2], posB[1]]
         rotated_posA = [posA[0], -posA[2], posA[1]]
