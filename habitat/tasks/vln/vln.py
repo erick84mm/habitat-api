@@ -281,7 +281,7 @@ class AdjacentViewpointSensor(Sensor):
         q1_inv = np.conjugate(quat)
         dq = quaternion.as_float_array(q1_inv * camera_quat)
 
-        elevation_angle_2 = 2 * np.arctan2(np.linalg.norm(dq[1:]), np.abs(dq[0]))
+        elevation_angle_2 = 2 * np.arctan2(np.linalg.norm(dq[1:]), dq[0])
         elevation_angle = angle_between_quaternions(quat, camera_quat)
 
         rotated_posB = [posB[0], -posB[2], posB[1]]
