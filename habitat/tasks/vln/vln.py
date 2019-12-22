@@ -282,6 +282,9 @@ class AdjacentViewpointSensor(Sensor):
         target_length = np.linalg.norm([target_vector[0], target_vector[1]])
         rel_elevation = np.arctan2(target_z, target_length)
 
+        print("elevation_angle", elevation_angle)
+        print("rel_elevation", rel_elevation)
+
         if  target_z < camera_z:
             return rel_elevation + elevation_angle
         return rel_elevation - elevation_angle
