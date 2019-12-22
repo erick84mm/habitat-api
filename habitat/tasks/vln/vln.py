@@ -331,7 +331,7 @@ class AdjacentViewpointSensor(Sensor):
         #print("elevation_angle_2", elevation_angle_2)
         #print("rel_elevation", rel_elevation)
         print("viewpoint %s" % c, rel_elevation - elevation_angle)
-        return rel_elevation - elevation_angle
+        return rel_elevation - elevation_angle - np.pi / 12
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
         observations = []
