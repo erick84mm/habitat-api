@@ -165,14 +165,15 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                 observations = self._env.reset()
                 action_history = []
                 gif_images = []
-                for im in images:
-                    image = Image.fromarray(im[:,:, [2,1,0]])
-                    gif_images.append(image)
-                    #image =  image[:,:, [2,1,0]]
-                    #cv2.imshow("RGB", image)
-                    #cv2.waitKey(0)
-                im1 = gif_images[0]
-                im1.save("out.gif", save_all=True, append_images=gif_images[1:], duration=100, loop=0)
+                if images:
+                    for im in images:
+                        image = Image.fromarray(im[:,:, [2,1,0]])
+                        gif_images.append(image)
+                        #image =  image[:,:, [2,1,0]]
+                        #cv2.imshow("RGB", image)
+                        #cv2.waitKey(0)
+                    im1 = gif_images[0]
+                    im1.save("out.gif", save_all=True, append_images=gif_images[1:], duration=100, loop=0)
 
                 gif_images = []
                 images = []
