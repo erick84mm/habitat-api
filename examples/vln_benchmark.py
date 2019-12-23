@@ -11,6 +11,7 @@ import random
 import time
 import cv2
 from pprint import pprint
+from PIL import Image
 
 import torch
 import torch.nn as nn
@@ -163,13 +164,17 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                 agent.reset()
                 observations = self._env.reset()
                 action_history = []
-                '''
+                gif_images = []
                 for im in images:
-                    image = im
-                    image =  image[:,:, [2,1,0]]
-                    cv2.imshow("RGB", image)
-                    cv2.waitKey(0)
-                '''
+                    image = Image.fromarray(im[:,:, [2,1,0]])
+                    gif_images.append(image)
+                    #image =  image[:,:, [2,1,0]]
+                    #cv2.imshow("RGB", image)
+                    #cv2.waitKey(0)
+                im1 = gif_images[0]
+                im1.save("out.gif", save_all=True, append_images=gif_images[1:], duration=100, loop=0)
+
+                gif_images = []
                 images = []
                 print("*"*20 + "Starting new episode" + "*"*20,
                     self._env._current_episode.curr_viewpoint.image_id)
