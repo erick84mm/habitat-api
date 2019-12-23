@@ -166,6 +166,7 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                 action_history = []
                 gif_images = []
                 if images:
+                    print("writing file with images")
                     for im in images:
                         image = Image.fromarray(im[:,:, [2,1,0]])
                         gif_images.append(image)
@@ -173,7 +174,7 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                         #cv2.imshow("RGB", image)
                         #cv2.waitKey(0)
                     im1 = gif_images[0]
-                    im1.save("out.gif", save_all=True, append_images=gif_images[1:], duration=100, loop=0)
+                    im1.save("out.gif", save_all=True, append_images=gif_images[1:], duration=1000, loop=0)
 
                 gif_images = []
                 images = []
