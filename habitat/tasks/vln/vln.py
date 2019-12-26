@@ -454,7 +454,7 @@ class SPL(Measure):
         current_position = self._sim.get_agent_state().position.tolist()
 
         distance_to_target = self._sim.geodesic_distance(
-            current_position, episode.goals[-1].get_position().tolist()
+            current_position, episode.goals[-1].get_position()
         )
 
         if (
@@ -506,7 +506,7 @@ class Success(Measure):
         current_position = self._sim.get_agent_state().position.tolist()
 
         distance_to_target = self._sim.geodesic_distance(
-            current_position, episode.goals[-1].get_position().tolist()
+            current_position, episode.goals[-1].get_position()
         )
 
         if (
@@ -543,7 +543,7 @@ class OracleSuccess(Measure):
         current_position = self._sim.get_agent_state().position.tolist()
 
         distance_to_target = self._sim.geodesic_distance(
-            current_position, episode.goals[-1].get_position().tolist()
+            current_position, episode.goals[-1].get_position()
         )
 
         if (
@@ -622,7 +622,7 @@ class NavigationError(Measure):
         current_position = self._sim.get_agent_state().position.tolist()
 
         distance_to_target = self._sim.geodesic_distance(
-            current_position, episode.goals[-1].get_position().tolist()
+            current_position, episode.goals[-1].get_position()
         )
         self._previous_position = current_position
 
