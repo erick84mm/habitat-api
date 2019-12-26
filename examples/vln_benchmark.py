@@ -410,7 +410,6 @@ class ShortestPathAgent(habitat.Agent):
         #print(action, action_args)
         return {"action": action, "action_args": action_args}
 
-
 class seq2seqAgent(habitat.Agent):
     def __init__(self, success_distance, goal_sensor_uuid, encoder, decoder):
         self.dist_threshold_to_stop = success_distance
@@ -424,6 +423,10 @@ class seq2seqAgent(habitat.Agent):
 
 
 def main():
+
+    DISCRETE_SHORTEST_PATH_AGENT = 0
+    DISCRETE_RANDOM_AGENT = 1
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--task-config", type=str, default="configs/tasks/pointnav.yaml"
@@ -431,14 +434,20 @@ def main():
     parser.add_argument(
         "--num-episodes", type=int, default=100
     )
+    parser.add_argument(
+        "--agent_type", type=int, default=0
+    )
     args = parser.parse_args()
 
-    #agent = RandomDiscreteAgent(3.0, "SPL")
+    if args.agent_type == 0:
+        agent = ShortestPathAgent(3.0, "SPL", half_visible_angle=0.767945)
+    elif args.agent_type == 1:
+        agent = RandomDiscreteAgent(3.0, "SPL", half_visible_angle=0.767945)
+
     #benchmark = VLNRandomBenchmark(args.task_config)
     #metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
 
 
-    agent = ShortestPathAgent(3.0, "SPL", half_visible_angle=0.767945)
     benchmark = VLNShortestPathBenchmark(args.task_config)
     metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
 
