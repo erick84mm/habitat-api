@@ -482,12 +482,7 @@ class SPL(Measure):
 
 @registry.register_measure
 class TrajectoryLength(Measure):
-    r"""SPL (Success weighted by Path Length)
-
-    ref: On Evaluation of Embodied Agents - Anderson et. al
-    https://arxiv.org/pdf/1807.06757.pdf
-    """
-
+    
     def __init__(
         self, *args: Any, sim: Simulator, config: Config, **kwargs: Any
     ):
