@@ -244,6 +244,10 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                 #pprint(action_history)
                 metrics = self._env.get_metrics()
                 pprint(metrics)
+                if "navigationError" in metrics and  metrics["navigationError"] > 0:
+                    print("Scan %s" % self._env._current_episode.scan)
+                    print("image_id %s" % self._env._current_episode.goals[0].image_id)
+
                 for m, v in metrics.items():
                     agg_metrics[m] += v
                 count_episodes += 1
@@ -442,7 +446,7 @@ def main():
     if args.agent_type == 0:
         agent = ShortestPathAgent(3.0, "SPL", half_visible_angle=0.767945)
     elif args.agent_type == 1:
-        agent = RandomDiscreteAgent(3.0, "SPL", half_visible_angle=0.767945)
+        agent = RandomDiscreteAgent(3.0, "SPL")
 
     benchmark = VLNShortestPathBenchmark(args.task_config)
     metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
