@@ -71,8 +71,8 @@ class VLNRandomBenchmark(habitat.Benchmark):
                 agent.reset()
                 observations = self._env.reset()
                 action_history = []
-                print("*"*20 + "Starting new episode" + "*"*20,
-                    self._env._current_episode.curr_viewpoint.image_id)
+                #print("*"*20 + "Starting new episode" + "*"*20,
+                #    self._env._current_episode.curr_viewpoint.image_id)
                 elapsed_steps = 0
                 while not self._env.episode_over:
                     action = agent.act(
@@ -118,9 +118,12 @@ class VLNRandomBenchmark(habitat.Benchmark):
                         "nav_locations": nav_locations,
                         })
 
-                print("Target path ", [str(goal) for goal in self._env._current_episode.goals])
+                #print("Target path ", [str(goal) for goal in self._env._current_episode.goals])
+
                 #pprint(action_history)
                 metrics = self._env.get_metrics()
+                if np.isinf(metrics["navigationError"]):
+                    pprint(action_history)
                 pprint(metrics)
                 for m, v in metrics.items():
                     agg_metrics[m] += v
