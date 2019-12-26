@@ -115,7 +115,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
                         "new_heading": heading,
                         "new_pos": state.position,
                         "new_rot": state.rotation,
-                        "nav_locations": nav_locations,
+                        #"nav_locations": nav_locations,
                         })
 
                 #print("Target path ", [str(goal) for goal in self._env._current_episode.goals])
@@ -124,6 +124,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
                 metrics = self._env.get_metrics()
                 if np.isinf(metrics["navigationError"]):
                     pprint(action_history)
+                    print("Target path ", [str(goal) for goal in self._env._current_episode.goals])
                 pprint(metrics)
                 for m, v in metrics.items():
                     agg_metrics[m] += v
