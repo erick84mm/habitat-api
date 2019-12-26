@@ -241,21 +241,6 @@ class AdjacentViewpointSensor(Sensor):
                 data = json.load(f)
         return data
 
-    def _quat_to_xy_heading_vector(self, quat):
-        direction_vector = np.array([0, 0, -1])
-        heading_vector = quaternion_rotate_vector(quat, direction_vector)
-        return heading_vector
-
-    def _unit_vector(self, vector):
-        """ Returns the unit vector of the vector.  """
-        return vector / np.linalg.norm(vector)
-
-    def _angle_between(self,v1, v2):
-        """ Returns the angle in radians between vectors 'v1' and 'v2'"""
-        v1_u = self._unit_vector(v1)
-        v2_u = self._unit_vector(v2)
-        return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
-
     def normalize_angle(self, angle):
         # Matterport goes from 0 to 2pi going clock wise.
         # Habitat goes from 0 - pi going counter clock wise.
@@ -319,18 +304,9 @@ class AdjacentViewpointSensor(Sensor):
         rotated_posA = [posA[0], -posA[2], posA[1]]
         target_vector = np.array(rotated_posB) - np.array(rotated_posA)
         target_z = target_vector[2]
-        camera_z = camera_vector[1]
         target_length = np.linalg.norm([target_vector[0], target_vector[1]])
         # How to convert habitat z to matterport z?
         rel_elevation = np.arctan2(target_z, target_length)
-        #print("viewpoint", c)
-        #print("rotated_posA", rotated_posA)
-        #print("rotated_posB", rotated_posB)
-        #print("target vector", target_vector)
-        #print("elevation_angle", elevation_angle)
-        #print("elevation_angle_2", elevation_angle_2)
-        #print("rel_elevation", rel_elevation)
-        #print("viewpoint %s" % c, rel_elevation - elevation_angle)
         return rel_elevation - elevation_angle
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
@@ -450,9 +426,20 @@ class SPL(Measure):
     def _get_uuid(self, *args: Any, **kwargs: Any):
         return "spl"
 
+    def _episode_distance_from_path(self, episode: VLNEpisode):
+        previous_goal = episode.goals[0]
+        total_distance = 0.0
+        for goal in episode.goals[1:]:
+            posA = previous_goal.get_position()
+            posB = goal.get_position()
+            total_distance += self._euclidean_distance(posA, posB)
+            previous_goal = goal
+        return total_distance
+
     def reset_metric(self, *args: Any, episode, **kwargs: Any):
         self._previous_position = self._sim.get_agent_state().position.tolist()
-        self._start_end_episode_distance = episode.info["geodesic_distance"]
+        self._start_end_episode_distance = self._episode_distance_from_path(episode)
+        #self._start_end_episode_distance = episode.info["geodesic_distance"]
         self._agent_episode_distance = 0.0
         self._metric = None
 

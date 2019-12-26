@@ -40,7 +40,6 @@ from habitat.utils.geometry_utils import (
     angle_between_quaternions,
 )
 
-
 class VLNRandomBenchmark(habitat.Benchmark):
     def evaluate(
             self, agent: Agent, num_episodes: Optional[int] = None
@@ -386,6 +385,9 @@ class ShortestPathAgent(habitat.Agent):
                     action = "LOOK_DOWN" # Look down
                       #action_args = {"num_steps": abs(int(rel_elevation / step_size))}
                 else:
+                    if goal_location["Restricted"]:
+                        print("WARNING: The target was not in the Field of view," +
+                        " but the step action is going to be performed")
                     action = "TELEPORT" # Move forward
                     image_id = goal.image_id
                     posB = goal_location["start_position"]
