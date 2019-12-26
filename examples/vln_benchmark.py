@@ -319,12 +319,13 @@ class RandomDiscreteAgent(habitat.Agent):
             action = "STOP"
         elif len(observations["adjacentViewpoints"]) > 1:
             # Turn right until we can go forward
+            goal = observations["adjacentViewpoints"][1]
             action = "TELEPORT"
-            pos = observations["adjacentViewpoints"][1]["start_position"]
+            image_id = goal["image_id"]
+            pos = goal["start_position"]
 
             # Keeping the same rotation as the previous step
             rot = observations["adjacentViewpoints"][0]["start_rotation"]
-            image_id = observations["adjacentViewpoints"][1]["image_id"]
 
             viewpoint = ViewpointData(
                 image_id=image_id,
@@ -445,10 +446,11 @@ def main():
 
     if args.agent_type == 0:
         agent = ShortestPathAgent(3.0, "SPL", half_visible_angle=0.767945)
+        benchmark = VLNShortestPathBenchmark(args.task_config)
     elif args.agent_type == 1:
         agent = RandomDiscreteAgent(3.0, "SPL")
+        benchmark = VLNRandomBenchmark(args.task_config)
 
-    benchmark = VLNShortestPathBenchmark(args.task_config)
     metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
 
 
