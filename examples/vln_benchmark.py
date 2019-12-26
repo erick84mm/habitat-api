@@ -385,7 +385,7 @@ class ShortestPathAgent(habitat.Agent):
                     action = "LOOK_DOWN" # Look down
                       #action_args = {"num_steps": abs(int(rel_elevation / step_size))}
                 else:
-                    if goal_location["Restricted"]:
+                    if goal_location["restricted"]:
                         print("WARNING: The target was not in the Field of view," +
                         " but the step action is going to be performed")
                     action = "TELEPORT" # Move forward
