@@ -480,9 +480,89 @@ class SPL(Measure):
         if self._metric >= 0.9999975:
             self._metric = 1.0
 
+
+@registry.register_measure
+class Success(Measure):
+    r"""SPL (Success weighted by Path Length)
+
+    ref: On Evaluation of Embodied Agents - Anderson et. al
+    https://arxiv.org/pdf/1807.06757.pdf
+    """
+
+    def __init__(
+        self, *args: Any, sim: Simulator, config: Config, **kwargs: Any
+    ):
+        self._sim = sim
+        self._config = config
+
+        super().__init__()
+
+    def _get_uuid(self, *args: Any, **kwargs: Any):
+        return "success"
+
+
+    def reset_metric(self, *args: Any, episode, **kwargs: Any):
+        self._metric = None
+
+    def update_metric(
+        self, *args: Any, episode, action, task: EmbodiedTask, **kwargs: Any
+    ):
+        ep_success = 0
+        current_position = self._sim.get_agent_state().position.tolist()
+
+        distance_to_target = self._sim.geodesic_distance(
+            current_position, episode.goals[-1].view_point.position
+        )
+
+        if (
+            hasattr(task, "is_stop_called") and
+            task.is_stop_called and
+            distance_to_target < self._config.SUCCESS_DISTANCE
+        ):
+            ep_success = 1
+
+        self._metric = ep_success
+
+@registry.register_measure
+class OracleSuccess(Measure):
+
+    def __init__(
+        self, *args: Any, sim: Simulator, config: Config, **kwargs: Any
+    ):
+        self._sim = sim
+        self._config = config
+
+        super().__init__()
+
+    def _get_uuid(self, *args: Any, **kwargs: Any):
+        return "oracleSuccess"
+
+
+    def reset_metric(self, *args: Any, episode, **kwargs: Any):
+        self._metric = None
+
+    def update_metric(
+        self, *args: Any, episode, action, task: EmbodiedTask, **kwargs: Any
+    ):
+        ep_success = 0
+        current_position = self._sim.get_agent_state().position.tolist()
+
+        distance_to_target = self._sim.geodesic_distance(
+            current_position, episode.goals[-1].view_point.position
+        )
+
+        if (
+            hasattr(task, "is_stop_called") and
+            task.is_stop_called and
+            distance_to_target < self._config.ORACLE_SUCCESS_DISTANCE
+        ):
+            ep_success = 1
+
+        self._metric = ep_success
+
 @registry.register_measure
 class TrajectoryLength(Measure):
-    
+
     def __init__(
         self, *args: Any, sim: Simulator, config: Config, **kwargs: Any
     ):
