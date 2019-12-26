@@ -164,23 +164,23 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                 observations = self._env.reset()
                 action_history = []
                 gif_images = []
-                if images:
-                    print("writing file with images")
-                    for im in images:
-                        image = Image.fromarray(im[:,:, [2,1,0]])
-                        gif_images.append(image)
+                #if images:
+                    #print("writing file with images")
+                    #for im in images:
+                    #    image = Image.fromarray(im[:,:, [2,1,0]])
+                    #    gif_images.append(image)
                         #image =  image[:,:, [2,1,0]]
                         #cv2.imshow("RGB", image)
                         #cv2.waitKey(0)
-                    im1 = gif_images[0]
-                    im1.save("out.gif", save_all=True, append_images=gif_images[1:], duration=1000, loop=0)
+                    #im1 = gif_images[0]
+                    #im1.save("out.gif", save_all=True, append_images=gif_images[1:], duration=1000, loop=0)
 
                 gif_images = []
                 images = []
-                print("*"*20 + "Starting new episode" + "*"*20,
-                    self._env._current_episode.curr_viewpoint.image_id)
-                if observations and "heading" in observations:
-                    print("Episode heading: %s" % observations["heading"])
+                #print("*"*20 + "Starting new episode" + "*"*20,
+                #    self._env._current_episode.curr_viewpoint.image_id)
+                #if observations and "heading" in observations:
+                #    print("Episode heading: %s" % observations["heading"])
 
                 elapsed_steps = 0
                 goal_idx = 1
@@ -188,7 +188,7 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                 images.append(observations["rgb"][:,:,[2,1,0]])
                 observations["images"] = images
 
-                print("Target path ", [str(goal) for goal in self._env._current_episode.goals])
+                #print("Target path ", [str(goal) for goal in self._env._current_episode.goals])
                 while not self._env.episode_over:
                     goal_viewpoint = self._env._current_episode.goals[goal_idx]
 
@@ -352,7 +352,7 @@ class ShortestPathAgent(habitat.Agent):
         if goal.image_id == navigable_locations[0]["image_id"]:
             action = "STOP"
         else:
-            print("The goal is: %s", goal.image_id)
+            #print("The goal is: %s", goal.image_id)
             step_size = np.pi/6.0
             goal_location = None
             for location in navigable_locations:
@@ -367,10 +367,10 @@ class ShortestPathAgent(habitat.Agent):
                 # this is the relative elevation or altitute
                 rel_elevation = goal_location["rel_elevation"]
 
-                print("The relative heading to the goal is %s" % str(rel_heading))
-                print("The relative elevation to the goal is %s" % str(rel_elevation))
-                print("The heading is", observations["heading"])
-                print("The elevation is", observations["elevation"])
+                #print("The relative heading to the goal is %s" % str(rel_heading))
+                #print("The relative elevation to the goal is %s" % str(rel_elevation))
+                #print("The heading is", observations["heading"])
+                #print("The elevation is", observations["elevation"])
 
                 if rel_heading > step_size:
                     action = "TURN_RIGHT" # Turn right
@@ -399,9 +399,9 @@ class ShortestPathAgent(habitat.Agent):
                     action_args.update({"target": viewpoint})
             else:
                 print("Target position %s not visible, This is an error in the system" % goal.image_id)
-                print("The relative heading is %s\n" % str(rel_heading))
-                print("The relative elevation is %s\n" % str(rel_elevation))
-                pprint(navigable_locations)
+                #print("The relative heading is %s\n" % str(rel_heading))
+                #print("The relative elevation is %s\n" % str(rel_elevation))
+                #pprint(navigable_locations)
                 for ob in observations["images"]:
                     image = ob
                     image =  image[:,:, [2,1,0]]
