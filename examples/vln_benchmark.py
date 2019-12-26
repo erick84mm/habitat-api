@@ -444,10 +444,6 @@ def main():
     elif args.agent_type == 1:
         agent = RandomDiscreteAgent(3.0, "SPL", half_visible_angle=0.767945)
 
-    #benchmark = VLNRandomBenchmark(args.task_config)
-    #metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
-
-
     benchmark = VLNShortestPathBenchmark(args.task_config)
     metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
 

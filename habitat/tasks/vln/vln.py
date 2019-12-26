@@ -483,11 +483,6 @@ class SPL(Measure):
 
 @registry.register_measure
 class Success(Measure):
-    r"""SPL (Success weighted by Path Length)
-
-    ref: On Evaluation of Embodied Agents - Anderson et. al
-    https://arxiv.org/pdf/1807.06757.pdf
-    """
 
     def __init__(
         self, *args: Any, sim: Simulator, config: Config, **kwargs: Any
@@ -603,7 +598,6 @@ class NavigationError(Measure):
         self, *args: Any, sim: Simulator, config: Config, **kwargs: Any
     ):
         self._previous_position = None
-        self._agent_episode_distance = None
         self._sim = sim
         self._config = config
 
@@ -615,8 +609,7 @@ class NavigationError(Measure):
     def reset_metric(self, *args: Any, episode, **kwargs: Any):
         self._previous_position = self._sim.get_agent_state().position.tolist()
         #self._start_end_episode_distance = episode.info["geodesic_distance"]
-        self._agent_episode_distance = 0.0
-        self._metric = None
+        self._metric = 0.0
 
     def _euclidean_distance(self, position_a, position_b):
         return np.linalg.norm(
@@ -626,25 +619,14 @@ class NavigationError(Measure):
     def update_metric(
         self, *args: Any, episode, action, task: EmbodiedTask, **kwargs: Any
     ):
-        ep_success = 0
         current_position = self._sim.get_agent_state().position.tolist()
 
         distance_to_target = self._sim.geodesic_distance(
             current_position, episode.goals[-1].view_point.position
         )
-
-        if (
-            hasattr(task, "is_stop_called") and
-            task.is_stop_called
-        ):
-            ep_success = 1
-
-        self._agent_episode_distance += self._euclidean_distance(
-            current_position, self._previous_position
-        )
         self._previous_position = current_position
 
-        self._metric = ep_success * distance_to_target
+        self._metric = distance_to_target
 
 @registry.register_measure
 class Collisions(Measure):
