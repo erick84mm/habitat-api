@@ -105,6 +105,9 @@ class R2RDatasetV1(Dataset):
 
             self.episodes.append(episode)
 
+    def get_distance_to_target(self, scan, start, end):
+        return self.connectivity["distances"][scan][start][end]
+
     def get_dummy(self):
         print("dummy")
         return 0

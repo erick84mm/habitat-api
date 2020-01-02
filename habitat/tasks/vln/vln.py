@@ -422,8 +422,6 @@ class SPL(Measure):
         self._agent_episode_distance = None
         self._sim = sim
         self._config = config
-        connectivity_path = getattr(config, "CONNECTIVITY_PATH", "")
-        self._connectivity = load_connectivity(connectivity_path)
         super().__init__()
 
     def _get_uuid(self, *args: Any, **kwargs: Any):
@@ -463,8 +461,12 @@ class SPL(Measure):
         )
         start = episode.curr_viewpoint.image_id
         end = episode.goals[-1].image_id
-        distance_to_target = \
-            self._connectivity[episode.scan]["distances"][start][end]
+        distance_to_target = task.get_distance_to_target(
+            episode.scan,
+            start,
+            end
+        )
+
         if (
             hasattr(task, "is_stop_called") and
             task.is_stop_called and
@@ -876,6 +878,15 @@ class VLNTask(EmbodiedTask):
 
     def _check_episode_is_active(self, *args: Any, **kwargs: Any) -> bool:
         return not getattr(self, "is_stop_called", False)
+
+    def get_distance_to_target(self, scan, start_viewpoint, end_viewpoint):
+        if self._dataset:
+            return self._dataset.get_distance_to_target(
+                scan,
+                start_viewpoint,
+                end_viewpoint
+            )
+        return float("inf")
 
     def get_dummy(self):
         if self._dataset:
