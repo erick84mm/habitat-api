@@ -327,6 +327,7 @@ class AdjacentViewpointSensor(Sensor):
 
         agent_pos = agent_state.position
         camera_rot = quaternion_to_list(agent_state.sensor_states["rgb"].rotation)
+        camera_pos = agent_state.sensor_states["rgb"].position
         agent_rot = quaternion_to_list(agent_state.rotation)
         angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
 
@@ -336,6 +337,7 @@ class AdjacentViewpointSensor(Sensor):
                 "start_position": agent_state.position,
                 "start_rotation": agent_rot,
                 "camera_rotation": camera_rot,
+                "camera_pos": camera_pos,
                 "rel_heading": 0,
                 "rel_elevation": 0,
             }
@@ -366,6 +368,7 @@ class AdjacentViewpointSensor(Sensor):
                 "start_position": target_pos,
                 "start_rotation": agent_rot,
                 "camera_rotation": camera_rot,
+                "camera_pos": camera_pos,
                 "rel_heading": rel_heading,
                 "rel_elevation": rel_elevation,
                 "restricted": restricted
