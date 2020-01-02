@@ -268,6 +268,6 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                 habitat_formatted_data
                 )
 
-            with open(config.DATA_PATH.format(split=split)[:-3], "w+") as outfile:
+            with open(config.DATA_PATH.format(split=split)[:-8] + "_test.json", "w+") as outfile:
                 json.dump(habitat_formatted_data, outfile)
     return 0
