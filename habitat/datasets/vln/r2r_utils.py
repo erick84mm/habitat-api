@@ -22,8 +22,9 @@ SCENE_ID = "mp3d/{scan}/{scan}.glb"
 base_vocab = ['<pad>', '<unk>', '<s>', '</s>']
 padding_idx = base_vocab.index('<pad>')
 
-def load_nav_graphs(scans):
+def load_nav_graphs(connectivity_path):
     ''' Load connectivity graph for each scan '''
+    scans = read(connectivity_path + "scans.txt")
 
     def distance(pose1, pose2):
         ''' Euclidean distance between two graph poses '''
@@ -33,7 +34,7 @@ def load_nav_graphs(scans):
 
     graphs = {}
     for scan in scans:
-        with open('connectivity/%s_connectivity.json' % scan) as f:
+        with open(connectivity_path + '%s_connectivity.json' % scan) as f:
             G = nx.Graph()
             positions = {}
             data = json.load(f)
@@ -50,8 +51,7 @@ def load_nav_graphs(scans):
     return graphs
 
 def get_distances(scan_filename):
-    scans = read(scan_filename)
-    graphs = load_nav_graphs(scans)
+    graphs = load_nav_graphs(scan_filename)
     distances = {}
     for scan, G in graphs.items():
         distances[scan] = dict(nx.all_pairs_dijkstra_path_length(G))
@@ -185,7 +185,7 @@ def normalize_heading(heading):
 def serialize_r2r(config, splits=["train"], force=False) -> None:
     json_file_path = config.DATA_PATH[:-3]
     connectivity = load_connectivity(config.CONNECTIVITY_PATH + "connectivity.json")
-    distances = get_distances(config.CONNECTIVITY_PATH + "scans.txt")
+    distances = get_distances(config.CONNECTIVITY_PATH)
     # Building both vocabularies Train and TrainVAL
     train_vocab, train_word2idx = build_vocab(json_file_path, splits=["train"])
     trainval_vocab, trainval_word2idx = \
