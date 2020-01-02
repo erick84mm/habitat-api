@@ -416,7 +416,7 @@ class SPL(Measure):
 
     def _euclidean_distance(self, position_a, position_b):
         return np.linalg.norm(
-            np.array(position_b) - np.array(position_a), ord=2
+            np.array(position_b) - np.array(position_a)#, ord=2
         )
 
     def update_metric(
