@@ -231,6 +231,7 @@ class AdjacentViewpointSensor(Sensor):
             connectivity_path,
             visibility=True
         )
+        print(self._connectivity)
         super().__init__(config=config)
 
     def _get_uuid(self, *args: Any, **kwargs: Any):
@@ -317,8 +318,8 @@ class AdjacentViewpointSensor(Sensor):
             #print("Getting observations for scan %s" % scan)
             #print("Getting observations for viewpoint %s" % curr_viewpoint_id)
 
-            scan_inf = self._connectivity[scan]
-            viewpoint_inf = scan_inf["viewpoints"][curr_viewpoint_id]
+            scan_inf = self._connectivity[scan]["visibility"]
+            viewpoint_inf = scan_inf[curr_viewpoint_id]
             for i in range(len(viewpoint_inf["visible"])):
                 #print("Checking viewpoint %s" % scan_inf["idxtoid"][str(i)])
                 #print("Included", viewpoint_inf["included"])
@@ -328,7 +329,7 @@ class AdjacentViewpointSensor(Sensor):
                     adjacent_viewpoint_name = scan_inf["idxtoid"][str(i)]
                     if adjacent_viewpoint_name != curr_viewpoint_id:
                         adjacent_viewpoint = \
-                            scan_inf["viewpoints"][adjacent_viewpoint_name]
+                            scan_inf[adjacent_viewpoint_name]
                         if adjacent_viewpoint["included"]:
                             observations.append(
                                 {
