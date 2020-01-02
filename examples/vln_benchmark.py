@@ -267,7 +267,8 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                     print("image_id %s" % self._env._current_episode.goals[0].image_id)
 
                 for m, v in metrics.items():
-                    agg_metrics[m] += v
+                    if m != "distance_to_goal":
+                        agg_metrics[m] += v
                 count_episodes += 1
                 print(count_episodes)
 
