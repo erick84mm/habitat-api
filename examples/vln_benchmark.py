@@ -369,6 +369,7 @@ class ShortestPathAgent(habitat.Agent):
         return dist <= self.dist_threshold_to_stop
 
     def act(self, observations, goal):
+        print("The target is moving to: ",goal.image_id)
         action = ""
         action_args = {}
         navigable_locations = observations["adjacentViewpoints"]
