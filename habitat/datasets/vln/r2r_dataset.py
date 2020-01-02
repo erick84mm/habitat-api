@@ -102,7 +102,11 @@ class R2RDatasetV1(Dataset):
                     image_id=viewpoint,
                     view_point=AgentState(position=pos, rotation=rot)
                     )
-
+            episode.distance = self.get_distance_to_target(
+                scan,
+                episode.goals[0].image_id,
+                episode.goals[-1].image_id
+            )
             self.episodes.append(episode)
 
     def get_distance_to_target(self, scan, start, end):

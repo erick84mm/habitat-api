@@ -133,6 +133,7 @@ class VLNEpisode(Episode):
     )
     scan: str = None
     curr_viewpoint: Optional[ViewpointData] = None
+    distance = None
 
 @registry.register_sensor
 class HeadingSensor(Sensor):
@@ -409,7 +410,11 @@ class SPL(Measure):
 
     def reset_metric(self, *args: Any, episode, **kwargs: Any):
         self._previous_position = self._sim.get_agent_state().position.tolist()
-        self._start_end_episode_distance = self._episode_distance_from_path(episode)
+        if episode.distance:
+            self._start_end_episode_distance = episode.distance
+        else:
+            self._start_end_episode_distance = \
+                self._episode_distance_from_path(episode)
         #self._start_end_episode_distance = episode.info["geodesic_distance"]
         self._agent_episode_distance = 0.0
         self._metric = None
@@ -652,9 +657,12 @@ class DistanceToGoal(Measure):
 
     def reset_metric(self, episode, *args: Any, **kwargs: Any):
         self._previous_position = self._sim.get_agent_state().position.tolist()
-        self._start_end_episode_distance = self._sim.geodesic_distance(
-            self._previous_position, episode.goals[-1].get_position()
-        )
+        if episode.distance:
+            self._start_end_episode_distance = episode.distance
+        else:
+            self._start_end_episode_distance = self._sim.geodesic_distance(
+                self._previous_position, episode.goals[-1].get_position()
+            )
         self._agent_episode_distance = 0.0
         self._metric = None
 
@@ -671,7 +679,7 @@ class DistanceToGoal(Measure):
         )
 
         self._agent_episode_distance += self._euclidean_distance(
-             self._previous_position, current_position
+            current_position, self._previous_position
         )
 
         self._previous_position = current_position
