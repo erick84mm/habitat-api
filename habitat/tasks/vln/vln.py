@@ -423,7 +423,6 @@ class SPL(Measure):
         self._config = config
         connectivity_path = getattr(config, "CONNECTIVITY_PATH", "")
         self._connectivity = load_connectivity(connectivity_path, distance=True)
-        print(sim.config)
         super().__init__()
 
     def _get_uuid(self, *args: Any, **kwargs: Any):
@@ -454,6 +453,7 @@ class SPL(Measure):
     def update_metric(
         self, *args: Any, episode, action, task: EmbodiedTask, **kwargs: Any
     ):
+        print("The value of the get dummy is", task.get_dummy())
         ep_success = 0
         current_position = self._sim.get_agent_state().position.tolist()
 
@@ -875,3 +875,8 @@ class VLNTask(EmbodiedTask):
 
     def _check_episode_is_active(self, *args: Any, **kwargs: Any) -> bool:
         return not getattr(self, "is_stop_called", False)
+
+    def get_dummy(self):
+        if self._dataset:
+            return self._dataset.get_dummy()
+        return 1

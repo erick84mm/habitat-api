@@ -107,3 +107,7 @@ class R2RDatasetV1(Dataset):
                     )
 
             self.episodes.append(episode)
+
+    def get_dummy(self):
+        print("dummy")
+        return 0
