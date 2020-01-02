@@ -671,7 +671,7 @@ class DistanceToGoal(Measure):
         )
 
         self._agent_episode_distance += self._euclidean_distance(
-            current_position, self._previous_position
+             self._previous_position, current_position
         )
 
         self._previous_position = current_position
