@@ -725,7 +725,7 @@ class TeleportAction(SimulatorTaskAction):
         if not self._sim.is_navigable(position):
             # is not navigable then we search for a location close to the target
             new_position = np.array(position, dtype='f')
-            new_position = self._sim.pathfinder.snap_point(new_position)
+            new_position = self._sim._sim.pathfinder.snap_point(new_position)
             if np.isnan(new_position[0]):
                 return self._sim.get_observations_at()
             else:
