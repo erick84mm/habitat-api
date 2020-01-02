@@ -192,7 +192,7 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                 images.append(observations["rgb"][:,:,[2,1,0]])
                 observations["images"] = images
 
-                #print("Target path ", [str(goal) for goal in self._env._current_episode.goals])
+                print("Target path ", [str(goal) for goal in self._env._current_episode.goals])
                 while not self._env.episode_over:
                     goal_viewpoint = self._env._current_episode.goals[goal_idx]
 
