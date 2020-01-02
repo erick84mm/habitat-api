@@ -10,9 +10,11 @@ import gzip
 import json
 import math
 import string
+import numpy as np
+import networkx as nx
+
 from os import path
 from collections import Counter
-import numpy as np
 from habitat.tasks.utils import heading_to_rotation
 
 
@@ -20,9 +22,53 @@ SCENE_ID = "mp3d/{scan}/{scan}.glb"
 base_vocab = ['<pad>', '<unk>', '<s>', '</s>']
 padding_idx = base_vocab.index('<pad>')
 
+def load_nav_graphs(scans):
+    ''' Load connectivity graph for each scan '''
+
+    def distance(pose1, pose2):
+        ''' Euclidean distance between two graph poses '''
+        return ((pose1['pose'][3]-pose2['pose'][3])**2\
+          + (pose1['pose'][7]-pose2['pose'][7])**2\
+          + (pose1['pose'][11]-pose2['pose'][11])**2)**0.5
+
+    graphs = {}
+    for scan in scans:
+        with open('connectivity/%s_connectivity.json' % scan) as f:
+            G = nx.Graph()
+            positions = {}
+            data = json.load(f)
+            for i,item in enumerate(data):
+                if item['included']:
+                    for j,conn in enumerate(item['unobstructed']):
+                        if conn and data[j]['included']:
+                            positions[item['image_id']] = np.array([item['pose'][3],
+                                    item['pose'][7], item['pose'][11]]);
+                            assert data[j]['unobstructed'][i], 'Graph should be undirected'
+                            G.add_edge(item['image_id'],data[j]['image_id'],weight=distance(item,data[j]))
+            nx.set_node_attributes(G, values=positions, name='position')
+            graphs[scan] = G
+    return graphs
+
+def get_distances():
+    scans = read(config.CONNECTIVITY_PATH+"scans.txt")
+    graphs = load_nav_graphs(scans)
+    distances = {}
+    for scan, G in graphs.items():
+        distances[scan] = dict(nx.all_pairs_dijkstra_path_length(G))
+    return distances
 
 def make_id(path_id, instr_id):
     return str(path_id) + "_" + str(instr_id)
+
+def read(filename):
+    data = []
+    if path.exists(filename):
+        with open(filename) as f:
+            for line in f:
+                data.append(line.strip())
+    else:
+        print("Unable to read file. File %s not found" % filename)
+    return data
 
 
 def read_json(filename):
@@ -131,14 +177,15 @@ def normalize_heading(heading):
     # Matterport goes from 0 to 2pi going clock wise.
     # Habitat goes from 0 - pi going counter clock wise.
     # Also habitat goes from 0 to - pi clock wise.
-    
+
     if heading > np.pi:
         return 2 * np.pi - heading
     return -heading
 
 def serialize_r2r(config, splits=["train"], force=False) -> None:
     json_file_path = config.DATA_PATH[:-3]
-    connectivity = load_connectivity(config.CONNECTIVITY_PATH)
+    connectivity = load_connectivity(config.CONNECTIVITY_PATH + "connectivity.json")
+    distances = get_distances()
     # Building both vocabularies Train and TrainVAL
     train_vocab, train_word2idx = build_vocab(json_file_path, splits=["train"])
     trainval_vocab, trainval_word2idx = \

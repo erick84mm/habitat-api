@@ -57,7 +57,7 @@ class R2RDatasetV1(Dataset):
         if config is None:
             return
 
-        with open(config.CONNECTIVITY_PATH) as f:
+        with open(config.CONNECTIVITY_PATH + "connectivity.json") as f:
             self.connectivity = json.load(f)
 
         with gzip.open(config.DATA_PATH.format(split=config.SPLIT), "rt") as f:
