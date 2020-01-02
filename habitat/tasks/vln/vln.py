@@ -724,11 +724,11 @@ class TeleportAction(SimulatorTaskAction):
 
         if not self._sim.is_navigable(position):
             # is not navigable then we search for a location close to the target
-            new_position = PathFinder.snap_point(position)
+            new_position = PathFinder.snap_point(numpy.array(position))
             if np.isnan(new_position[0]):
                 return self._sim.get_observations_at()
             else:
-                position = new_position
+                position = new_position.tolist()
 
         if kwargs and "episode" in kwargs:
             last_viewpoint = kwargs["episode"].curr_viewpoint
