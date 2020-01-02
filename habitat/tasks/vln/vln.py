@@ -228,8 +228,7 @@ class AdjacentViewpointSensor(Sensor):
         self._sim = sim
         connectivity_path = getattr(config, "CONNECTIVITY_PATH", "")
         self._connectivity = load_connectivity(
-            connectivity_path,
-            visibility=True
+            connectivity_path
         )
         super().__init__(config=config)
 
@@ -424,7 +423,7 @@ class SPL(Measure):
         self._sim = sim
         self._config = config
         connectivity_path = getattr(config, "CONNECTIVITY_PATH", "")
-        self._connectivity = load_connectivity(connectivity_path, distance=True)
+        self._connectivity = load_connectivity(connectivity_path)
         super().__init__()
 
     def _get_uuid(self, *args: Any, **kwargs: Any):
