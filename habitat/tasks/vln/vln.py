@@ -423,7 +423,7 @@ class SPL(Measure):
         self._config = config
         connectivity_path = getattr(config, "CONNECTIVITY_PATH", "")
         self._connectivity = load_connectivity(connectivity_path, distance=True)
-        print(sim._config)
+        print(sim.config)
         super().__init__()
 
     def _get_uuid(self, *args: Any, **kwargs: Any):
