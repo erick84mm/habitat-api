@@ -109,7 +109,7 @@ def load_connectivity(connectivity_path, distance=False, visibility=False):
                 habitat_sim.geo.GRAVITY
             )
             pt_habitat = quat_rotate_vector(q_habitat_mp3d, pt_mp3d)
-            positions[item['image_id']] = pt_habitat
+            positions[item['image_id']] = pt_habitat.tolist()
             visibility[item['image_id']] = {
                 "included": item["included"],
                 "visible": item["visible"],
