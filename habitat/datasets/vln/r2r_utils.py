@@ -87,7 +87,7 @@ def load_datasets(splits, data_path):
     return data
 
 
-def load_connectivity(connectivity_path):
+def load_connectivity(connectivity_path, distance=False, visibility=False):
     file_format = connectivity_path + "{}_connectivity.json"
     scans = read(connectivity_path + "scans.txt")
     connectivity = {}
@@ -97,7 +97,10 @@ def load_connectivity(connectivity_path):
         distances = dict(nx.all_pairs_dijkstra_path_length(G))
 
         positions = {}
-        for item in data:
+        visibility = {}
+        idxtoid = {}
+        for i, item in enumerate(data):
+            idxtoid[str(i)] = item['image_id']
             pt_mp3d = np.array([item['pose'][3],
                 item['pose'][7], item['pose'][11]])
 
@@ -107,11 +110,22 @@ def load_connectivity(connectivity_path):
             )
             pt_habitat = quat_rotate_vector(q_habitat_mp3d, pt_mp3d)
             positions[item['image_id']] = pt_habitat
+            visibility[item['image_id']] = {
+                "included": item["included"],
+                "visible": item["visible"],
+                "unobstructed": item["unobstructed"],
+            }
 
         connectivity[scan] = {
             "viewpoints": positions,
-            "distances": distances
         }
+        if distance:
+            connectivity[scan].update({"distances": distances})
+        if visibility:
+            connectivity[scan].update({
+                "visibility": visibility,
+                "idxtoid": idxtoid,
+            })
 
     return connectivity
 
