@@ -263,10 +263,11 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
             }
 
             print("writting", len(habitat_episodes))
-            with open(config.DATA_PATH.format(split=split)[:-3], "w+") as outfile:
-                json.dump(habitat_formatted_data, outfile)
             save_gzip(
                 config.DATA_PATH.format(split=split),
                 habitat_formatted_data
                 )
+
+            with open(config.DATA_PATH.format(split=split)[:-3], "w+") as outfile:
+                json.dump(habitat_formatted_data, outfile)
     return 0
