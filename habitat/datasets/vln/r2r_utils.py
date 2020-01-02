@@ -49,8 +49,8 @@ def load_nav_graphs(scans):
             graphs[scan] = G
     return graphs
 
-def get_distances():
-    scans = read(config.CONNECTIVITY_PATH+"scans.txt")
+def get_distances(scan_filename):
+    scans = read(scan_filename)
     graphs = load_nav_graphs(scans)
     distances = {}
     for scan, G in graphs.items():
@@ -185,7 +185,7 @@ def normalize_heading(heading):
 def serialize_r2r(config, splits=["train"], force=False) -> None:
     json_file_path = config.DATA_PATH[:-3]
     connectivity = load_connectivity(config.CONNECTIVITY_PATH + "connectivity.json")
-    distances = get_distances()
+    distances = get_distances(config.CONNECTIVITY_PATH + "scans.txt")
     # Building both vocabularies Train and TrainVAL
     train_vocab, train_word2idx = build_vocab(json_file_path, splits=["train"])
     trainval_vocab, trainval_word2idx = \
