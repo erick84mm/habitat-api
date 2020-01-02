@@ -332,7 +332,6 @@ class AdjacentViewpointSensor(Sensor):
                             scan_inf["viewpoints"][adjacent_viewpoint_name]
                         adjacent_viewpoint = \
                             scan_inf["visibility"][adjacent_viewpoint_name]
-                        print(adjacent_viewpoint)
                         if adjacent_viewpoint["included"]:
                             observations.append(
                                 {
@@ -464,8 +463,7 @@ class SPL(Measure):
         start = episode.curr_viewpoint.image_id
         end = episode.goals[-1].image_id
         distance_to_target = \
-            self._connectivity["distances"][episode.scan][start][end]
-
+            self._connectivity[episode.scan]["distances"][start][end]
         if (
             hasattr(task, "is_stop_called") and
             task.is_stop_called and
