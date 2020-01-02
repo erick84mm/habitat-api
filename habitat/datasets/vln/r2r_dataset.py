@@ -15,7 +15,7 @@ from habitat.core.registry import registry
 from habitat.core.simulator import AgentState
 from habitat.datasets.utils import VocabDict
 from habitat.tasks.vln.vln import VLNEpisode, InstructionData, ViewpointData
-from habitat.datasets.vln.r2r_utils import serialize_r2r
+from habitat.datasets.vln.r2r_utils import serialize_r2r, load_connectivity
 from habitat.tasks.utils import heading_to_rotation
 
 DEFAULT_SCENE_PATH_PREFIX = "data/scene_datasets/"
@@ -52,13 +52,10 @@ class R2RDatasetV1(Dataset):
         self.episodes: List[VLNEpisode] = []
         self.train_vocab: VocabDict = []
         self.trainval_vocab: VocabDict = []
-        self.connectivity = {}
+        self.connectivity = load_connectivity(config.CONNECTIVITY_PATH)
 
         if config is None:
             return
-
-        with open(config.CONNECTIVITY_PATH + "connectivity.json") as f:
-            self.connectivity = json.load(f)
 
         with gzip.open(config.DATA_PATH.format(split=config.SPLIT), "rt") as f:
             self.from_json(f.read(), scenes_dir=config.SCENES_DIR)
@@ -67,6 +64,7 @@ class R2RDatasetV1(Dataset):
         self, json_str: str, scenes_dir: Optional[str] = None
     ) -> None:
         deserialized = json.loads(json_str)
+        default_rotation = [0,0,0,1]
 
         self.train_vocab = VocabDict(
             word_list=deserialized["train_vocab"]["word_list"]
@@ -98,9 +96,8 @@ class R2RDatasetV1(Dataset):
 
             scan = episode.scan
             for v_index, viewpoint in enumerate(episode.goals):
-                viewpoint_dic = self.connectivity[scan]["viewpoints"][viewpoint]
-                pos = viewpoint_dic["start_position"]
-                rot = viewpoint_dic["start_rotation"]
+                pos = self.connectivity[scan]["viewpoints"][viewpoint]
+                rot = default_rotation
                 episode.goals[v_index] = ViewpointData(
                     image_id=viewpoint,
                     view_point=AgentState(position=pos, rotation=rot)

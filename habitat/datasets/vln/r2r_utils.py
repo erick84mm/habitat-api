@@ -87,7 +87,7 @@ def load_datasets(splits, data_path):
     return data
 
 
-def load_connectivity(connectivity_path, distance=False, visibility=False):
+def load_connectivity(connectivity_path):
     file_format = connectivity_path + "{}_connectivity.json"
     scans = read(connectivity_path + "scans.txt")
     connectivity = {}
@@ -115,17 +115,13 @@ def load_connectivity(connectivity_path, distance=False, visibility=False):
                 "visible": item["visible"],
                 "unobstructed": item["unobstructed"],
             }
-
-        connectivity[scan] = {
-            "viewpoints": positions,
-        }
-        if distance:
-            connectivity[scan].update({"distances": distances})
-        if visibility:
-            connectivity[scan].update({
+            
+        connectivity[scan].update({
+                "viewpoints": positions,
+                "distances": distances,
                 "visibility": visibility,
                 "idxtoid": idxtoid,
-            })
+        })
 
     return connectivity
 

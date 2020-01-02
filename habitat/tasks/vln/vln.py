@@ -346,8 +346,10 @@ class AdjacentViewpointSensor(Sensor):
         return observations[::1]
 
     def get_observation(
-        self, observations, episode, *args: Any, **kwargs: Any
+        self, observations, episode, task, *args: Any, **kwargs: Any
     ):
+        if task:
+            print("The task is valid")
         curr_viewpoint_id = episode.curr_viewpoint.image_id
         near_viewpoints = self._get_observation_space(
             scan=episode.scan,
