@@ -108,6 +108,28 @@ class R2RDatasetV1(Dataset):
     def get_distance_to_target(self, scan, start, end):
         return self.connectivity[scan]["distances"][start][end]
 
-    def get_dummy(self):
-        print("dummy")
-        return 0
+    def get_navigable_locations(self, scan, viewpoint):
+        observations = []
+        default_rotation = [0,0,0,1]
+        scan_inf = self.connectivity[scan]
+        viewpoint_inf = scan_inf["visibility"][viewpoint]
+        for i in range(len(viewpoint_inf["visible"])):
+            if viewpoint_inf["included"] and viewpoint_inf["unobstructed"][i]:
+                adjacent_viewpoint_name = scan_inf["idxtoid"][str(i)]
+                if adjacent_viewpoint_name != viewpoint:
+                    adjacent_viewpoint_pos = \
+                        scan_inf["viewpoints"][adjacent_viewpoint_name]
+                    adjacent_viewpoint = \
+                        scan_inf["visibility"][adjacent_viewpoint_name]
+                    if adjacent_viewpoint["included"]:
+                        observations.append(
+                            {
+                                "image_id": adjacent_viewpoint_name,
+                                "start_position":
+                                    adjacent_viewpoint_pos,
+                                "start_rotation":
+                                    default_rotation
+                            }
+                        )
+        # In VLN the observations are from left to right but here is backwards.
+        return observations[::1]

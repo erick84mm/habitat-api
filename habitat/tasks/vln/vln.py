@@ -308,61 +308,28 @@ class AdjacentViewpointSensor(Sensor):
         return rel_elevation - elevation_angle
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
-        observations = []
-        default_rotation = [0,0,0,1]
-        if kwargs and 'scan' in kwargs:
-            scan = kwargs["scan"]
-            curr_viewpoint_id = kwargs["curr_viewpoint"]
+        if "task" in kwargs and "scan" in kwargs
+            and "curr_viewpoint" in kwargs:
+            return kwargs["task"].get_navigable_locations()
+        return []
 
-            #print("Getting observations for scan %s" % scan)
-            #print("Getting observations for viewpoint %s" % curr_viewpoint_id)
-
-            scan_inf = self._connectivity[scan]
-            viewpoint_inf = scan_inf["visibility"][curr_viewpoint_id]
-            for i in range(len(viewpoint_inf["visible"])):
-                #print("Checking viewpoint %s" % scan_inf["idxtoid"][str(i)])
-                #print("Included", viewpoint_inf["included"])
-                #print("unobstructed", viewpoint_inf["unobstructed"][i])
-                if viewpoint_inf["included"] \
-                and viewpoint_inf["unobstructed"][i]:
-                    adjacent_viewpoint_name = scan_inf["idxtoid"][str(i)]
-                    if adjacent_viewpoint_name != curr_viewpoint_id:
-                        adjacent_viewpoint_pos = \
-                            scan_inf["viewpoints"][adjacent_viewpoint_name]
-                        adjacent_viewpoint = \
-                            scan_inf["visibility"][adjacent_viewpoint_name]
-                        if adjacent_viewpoint["included"]:
-                            observations.append(
-                                {
-                                    "image_id": adjacent_viewpoint_name,
-                                    "start_position":
-                                        adjacent_viewpoint_pos,
-                                    "start_rotation":
-                                        default_rotation
-                                }
-                            )
-        # In VLN the observations are from left to right but here is backwards.
-        return observations[::1]
 
     def get_observation(
         self, observations, episode, task, *args: Any, **kwargs: Any
     ):
-        if task:
-            print("The task is valid")
-        curr_viewpoint_id = episode.curr_viewpoint.image_id
-        near_viewpoints = self._get_observation_space(
-            scan=episode.scan,
-            curr_viewpoint=curr_viewpoint_id
-            )
+        scan = episode.scan
+        curr_viewpoint = episode.curr_viewpoint.image_id
+
+        near_viewpoints = \
+            task.get_navigable_locations(scan, curr_viewpoint)
 
         agent_state = self._sim.get_agent_state()
-        # The camera has to be inverted so it matches the real point
+
         agent_pos = agent_state.position
         camera_rot = quaternion_to_list(agent_state.sensor_states["rgb"].rotation)
         agent_rot = quaternion_to_list(agent_state.rotation)
         angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
-        #print("Camera Rotation", camera_rot, agent_state.sensor_states["rgb"].rotation)
-        #print("Agent Rotation", agent_rot, agent_state.rotation)
+
         navigable_viewpoints = [
             {
                 "image_id": curr_viewpoint_id,
@@ -373,7 +340,7 @@ class AdjacentViewpointSensor(Sensor):
                 "rel_elevation": 0,
             }
         ]
-        #print("Adjacent viewpoints ", adjacent_viewpoints)
+
         for viewpoint in near_viewpoints:
             image_id = viewpoint["image_id"]
             target_pos = viewpoint["start_position"]
@@ -389,7 +356,7 @@ class AdjacentViewpointSensor(Sensor):
                     target_pos,
                     image_id
             )
-            #print("processing Viewpoint %s" % viewpoint["image_id"])
+
             restricted = True
             if -angle <= rel_heading <= angle:
                 restricted = False
@@ -403,7 +370,7 @@ class AdjacentViewpointSensor(Sensor):
                 "rel_elevation": rel_elevation,
                 "restricted": restricted
             })
-        #print("\nNavigable viewpoints", navigable_viewpoints)
+
         return navigable_viewpoints
 
 @registry.register_measure
@@ -452,7 +419,6 @@ class SPL(Measure):
     def update_metric(
         self, *args: Any, episode, action, task: EmbodiedTask, **kwargs: Any
     ):
-        print("The value of the get dummy is", task.get_dummy())
         ep_success = 0
         current_position = self._sim.get_agent_state().position.tolist()
 
@@ -888,7 +854,7 @@ class VLNTask(EmbodiedTask):
             )
         return float("inf")
 
-    def get_dummy(self):
+    def get_navigable_locations(self, scan, viewpoint):
         if self._dataset:
-            return self._dataset.get_dummy()
-        return 1
+            return self._dataset.get_navigable_locations(scan, viewpoint)
+        return {}
