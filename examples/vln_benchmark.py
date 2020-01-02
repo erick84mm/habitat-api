@@ -245,7 +245,21 @@ class VLNShortestPathBenchmark(habitat.Benchmark):
                         "nav_locations": nav_locations,
                         })
 
-                #pprint(action_history)
+                    pprint({
+                        "action": action["action"],
+                        "prev_image_id": prev_image_id,
+                        "prev_heading": prev_heading,
+                        "prev_pos": prev_state.position,
+                        "prev_rot": prev_state.rotation,
+                        "prev_nav_locations": prev_nav_locations,
+                        "new_image_id": image_id,
+                        "new_heading": heading,
+                        "new_pos": state.position,
+                        "new_rot": state.rotation,
+                        "nav_locations": nav_locations,
+                        })
+
+                pprint(action_history)
                 metrics = self._env.get_metrics()
                 pprint(metrics)
                 if "navigationError" in metrics and  metrics["navigationError"] > 0:
