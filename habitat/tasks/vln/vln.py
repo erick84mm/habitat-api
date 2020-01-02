@@ -310,6 +310,7 @@ class AdjacentViewpointSensor(Sensor):
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
         observations = []
+        default_rotation = [0,0,0,1]
         if kwargs and 'scan' in kwargs:
             scan = kwargs["scan"]
             curr_viewpoint_id = kwargs["curr_viewpoint"]
@@ -328,7 +329,7 @@ class AdjacentViewpointSensor(Sensor):
                     adjacent_viewpoint_name = scan_inf["idxtoid"][str(i)]
                     if adjacent_viewpoint_name != curr_viewpoint_id:
                         adjacent_viewpoint = \
-                            scan_inf["visibility"][adjacent_viewpoint_name]
+                            scan_inf["viewpoints"][adjacent_viewpoint_name]
                         if adjacent_viewpoint["included"]:
                             observations.append(
                                 {
@@ -336,7 +337,7 @@ class AdjacentViewpointSensor(Sensor):
                                     "start_position":
                                         adjacent_viewpoint["start_position"],
                                     "start_rotation":
-                                        adjacent_viewpoint["start_rotation"]
+                                        default_rotation
                                 }
                             )
         # In VLN the observations are from left to right but here is backwards.
