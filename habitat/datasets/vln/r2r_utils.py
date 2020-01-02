@@ -115,13 +115,13 @@ def load_connectivity(connectivity_path):
                 "visible": item["visible"],
                 "unobstructed": item["unobstructed"],
             }
-            
-        connectivity[scan].update({
+
+        connectivity[scan] = {
                 "viewpoints": positions,
                 "distances": distances,
                 "visibility": visibility,
                 "idxtoid": idxtoid,
-        })
+        }
 
     return connectivity
 
