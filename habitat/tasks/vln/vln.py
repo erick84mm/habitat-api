@@ -231,6 +231,7 @@ class AdjacentViewpointSensor(Sensor):
             connectivity_path,
             visibility=True
         )
+        print(connectivity_path)
         print(self._connectivity)
         super().__init__(config=config)
 
