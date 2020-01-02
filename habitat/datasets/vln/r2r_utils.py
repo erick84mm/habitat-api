@@ -12,19 +12,20 @@ import math
 import string
 import numpy as np
 import networkx as nx
+import habitat_sim
 
 from os import path
 from collections import Counter
 from habitat.tasks.utils import heading_to_rotation
+from habitat_sim.utils.common import quat_from_two_vectors, quat_rotate_vector
 
 
 SCENE_ID = "mp3d/{scan}/{scan}.glb"
 base_vocab = ['<pad>', '<unk>', '<s>', '</s>']
 padding_idx = base_vocab.index('<pad>')
 
-def load_nav_graphs(connectivity_path):
+def load_nav_graph(data):
     ''' Load connectivity graph for each scan '''
-    scans = read(connectivity_path + "scans.txt")
 
     def distance(pose1, pose2):
         ''' Euclidean distance between two graph poses '''
@@ -32,30 +33,18 @@ def load_nav_graphs(connectivity_path):
           + (pose1['pose'][7]-pose2['pose'][7])**2\
           + (pose1['pose'][11]-pose2['pose'][11])**2)**0.5
 
-    graphs = {}
-    for scan in scans:
-        with open(connectivity_path + '%s_connectivity.json' % scan) as f:
-            G = nx.Graph()
-            positions = {}
-            data = json.load(f)
-            for i,item in enumerate(data):
-                if item['included']:
-                    for j,conn in enumerate(item['unobstructed']):
-                        if conn and data[j]['included']:
-                            positions[item['image_id']] = np.array([item['pose'][3],
-                                    item['pose'][7], item['pose'][11]]);
-                            assert data[j]['unobstructed'][i], 'Graph should be undirected'
-                            G.add_edge(item['image_id'],data[j]['image_id'],weight=distance(item,data[j]))
-            nx.set_node_attributes(G, values=positions, name='position')
-            graphs[scan] = G
-    return graphs
-
-def get_distances(scan_filename):
-    graphs = load_nav_graphs(scan_filename)
-    distances = {}
-    for scan, G in graphs.items():
-        distances[scan] = dict(nx.all_pairs_dijkstra_path_length(G))
-    return distances
+    G = nx.Graph()
+    positions = {}
+    for i,item in enumerate(data):
+        if item['included']:
+            for j,conn in enumerate(item['unobstructed']):
+                if conn and data[j]['included']:
+                    positions[item['image_id']] = np.array([item['pose'][3],
+                            item['pose'][7], item['pose'][11]])
+                    assert data[j]['unobstructed'][i], 'Graph should be undirected'
+                    G.add_edge(item['image_id'],data[j]['image_id'],weight=distance(item,data[j]))
+    nx.set_node_attributes(G, values=positions, name='position')
+    return G
 
 def make_id(path_id, instr_id):
     return str(path_id) + "_" + str(instr_id)
@@ -98,8 +87,33 @@ def load_datasets(splits, data_path):
     return data
 
 
-def load_connectivity(data_path):
-    return read_json(data_path)
+def load_connectivity(connectivity_path):
+    file_format = connectivity_path + "{}_connectivity.json"
+    scans = read(connectivity_path + "scans.txt")
+    connectivity = {}
+    for scan in scans:
+        data = read_json(file_format.format(scan))
+        G = load_nav_graph(data)
+        distances = dict(nx.all_pairs_dijkstra_path_length(G))
+
+        positions = {}
+        for item in data:
+            pt_mp3d = np.array([item['pose'][3],
+                item['pose'][7], item['pose'][11]])
+
+            q_habitat_mp3d = quat_from_two_vectors(
+                np.array([0.0, 0.0, -1.0]),
+                habitat_sim.geo.GRAVITY
+            )
+            pt_habitat = quat_rotate_vector(q_habitat_mp3d, pt_mp3d)
+            positions[item['image_id']] = pt_habitat
+
+        connectivity[scan] = {
+            "viewpoints": positions,
+            "distances": distances
+        }
+
+    return connectivity
 
 
 class Tokenizer(object):
@@ -184,8 +198,7 @@ def normalize_heading(heading):
 
 def serialize_r2r(config, splits=["train"], force=False) -> None:
     json_file_path = config.DATA_PATH[:-3]
-    connectivity = load_connectivity(config.CONNECTIVITY_PATH + "connectivity.json")
-    distances = get_distances(config.CONNECTIVITY_PATH)
+    connectivity = load_connectivity(config.CONNECTIVITY_PATH)
     # Building both vocabularies Train and TrainVAL
     train_vocab, train_word2idx = build_vocab(json_file_path, splits=["train"])
     trainval_vocab, trainval_word2idx = \
@@ -208,7 +221,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                         'episode_id': make_id(episode["path_id"], i),
                         'scene_id': SCENE_ID.format(scan=scan),
                         'start_position':
-                            connectivity[scan]["viewpoints"][viewpoint]["start_position"],
+                            connectivity[scan]["viewpoints"][viewpoint],
                         'start_rotation':
                             heading_to_rotation(heading),
                         'info': {"geodesic_distance": distance},

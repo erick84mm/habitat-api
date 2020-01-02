@@ -9,6 +9,8 @@ from typing import Any, Dict, List, Optional, Type, Union
 import attr
 import json
 import numpy as np
+import quaternion
+
 from gym import spaces
 
 from habitat.config import Config
@@ -40,7 +42,7 @@ from habitat.utils.geometry_utils import (
     angle_between_quaternions,
     dir_angle_between_quaternions,
 )
-import quaternion
+from habitat.datasets.vln.r2r_utils import load_connectivity
 
 cv2 = try_cv2_import()
 
@@ -225,7 +227,7 @@ class AdjacentViewpointSensor(Sensor):
     ):
         self._sim = sim
         connectivity_path = getattr(config, "CONNECTIVITY_PATH", "")
-        self._connectivity = self._load_connectivity(connectivity_path)
+        self._connectivity = load_connectivity(connectivity_path)
         super().__init__(config=config)
 
     def _get_uuid(self, *args: Any, **kwargs: Any):
@@ -234,12 +236,6 @@ class AdjacentViewpointSensor(Sensor):
     def _get_sensor_type(self, *args: Any, **kwargs: Any):
         return SensorTypes.NULL  # Missing sensor type
 
-    def _load_connectivity(self, path):
-        data = {}
-        if path:
-            with open(path) as f:
-                data = json.load(f)
-        return data
 
     def normalize_angle(self, angle):
         # Matterport goes from 0 to 2pi going clock wise.
@@ -419,6 +415,8 @@ class SPL(Measure):
         self._agent_episode_distance = None
         self._sim = sim
         self._config = config
+        connectivity_path = getattr(config, "CONNECTIVITY_PATH", "")
+        self._connectivity = load_connectivity(connectivity_path)
 
         super().__init__()
 
@@ -456,6 +454,10 @@ class SPL(Measure):
         distance_to_target = self._sim.geodesic_distance(
             current_position, episode.goals[-1].get_position()
         )
+        start = episode.curr_viewpoint.image_id
+        end = episode.goals[-1].image_id
+        distance_to_target = \
+            self._connectivity["distances"][episode.scan][start][end]
 
         if (
             hasattr(task, "is_stop_called") and
