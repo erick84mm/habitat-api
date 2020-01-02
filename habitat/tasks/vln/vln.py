@@ -308,8 +308,8 @@ class AdjacentViewpointSensor(Sensor):
         return rel_elevation - elevation_angle
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
-        if "task" in kwargs and "scan" in kwargs
-            and "curr_viewpoint" in kwargs:
+        if "task" in kwargs and "scan" in kwargs and \
+        "curr_viewpoint" in kwargs:
             return kwargs["task"].get_navigable_locations()
         return []
 
