@@ -332,7 +332,7 @@ class AdjacentViewpointSensor(Sensor):
 
         navigable_viewpoints = [
             {
-                "image_id": curr_viewpoint_id,
+                "image_id": curr_viewpoint,
                 "start_position": agent_state.position,
                 "start_rotation": agent_rot,
                 "camera_rotation": camera_rot,
