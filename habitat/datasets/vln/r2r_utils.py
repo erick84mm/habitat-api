@@ -102,7 +102,7 @@ def load_connectivity(connectivity_path):
         for i, item in enumerate(data):
             idxtoid[str(i)] = item['image_id']
             pt_mp3d = np.array([item['pose'][3],
-                item['pose'][7], item['pose'][11]])
+                item['pose'][7], item['pose'][11] - item['height']])
 
             q_habitat_mp3d = quat_from_two_vectors(
                 np.array([0.0, 0.0, -1.0]),
