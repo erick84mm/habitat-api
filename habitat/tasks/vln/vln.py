@@ -328,14 +328,17 @@ class AdjacentViewpointSensor(Sensor):
                 and viewpoint_inf["unobstructed"][i]:
                     adjacent_viewpoint_name = scan_inf["idxtoid"][str(i)]
                     if adjacent_viewpoint_name != curr_viewpoint_id:
-                        adjacent_viewpoint = \
+                        adjacent_viewpoint_pos = \
                             scan_inf["viewpoints"][adjacent_viewpoint_name]
+                        adjacent_viewpoint = \
+                            scan_inf["visibility"][adjacent_viewpoint_name]
+                        print(adjacent_viewpoint)
                         if adjacent_viewpoint["included"]:
                             observations.append(
                                 {
                                     "image_id": adjacent_viewpoint_name,
                                     "start_position":
-                                        adjacent_viewpoint["start_position"],
+                                        adjacent_viewpoint_pos,
                                     "start_rotation":
                                         default_rotation
                                 }
