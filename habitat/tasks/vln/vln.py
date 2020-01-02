@@ -43,7 +43,7 @@ from habitat.utils.geometry_utils import (
     dir_angle_between_quaternions,
 )
 from habitat.datasets.vln.r2r_utils import load_connectivity
-from habitat_sim.nav.PathFinder import snap_point
+from habitat_sim.nav import PathFinder
 
 cv2 = try_cv2_import()
 
@@ -724,7 +724,7 @@ class TeleportAction(SimulatorTaskAction):
 
         if not self._sim.is_navigable(position):
             # is not navigable then we search for a location close to the target
-            new_position = snap_point(position)
+            new_position = PathFinder.snap_point(position)
             if np.isnan(new_position[0]):
                 return self._sim.get_observations_at()
             else:
