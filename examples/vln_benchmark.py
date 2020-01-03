@@ -479,7 +479,7 @@ def main():
         "--agent_type", type=int, default=0
     )
     parser.add_argument(
-        "-d", action='store_true'
+        "--discrete", action='store_true'
     )
     args = parser.parse_args()
 
