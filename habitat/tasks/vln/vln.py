@@ -342,6 +342,7 @@ class AdjacentViewpointSensor(Sensor):
                 "camera_pos": camera_pos,
                 "rel_heading": 0,
                 "rel_elevation": 0,
+                "restricted": True
             }
         ]
 

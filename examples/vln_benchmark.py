@@ -312,6 +312,7 @@ class RandomDiscreteAgent(habitat.Agent):
     def act(self, observations, elapsed_steps, previous_step_collided):
         action = ""
         action_args = {}
+        visible_points = sum([1 for ob in observations["adjacentViewpoints"] if not ob["restricted"]])
         if elapsed_steps == 0:
             # Turn right (direction choosing)
             action = "TURN_RIGHT"
@@ -323,21 +324,24 @@ class RandomDiscreteAgent(habitat.Agent):
         elif elapsed_steps >= 5:
             # Stop action after 5 tries.
             action = "STOP"
-        elif len(observations["adjacentViewpoints"]) > 1:
+        elif visible_points > 1:
             # Turn right until we can go forward
-            goal = observations["adjacentViewpoints"][1]
-            action = "TELEPORT"
-            image_id = goal["image_id"]
-            pos = goal["start_position"]
+            for ob in  observations["adjacentViewpoints"]:
+                if not ob["restricted"]]:
+                    goal = ob
+                    action = "TELEPORT"
+                    image_id = goal["image_id"]
+                    pos = goal["start_position"]
 
-            # Keeping the same rotation as the previous step
-            rot = observations["adjacentViewpoints"][0]["start_rotation"]
+                    # Keeping the same rotation as the previous step
+                    rot = observations["adjacentViewpoints"][0]["start_rotation"]
 
-            viewpoint = ViewpointData(
-                image_id=image_id,
-                view_point=AgentState(position=pos, rotation=rot)
-            )
-            action_args.update({"target": viewpoint})
+                    viewpoint = ViewpointData(
+                        image_id=image_id,
+                        view_point=AgentState(position=pos, rotation=rot)
+                    )
+                    action_args.update({"target": viewpoint})
+                    break
 
         else:
             action = "TURN_RIGHT"
