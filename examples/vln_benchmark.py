@@ -327,7 +327,7 @@ class RandomDiscreteAgent(habitat.Agent):
         elif visible_points > 1:
             # Turn right until we can go forward
             for ob in  observations["adjacentViewpoints"]:
-                if not ob["restricted"]]:
+                if not ob["restricted"]:
                     goal = ob
                     action = "TELEPORT"
                     image_id = goal["image_id"]
