@@ -103,8 +103,6 @@ class ViewpointData:
         return self.view_point.rotation
 
 
-
-
 @attr.s(auto_attribs=True, kw_only=True)
 class VLNEpisode(Episode):
     r"""Class for episode specification that includes initial position and
@@ -135,6 +133,7 @@ class VLNEpisode(Episode):
     scan: str = None
     curr_viewpoint: Optional[ViewpointData] = None
     distance = None
+
 
 @registry.register_sensor
 class HeadingSensor(Sensor):
@@ -176,7 +175,6 @@ class HeadingSensor(Sensor):
         rotation_world_agent = agent_state.rotation
 
         return self._quat_to_xy_heading(rotation_world_agent.inverse())
-
 
 
 @registry.register_sensor
@@ -228,10 +226,6 @@ class AdjacentViewpointSensor(Sensor):
         self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
     ):
         self._sim = sim
-        connectivity_path = getattr(config, "CONNECTIVITY_PATH", "")
-        self._connectivity = load_connectivity(
-            connectivity_path
-        )
         super().__init__(config=config)
 
     def _get_uuid(self, *args: Any, **kwargs: Any):
@@ -240,23 +234,17 @@ class AdjacentViewpointSensor(Sensor):
     def _get_sensor_type(self, *args: Any, **kwargs: Any):
         return SensorTypes.NULL  # Missing sensor type
 
-
     def normalize_angle(self, angle):
         # Matterport goes from 0 to 2pi going clock wise.
         # Habitat goes from 0 - pi going counter clock wise.
         # Also habitat goes from 0 to - pi clock wise.
         # This method normalizes to Matterport heading format.
-
         if 0 <= angle < np.pi:
             return 2 * np.pi - angle
         return -angle
 
     def get_rel_heading(self, posA, rotA, posB):
-        '''
-        posA = [x,y,z]
-        rotA = [x,y,z,w]
-        posB = [x,y,z]
-        '''
+
         direction_vector = np.array([0, 0, -1])
         quat = quaternion_from_coeff(rotA).inverse()
 
@@ -282,12 +270,9 @@ class AdjacentViewpointSensor(Sensor):
         x = target_vector[0] * camera_horizon_vec[0] + \
             target_vector[1] * camera_horizon_vec[1]
 
-        # This arctan2 is with respect to matterport
-        # which is the opposite as habitat
-        rel_heading = np.arctan2(y, x)
-        return rel_heading
+        return np.arctan2(y, x)
 
-    def get_rel_elevation(self, posA, rotA, cameraA, posB, c):
+    def get_rel_elevation(self, posA, rotA, cameraA, posB):
         direction_vector = np.array([0, 0, -1])
         quat = quaternion_from_coeff(rotA)
         rot_vector = quaternion_rotate_vector(quat.inverse(), direction_vector)
@@ -305,7 +290,7 @@ class AdjacentViewpointSensor(Sensor):
         target_vector = np.array(rotated_posB) - np.array(rotated_posA)
         target_z = target_vector[2]
         target_length = np.linalg.norm([target_vector[0], target_vector[1]])
-        # How to convert habitat z to matterport z?
+
         rel_elevation = np.arctan2(target_z, target_length)
         return rel_elevation - elevation_angle
 
@@ -314,7 +299,6 @@ class AdjacentViewpointSensor(Sensor):
         "curr_viewpoint" in kwargs:
             return kwargs["task"].get_navigable_locations()
         return []
-
 
     def get_observation(
         self, observations, episode, task, *args: Any, **kwargs: Any
@@ -358,11 +342,10 @@ class AdjacentViewpointSensor(Sensor):
                     agent_pos,
                     agent_rot,
                     camera_rot,
-                    target_pos,
-                    image_id
+                    target_pos
             )
-
             restricted = True
+
             if -angle <= rel_heading <= angle:
                 restricted = False
 
@@ -378,6 +361,7 @@ class AdjacentViewpointSensor(Sensor):
             })
 
         return navigable_viewpoints
+
 
 @registry.register_measure
 class SPL(Measure):
@@ -434,17 +418,39 @@ class SPL(Measure):
         ep_success = 0
         current_position = self._sim.get_agent_state().position.tolist()
 
-        distance_to_target = self._sim.geodesic_distance(
-            current_position, episode.goals[-1].get_position()
-        )
-        start = episode.curr_viewpoint.image_id
-        end = episode.goals[-1].image_id
-        distance_to_target = task.get_distance_to_target(
-            episode.scan,
-            start,
-            end
-        )
+        discrete = getattr(task, "is_discrete")
+        if discrete:
+            curr_viewpoint_id = episode.curr_viewpoint.image_id
+            goal = episode.goals[-1].image_id
+            scan = episode.scan
+            distance_to_target = \
+                task.get_distance_to_target(scan, curr_viewpoint_id, goal)
+        else:
+            distance_to_target = self._sim.geodesic_distance(
+                current_position, episode.goals[-1].get_position()
+            )
 
+            if np.isinf(distance_to_target):
+                print(
+                    "WARNING: The Success metric might be compromised " +
+                    "The geodesic_distance failed " +
+                    "looking for a snap_point instead"
+                )
+                new_position = np.array(current_position, dtype='f')
+                new_position = self._sim._sim.pathfinder.snap_point(
+                                new_position
+                               )
+                if np.isnan(new_position[0]):
+                    print(
+                        "ERROR: The Success metric is compromised " +
+                        "The geodesic_distance failed " +
+                        "Cannot find path"
+                    )
+                else:
+                    current_position = new_position
+                    distance_to_target = self._sim.geodesic_distance(
+                        current_position, episode.goals[-1].get_position()
+                    )
         if (
             hasattr(task, "is_stop_called") and
             task.is_stop_called and
@@ -455,6 +461,7 @@ class SPL(Measure):
         self._agent_episode_distance += self._euclidean_distance(
             current_position, self._previous_position
         )
+
         self._previous_position = current_position
 
         self._metric = ep_success * (
@@ -488,14 +495,44 @@ class Success(Measure):
         self._metric = None
 
     def update_metric(
-        self, *args: Any, episode, action, task: EmbodiedTask, **kwargs: Any
+        self, *args: Any, episode, task: EmbodiedTask, **kwargs: Any
     ):
         ep_success = 0
         current_position = self._sim.get_agent_state().position.tolist()
 
-        distance_to_target = self._sim.geodesic_distance(
-            current_position, episode.goals[-1].get_position()
-        )
+        discrete = getattr(task, "is_discrete")
+        if discrete:
+            curr_viewpoint_id = episode.curr_viewpoint.image_id
+            goal = episode.goals[-1].image_id
+            scan = episode.scan
+            distance_to_target = \
+                task.get_distance_to_target(scan, curr_viewpoint_id, goal)
+        else:
+            distance_to_target = self._sim.geodesic_distance(
+                current_position, episode.goals[-1].get_position()
+            )
+
+            if np.isinf(distance_to_target):
+                print(
+                    "WARNING: The Success metric might be compromised " +
+                    "The geodesic_distance failed " +
+                    "looking for a snap_point instead"
+                )
+                new_position = np.array(current_position, dtype='f')
+                new_position = self._sim._sim.pathfinder.snap_point(
+                                new_position
+                               )
+                if np.isnan(new_position[0]):
+                    print(
+                        "ERROR: The Success metric is compromised " +
+                        "The geodesic_distance failed " +
+                        "Cannot find path"
+                    )
+                else:
+                    current_position = new_position
+                    distance_to_target = self._sim.geodesic_distance(
+                        current_position, episode.goals[-1].get_position()
+                    )
 
         if (
             hasattr(task, "is_stop_called") and
@@ -506,6 +543,7 @@ class Success(Measure):
 
         self._metric = ep_success
 
+
 @registry.register_measure
 class OracleSuccess(Measure):
 
@@ -514,34 +552,70 @@ class OracleSuccess(Measure):
     ):
         self._sim = sim
         self._config = config
+        self._nearest_distance = -1
 
         super().__init__()
 
     def _get_uuid(self, *args: Any, **kwargs: Any):
         return "oracleSuccess"
 
-
     def reset_metric(self, *args: Any, episode, **kwargs: Any):
         self._metric = None
+        self._nearest_distance = -1
 
     def update_metric(
-        self, *args: Any, episode, action, task: EmbodiedTask, **kwargs: Any
+        self, *args: Any, episode, task: EmbodiedTask, **kwargs: Any
     ):
         ep_success = 0
-        current_position = self._sim.get_agent_state().position.tolist()
 
-        distance_to_target = self._sim.geodesic_distance(
-            current_position, episode.goals[-1].get_position()
-        )
+        discrete = getattr(task, "is_discrete")
+        if discrete:
+            curr_viewpoint_id = episode.curr_viewpoint.image_id
+            goal = episode.goals[-1].image_id
+            scan = episode.scan
+            distance_to_target = \
+                task.get_distance_to_target(scan, curr_viewpoint_id, goal)
+        else:
+            current_position = self._sim.get_agent_state().position.tolist()
+            distance_to_target = self._sim.geodesic_distance(
+                current_position, episode.goals[-1].get_position()
+            )
+            if np.isinf(distance_to_target):
+                print(
+                    "WARNING: The Oracle distance might be compromised " +
+                    "The geodesic_distance failed " +
+                    "looking for a snap_point instead"
+                )
+                new_position = np.array(current_position, dtype='f')
+                new_position = self._sim._sim.pathfinder.snap_point(
+                                new_position
+                               )
+                if np.isnan(new_position[0]):
+                    print(
+                        "ERROR: The Oracle distance is compromised " +
+                        "The geodesic_distance failed " +
+                        "Cannot find path"
+                    )
+                else:
+                    current_position = new_position
+                    distance_to_target = self._sim.geodesic_distance(
+                        current_position, episode.goals[-1].get_position()
+                    )
+        if (
+            self._nearest_distance == -1 or
+            distance_to_target < self._nearest_distance
+        ):
+            self._nearest_distance = distance_to_target
 
         if (
             hasattr(task, "is_stop_called") and
             task.is_stop_called and
-            distance_to_target < self._config.ORACLE_SUCCESS_DISTANCE
+            self._nearest_distance < self._config.ORACLE_SUCCESS_DISTANCE
         ):
             ep_success = 1
 
         self._metric = ep_success
+
 
 @registry.register_measure
 class TrajectoryLength(Measure):
@@ -563,8 +637,10 @@ class TrajectoryLength(Measure):
         self._metric = 0.0
 
     def _euclidean_distance(self, position_a, position_b):
+        position_a[1]=0  # project to xy plane
+        position_b[1]=0  # project to xy plane
         return np.linalg.norm(
-            np.array(position_b) - np.array(position_a), ord=2
+            np.array(position_b) - np.array(position_a)
         )
 
     def update_metric(
@@ -577,6 +653,7 @@ class TrajectoryLength(Measure):
         )
         self._previous_position = current_position
 
+
 @registry.register_measure
 class NavigationError(Measure):
     r"""
@@ -585,7 +662,6 @@ class NavigationError(Measure):
     def __init__(
         self, *args: Any, sim: Simulator, config: Config, **kwargs: Any
     ):
-        self._previous_position = None
         self._sim = sim
         self._config = config
 
@@ -595,8 +671,6 @@ class NavigationError(Measure):
         return "navigationError"
 
     def reset_metric(self, *args: Any, episode, **kwargs: Any):
-        self._previous_position = self._sim.get_agent_state().position.tolist()
-        #self._start_end_episode_distance = episode.info["geodesic_distance"]
         self._metric = 0.0
 
     def _euclidean_distance(self, position_a, position_b):
@@ -609,21 +683,42 @@ class NavigationError(Measure):
     ):
         current_position = self._sim.get_agent_state().position.tolist()
 
-        distance_to_target = self._sim.geodesic_distance(
-            current_position, episode.goals[-1].get_position()
-        )
-        
-        start = episode.curr_viewpoint.image_id
-        end = episode.goals[-1].image_id
-        distance_to_target = task.get_distance_to_target(
-            episode.scan,
-            start,
-            end
-        )
-
-        self._previous_position = current_position
+        discrete = getattr(task, "is_discrete")
+        if discrete:
+            curr_viewpoint_id = episode.curr_viewpoint.image_id
+            goal = episode.goals[-1].image_id
+            scan = episode.scan
+            distance_to_target = \
+                task.get_distance_to_target(scan, curr_viewpoint_id, goal)
+        else:
+            current_position = self._sim.get_agent_state().position.tolist()
+            distance_to_target = self._sim.geodesic_distance(
+                current_position, episode.goals[-1].get_position()
+            )
+            if np.isinf(distance_to_target):
+                print(
+                    "WARNING: The Oracle distance might be compromised " +
+                    "The geodesic_distance failed " +
+                    "looking for a snap_point instead"
+                )
+                new_position = np.array(current_position, dtype='f')
+                new_position = self._sim._sim.pathfinder.snap_point(
+                                new_position
+                               )
+                if np.isnan(new_position[0]):
+                    print(
+                        "ERROR: The Oracle distance is compromised " +
+                        "The geodesic_distance failed " +
+                        "Cannot find path"
+                    )
+                else:
+                    current_position = new_position
+                    distance_to_target = self._sim.geodesic_distance(
+                        current_position, episode.goals[-1].get_position()
+                    )
 
         self._metric = distance_to_target
+
 
 @registry.register_measure
 class Collisions(Measure):
@@ -758,11 +853,6 @@ class TeleportAction(SimulatorTaskAction):
                                 position=position,
                                 rotation=rotation)
                             )
-            #print("Teleporting from %s to %s \n" % (
-            #     last_viewpoint,
-            #     target.image_id
-            #     )
-            # )
 
         return self._sim.get_observations_at(
             position=position, rotation=rotation, keep_agent_at_new_pose=True
@@ -857,7 +947,7 @@ class LookUpAction(SimulatorTaskAction):
                 self._sim.step(HabitatSimActions.LOOK_UP)
         return self._sim.step(HabitatSimActions.LOOK_UP)
 
-'''
+
 @registry.register_task_action
 class LookDownAction(SimulatorTaskAction):
     def step(self, *args: Any, **kwargs: Any):
@@ -869,13 +959,14 @@ class LookDownAction(SimulatorTaskAction):
             for _ in range(kwargs["num_steps"] - 1):
                 self._sim.step(HabitatSimActions.LOOK_DOWN)
         return self._sim.step(HabitatSimActions.LOOK_DOWN)
-'''
+
 
 @registry.register_task(name="VLN-v1")
 class VLNTask(EmbodiedTask):
     def __init__(
         self, config: Config, sim: Simulator, dataset: Optional[Dataset] = None
     ) -> None:
+        self.is_discrete = getattr(config, 'DISCRETE')
         super().__init__(config=config, sim=sim, dataset=dataset)
 
     def overwrite_sim_config(

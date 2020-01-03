@@ -40,7 +40,51 @@ from habitat.utils.geometry_utils import (
     angle_between_quaternions,
 )
 
-class VLNRandomBenchmark(habitat.Benchmark):
+class VLNBenchmark(habitat.Benchmark):
+
+    def __init__(self, config_paths: Optional[str] = None) -> None:
+        self.action_history: Dict = defaultdict()
+        self.agg_metrics: Dict = defaultdict(float)
+        super().__init__()
+
+    def save_json(self, filename, data):
+        if data:
+            with open(filename, "w+") as outfile:
+                json.dump(data, outfile)
+        else:
+            print("Error: There are no data to write")
+
+    def save_action_history(self, filename):
+        self.save_json(filename, self.action_history)
+
+    def save_evaluation_report(self, filename):
+        self.save_json(filename, self.agg_metrics)
+
+    def reset_benchmark(self):
+        self.action_history: Dict = defaultdict()
+        self.agg_metrics: Dict = defaultdict(float)
+
+    def save_action_summary(self, filename):
+        if self.action_history:
+            action_summary = {}
+
+            for elem in self.action_history:
+                summary = {
+                    "gold_path" : elem["gold_path"],
+                    "actions" : elem["actions"],
+                    "path": elem["path"]
+                }
+
+                if not (elem["scan"] in action_summary):
+                    action_summary[elem["scan"]] = {}
+
+                action_summary[elem["scan"]].update({
+                    elem["path_id"] : summary
+                })
+
+            self.save_json(filename, action_summary)
+
+class VLNRandomBenchmark(VLNBenchmark):
     def evaluate(
             self, agent: Agent, num_episodes: Optional[int] = None
         ) -> Dict[str, float]:
@@ -51,6 +95,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
                 evaluation should be run.
             :return: dict containing metrics tracked by environment.
             """
+            self.reset_benchmark()
 
             if num_episodes is None:
                 num_episodes = len(self._env.episodes)
@@ -63,8 +108,6 @@ class VLNRandomBenchmark(habitat.Benchmark):
                 )
 
             assert num_episodes > 0, "num_episodes should be greater than 0"
-
-            agg_metrics: Dict = defaultdict(float)
 
             count_episodes = 0
             while count_episodes < num_episodes:
@@ -128,7 +171,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
                 pprint(metrics)
                 for m, v in metrics.items():
                     if m != "distance_to_goal":
-                        agg_metrics[m] += v
+                        self.agg_metrics[m] += v
                 count_episodes += 1
                 print(count_episodes)
 
@@ -136,7 +179,7 @@ class VLNRandomBenchmark(habitat.Benchmark):
 
             return avg_metrics
 
-class VLNShortestPathBenchmark(habitat.Benchmark):
+class VLNShortestPathBenchmark(VLNBenchmark):
     def evaluate(
             self, agent: Agent, num_episodes: Optional[int] = None
         ) -> Dict[str, float]:
@@ -275,21 +318,21 @@ class RandomAgent(habitat.Agent):
         dist = observations[self.goal_sensor_uuid][0]
         return dist <= self.dist_threshold_to_stop
 
-    def act(self, observations, elapsed_steps, previous_step_collided):
+    def act(self, observations, previous_step_collided):
         action = ""
         action_args = {}
+        visible_points = sum([1 for ob in observations["adjacentViewpoints"]
+                                if not ob["restricted"]])
+        prob = random.random()
 
-        if elapsed_steps == 0:
-            # Turn right (direction choosing)
-            action = "TURN_RIGHT"
-            num_steps = random.randint(0,11)
-            if num_steps > 0:
-                action_args= {"num_steps": num_steps}
-            else:
-                action = "MOVE_FORWARD"
-        elif elapsed_steps >= 5:
-            # Stop action after 5 tries.
+        # 10% probability of stopping
+        if prob <= 0.1:
             action = "STOP"
+
+        # 40% probability to choice a direction
+        elif prob <= 0.50:
+            action = "TURN_RIGHT"
+
         elif previous_step_collided:
             # Turn right until we can go forward
             action = "TURN_RIGHT"
@@ -297,7 +340,7 @@ class RandomAgent(habitat.Agent):
             action = "MOVE_FORWARD"
         return {"action": action, "action_args": action_args}
 
-class RandomDiscreteAgent(habitat.Agent):
+class DiscreteRandomAgent(habitat.Agent):
     def __init__(self, success_distance, goal_sensor_uuid):
         self.dist_threshold_to_stop = success_distance
         self.goal_sensor_uuid = goal_sensor_uuid
@@ -312,7 +355,9 @@ class RandomDiscreteAgent(habitat.Agent):
     def act(self, observations, elapsed_steps, previous_step_collided):
         action = ""
         action_args = {}
-        visible_points = sum([1 for ob in observations["adjacentViewpoints"] if not ob["restricted"]])
+        visible_points = sum([1 for ob in observations["adjacentViewpoints"]
+                                if not ob["restricted"]])
+
         if elapsed_steps == 0:
             # Turn right (direction choosing)
             action = "TURN_RIGHT"
@@ -320,12 +365,12 @@ class RandomDiscreteAgent(habitat.Agent):
             if num_steps > 0:
                 action_args = {"num_steps": num_steps}
 
-        # After going forward 6 times stop. 0 counts in R2R.
+        # Stop after teleporting 6 times.
         elif elapsed_steps >= 5:
-            # Stop action after 5 tries.
             action = "STOP"
+
+        # Turn right until we can go forward
         elif visible_points > 0:
-            # Turn right until we can go forward
             for ob in  observations["adjacentViewpoints"]:
                 if not ob["restricted"]:
                     goal = ob
@@ -342,16 +387,14 @@ class RandomDiscreteAgent(habitat.Agent):
                     )
                     action_args.update({"target": viewpoint})
                     break
-
         else:
             action = "TURN_RIGHT"
         return {"action": action, "action_args": action_args}
 
-class ShortestPathAgent(habitat.Agent):
-    def __init__(self, success_distance, goal_sensor_uuid, half_visible_angle=0):
+class DiscreteShortestPathAgent(habitat.Agent):
+    def __init__(self, success_distance, goal_sensor_uuid):
         self.dist_threshold_to_stop = success_distance
         self.goal_sensor_uuid = goal_sensor_uuid
-        self.half_visible_angle = half_visible_angle
 
     def reset(self):
         pass
@@ -361,50 +404,39 @@ class ShortestPathAgent(habitat.Agent):
         return dist <= self.dist_threshold_to_stop
 
     def act(self, observations, goal):
-        print("The target is moving to: ",goal.image_id)
         action = ""
         action_args = {}
         navigable_locations = observations["adjacentViewpoints"]
+
         if goal.image_id == navigable_locations[0]["image_id"]:
             action = "STOP"
         else:
-            #print("The goal is: %s", goal.image_id)
-            step_size = np.pi/6.0
+            step_size = np.pi/6.0  # default step in R2R
             goal_location = None
             for location in navigable_locations:
                 if location["image_id"] == goal.image_id:
                     goal_location = location
                     break
-
+            # Check if the goal is visible
             if goal_location:
-                # default step in R2R
-                # Check if the goal is visible
+
                 rel_heading = goal_location["rel_heading"]
-                # this is the relative elevation or altitute
                 rel_elevation = goal_location["rel_elevation"]
 
-                #print("The relative heading to the goal is %s" % str(rel_heading))
-                #print("The relative elevation to the goal is %s" % str(rel_elevation))
-                #print("The heading is", observations["heading"])
-                #print("The elevation is", observations["elevation"])
-
                 if rel_heading > step_size:
-                    action = "TURN_RIGHT" # Turn right
-                      #action_args = {"num_steps": abs(int(rel_heading / step_size))}
+                    action = "TURN_RIGHT"
                 elif rel_heading < -step_size:
-                    action = "TURN_LEFT" # Turn left
-                      #action_args = {"num_steps": abs(int(rel_heading / step_size))}
+                    action = "TURN_LEFT"
                 elif rel_elevation > step_size:
-                    action = "LOOK_UP" # Look up
-                      #action_args = {"num_steps": abs(int(rel_elevation / step_size))}
+                    action = "LOOK_UP"
                 elif rel_elevation < -step_size:
-                    action = "LOOK_DOWN" # Look down
-                      #action_args = {"num_steps": abs(int(rel_elevation / step_size))}
+                    action = "LOOK_DOWN"
                 else:
                     if goal_location["restricted"]:
-                        print("WARNING: The target was not in the Field of view," +
-                        " but the step action is going to be performed")
-                    action = "TELEPORT" # Move forward
+                        print("WARNING: The target was not in the" +
+                              " Field of view, but the step action " +
+                              "is going to be performed")
+                    action = "TELEPORT"  # Move forward
                     image_id = goal.image_id
                     posB = goal_location["start_position"]
                     rotA = navigable_locations[0]["start_rotation"]
@@ -414,16 +446,15 @@ class ShortestPathAgent(habitat.Agent):
                     )
                     action_args.update({"target": viewpoint})
             else:
-                print("Target position %s not visible, This is an error in the system" % goal.image_id)
-                #print("The relative heading is %s\n" % str(rel_heading))
-                #print("The relative elevation is %s\n" % str(rel_elevation))
-                #pprint(navigable_locations)
+                print("Target position %s not visible, " % goal.image_id +
+                      "This is an error in the system")
+                '''
                 for ob in observations["images"]:
                     image = ob
                     image =  image[:,:, [2,1,0]]
                     cv2.imshow("RGB", image)
                     cv2.waitKey(0)
-        #print(action, action_args)
+                '''
         return {"action": action, "action_args": action_args}
 
 class seq2seqAgent(habitat.Agent):
@@ -435,17 +466,11 @@ class seq2seqAgent(habitat.Agent):
         self.criterion = nn.CrossEntropyLoss()
 
 
-
-
-
 def main():
-
-    DISCRETE_SHORTEST_PATH_AGENT = 0
-    DISCRETE_RANDOM_AGENT = 1
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--task-config", type=str, default="configs/tasks/pointnav.yaml"
+        "--task-config", type=str, default="configs/tasks/vln_r2r.yaml"
     )
     parser.add_argument(
         "--num-episodes", type=int, default=100
@@ -453,22 +478,28 @@ def main():
     parser.add_argument(
         "--agent_type", type=int, default=0
     )
+    parser.add_argument(
+        "-d --discrete", action='store_true'
+    )
     args = parser.parse_args()
 
-    if args.agent_type == 0:
-        agent = ShortestPathAgent(3.0, "SPL", half_visible_angle=0.767945)
+    if args.discrete and args.agent_type == 0:
+        agent = DiscreteShortestPathAgent(3.0, "SPL")
         benchmark = VLNShortestPathBenchmark(args.task_config)
+    elif args.agent_type == 0:
+        agent = ShortestPathAgent(3.0, "SPL")
+        benchmark = VLNShortestPathBenchmark(args.task_config)
+    elif args.discrete and args.agent_type == 1:
+        agent = DiscreteRandomAgent(3.0, "SPL")
+        benchmark = VLNRandomBenchmark(args.task_config)
     elif args.agent_type == 1:
-        agent = RandomDiscreteAgent(3.0, "SPL")
+        agent = RandomAgent(3.0, "SPL")
         benchmark = VLNRandomBenchmark(args.task_config)
 
     metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
 
-
-
     for k, v in metrics.items():
         print("{}: {:.3f}".format(k, v))
-
 
 if __name__ == "__main__":
     main()
