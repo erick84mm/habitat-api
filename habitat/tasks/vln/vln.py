@@ -612,6 +612,15 @@ class NavigationError(Measure):
         distance_to_target = self._sim.geodesic_distance(
             current_position, episode.goals[-1].get_position()
         )
+        
+        start = episode.curr_viewpoint.image_id
+        end = episode.goals[-1].image_id
+        distance_to_target = task.get_distance_to_target(
+            episode.scan,
+            start,
+            end
+        )
+
         self._previous_position = current_position
 
         self._metric = distance_to_target
