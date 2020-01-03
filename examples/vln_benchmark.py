@@ -324,7 +324,7 @@ class RandomDiscreteAgent(habitat.Agent):
         elif elapsed_steps >= 5:
             # Stop action after 5 tries.
             action = "STOP"
-        elif visible_points > 1:
+        elif visible_points > 0:
             # Turn right until we can go forward
             for ob in  observations["adjacentViewpoints"]:
                 if not ob["restricted"]:
