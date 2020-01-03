@@ -484,15 +484,19 @@ def main():
     args = parser.parse_args()
 
     if args.discrete and args.agent_type == 0:
+        print("Running the Discrete Shortest Path Agent")
         agent = DiscreteShortestPathAgent(3.0, "SPL")
         benchmark = VLNShortestPathBenchmark(args.task_config)
     elif args.agent_type == 0:
+        print("Running the Continous Shortest Path Agent")
         agent = ShortestPathAgent(3.0, "SPL")
         benchmark = VLNShortestPathBenchmark(args.task_config)
     elif args.discrete and args.agent_type == 1:
+        print("Running the Discrete Random Agent")
         agent = DiscreteRandomAgent(3.0, "SPL")
         benchmark = VLNRandomBenchmark(args.task_config)
     elif args.agent_type == 1:
+        print("Running the Continous Random Agent")
         agent = RandomAgent(3.0, "SPL")
         benchmark = VLNRandomBenchmark(args.task_config)
 
