@@ -45,7 +45,6 @@ class VLNBenchmark(habitat.Benchmark):
     def __init__(self, config_paths: Optional[str] = None) -> None:
         self.action_history: Dict = defaultdict()
         self.agg_metrics: Dict = defaultdict(float)
-        super().__init__()
 
     def save_json(self, filename, data):
         if data:
