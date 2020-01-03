@@ -677,11 +677,20 @@ class DistanceToGoal(Measure):
             np.array(position_b) - np.array(position_a)#, ord=2
         )
 
-    def update_metric(self, episode, action, *args: Any, **kwargs: Any):
+    def update_metric(self, episode, task, action, *args: Any, **kwargs: Any):
         current_position = self._sim.get_agent_state().position.tolist()
 
         distance_to_target = self._sim.geodesic_distance(
             current_position, episode.goals[-1].get_position()
+        )
+
+
+        start = episode.curr_viewpoint.image_id
+        end = episode.goals[-1].image_id
+        distance_to_target = task.get_distance_to_target(
+            episode.scan,
+            start,
+            end
         )
 
         self._agent_episode_distance += self._euclidean_distance(
