@@ -87,7 +87,64 @@ class VLNBenchmark(habitat.Benchmark):
 
             self.save_json(filename, action_summary)
 
-class VLNRandomBenchmark(VLNBenchmark):
+
+class RandomBenchmark(VLNBenchmark):
+    def evaluate(
+            self, agent: Agent, num_episodes: Optional[int] = None
+        ) -> Dict[str, float]:
+            r"""..
+
+            :param agent: agent to be evaluated in environment.
+            :param num_episodes: count of number of episodes for which the
+                evaluation should be run.
+            :return: dict containing metrics tracked by environment.
+            """
+            self.reset_benchmark()
+
+            if num_episodes is None:
+                num_episodes = len(self._env.episodes)
+            else:
+                assert num_episodes <= len(self._env.episodes), (
+                    "num_episodes({}) is larger than number of episodes "
+                    "in environment ({})".format(
+                        num_episodes, len(self._env.episodes)
+                    )
+                )
+
+            assert num_episodes > 0, "num_episodes should be greater than 0"
+
+            count_episodes = 0
+            while count_episodes < num_episodes:
+                agent.reset()
+                observations = self._env.reset()
+                action_history = []
+
+                while not self._env.episode_over:
+                    action = agent.act(
+                        observations,
+                        self._env._sim.previous_step_collided,
+                        )
+                    action["action_args"].update(
+                        {
+                        "episode": self._env._current_episode
+                        }
+                    )
+                    observations = self._env.step(action)
+
+                metrics = self._env.get_metrics()
+                pprint(metrics)
+                for m, v in metrics.items():
+                    if m != "distance_to_goal":
+                        self.agg_metrics[m] += v
+                count_episodes += 1
+                print(count_episodes)
+
+            avg_metrics = {k: v / count_episodes for k, v in agg_metrics.items()}
+
+            return avg_metrics
+
+
+class DiscreteRandomBenchmark(VLNBenchmark):
     def evaluate(
             self, agent: Agent, num_episodes: Optional[int] = None
         ) -> Dict[str, float]:
@@ -181,6 +238,7 @@ class VLNRandomBenchmark(VLNBenchmark):
             avg_metrics = {k: v / count_episodes for k, v in agg_metrics.items()}
 
             return avg_metrics
+
 
 class VLNShortestPathBenchmark(VLNBenchmark):
     def evaluate(
@@ -309,6 +367,7 @@ class VLNShortestPathBenchmark(VLNBenchmark):
 
             return avg_metrics
 
+
 class RandomAgent(habitat.Agent):
     def __init__(self, success_distance, goal_sensor_uuid):
         self.dist_threshold_to_stop = success_distance
@@ -342,6 +401,7 @@ class RandomAgent(habitat.Agent):
         else:
             action = "MOVE_FORWARD"
         return {"action": action, "action_args": action_args}
+
 
 class DiscreteRandomAgent(habitat.Agent):
     def __init__(self, success_distance, goal_sensor_uuid):
@@ -393,6 +453,7 @@ class DiscreteRandomAgent(habitat.Agent):
         else:
             action = "TURN_RIGHT"
         return {"action": action, "action_args": action_args}
+
 
 class DiscreteShortestPathAgent(habitat.Agent):
     def __init__(self, success_distance, goal_sensor_uuid):
@@ -460,6 +521,7 @@ class DiscreteShortestPathAgent(habitat.Agent):
                 '''
         return {"action": action, "action_args": action_args}
 
+
 class seq2seqAgent(habitat.Agent):
     def __init__(self, success_distance, goal_sensor_uuid, encoder, decoder):
         self.dist_threshold_to_stop = success_distance
@@ -497,11 +559,11 @@ def main():
     elif args.discrete and args.agent_type == 1:
         print("Running the Discrete Random Agent")
         agent = DiscreteRandomAgent(3.0, "SPL")
-        benchmark = VLNRandomBenchmark(args.task_config)
+        benchmark = DiscreteRandomBenchmark(args.task_config)
     elif args.agent_type == 1:
         print("Running the Continous Random Agent")
         agent = RandomAgent(3.0, "SPL")
-        benchmark = VLNRandomBenchmark(args.task_config)
+        benchmark = RandomBenchmark(args.task_config)
 
     metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
 
