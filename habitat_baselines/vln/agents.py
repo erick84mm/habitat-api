@@ -80,7 +80,7 @@ class seq2seqAgent(habitat.Agent):
         # Forward through encoder, giving initial hidden state and memory cell for decoder
         ctx,h_t,c_t = self.encoder(seq, seq_lengths)
         im = observations["rgb"][:,:,[2,1,0]]
-        im_features = self._get_image_features(self, im)
+        im_features = self._get_image_features( im)
 
 '''
         a_t = Variable(torch.ones(batch_size).long() * self.model_actions.index('<start>'),
