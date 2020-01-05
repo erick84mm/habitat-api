@@ -124,7 +124,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
 
 
 def main():
-
+    print("main?")
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--task-config", type=str, default="configs/tasks/vln_r2r.yaml"
