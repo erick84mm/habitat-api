@@ -44,8 +44,8 @@ class seq2seqAgent(habitat.Agent):
         # Initialization when the action is start
         batch_size = 1
         # should be a tensor of logits
-        seq = torch.LongTensor([episode.instruction.tokens])
-        seq_lengths = torch.LongTensor([episode.instruction.tokens_length])
+        seq = torch.LongTensor([episode.instruction.tokens]).cuda()
+        seq_lengths = torch.LongTensor([episode.instruction.tokens_length]).cuda()
         #seq_mask = torch.LongTensor([episode.instruction.mask])
 
         # Forward through encoder, giving initial hidden state and memory cell for decoder
