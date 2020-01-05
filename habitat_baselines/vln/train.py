@@ -145,6 +145,7 @@ def main():
     agent = seq2seqAgent(3.0, "SPL", encoder, decoder)
     benchmark = Seq2SeqBenchmark(args.task_config)
 
+    metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
 
 
 if __name__ == "__main__":
