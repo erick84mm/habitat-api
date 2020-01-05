@@ -59,7 +59,7 @@ class seq2seqAgent(habitat.Agent):
         # move the input and model to GPU for speed if available
         if torch.cuda.is_available():
             input_batch = input_batch.to('cuda')
-
+            self.image_model.to('cuda')
 
         with torch.no_grad():
             output = self.image_model(input_batch)
@@ -81,7 +81,7 @@ class seq2seqAgent(habitat.Agent):
         # Forward through encoder, giving initial hidden state and memory cell for decoder
         ctx,h_t,c_t = self.encoder(seq, seq_lengths)
         im = observations["rgb"][:,:,[2,1,0]]
-        im_features = self._get_image_features( im)
+        im_features = self._get_image_features(im)
 
 '''
         a_t = Variable(torch.ones(batch_size).long() * self.model_actions.index('<start>'),
