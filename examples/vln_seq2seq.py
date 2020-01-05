@@ -140,7 +140,7 @@ def main():
     )
     args = parser.parse_args()
 
-    encoder = EncoderLSTM(1300, 100, 128, 0, 0.1, bidirectional=True, num_layers=1)
+    encoder = EncoderLSTM(1300, 100, 128, 0, 0.1, bidirectional=True, num_layers=3)
     decoder = None
     print("Constructed Encoder")
 
