@@ -388,7 +388,7 @@ class RandomAgent(habitat.Agent):
         prob = random.random()
 
         # 10% probability of stopping
-        if prob <= 0.1:
+        if prob <= 0.05:
             action = "STOP"
 
         # 40% probability to choice a direction
@@ -612,8 +612,6 @@ class seq2seqAgent(habitat.Agent):
         action_args = {}
         return {"action": action, "action_args": action_args}
 '''
-
-
 
 def main():
 
