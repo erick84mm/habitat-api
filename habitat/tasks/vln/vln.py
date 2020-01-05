@@ -77,6 +77,7 @@ class InstructionData:
     """
     instruction: str
     tokens: Optional[List[int]] = None
+    tokens_length: int = len(tokens)
 
 
 @attr.s(auto_attribs=True, kw_only=True)

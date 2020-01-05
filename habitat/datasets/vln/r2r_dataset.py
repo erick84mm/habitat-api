@@ -93,7 +93,9 @@ class R2RDatasetV1(Dataset):
                 episode.scene_id = os.path.join(scenes_dir, episode.scene_id)
             episode.instruction = InstructionData(
                 instruction=r2r_episode["instruction"],
-                tokens=instruction_encoding
+                tokens=instruction_encoding,
+                tokens_length=len(instruction_encoding)
+
             )
 
             scan = episode.scan
