@@ -9,6 +9,7 @@ import argparse
 from math import pi
 
 import numpy as np
+from PIL import Image
 
 import habitat
 from habitat.config.default import get_config
@@ -16,6 +17,7 @@ from habitat.sims.habitat_simulator.actions import HabitatSimActions
 
 import torch
 import torch.nn as nn
+import torchvision.models as models
 
 
 class seq2seqAgent(habitat.Agent):
@@ -29,6 +31,12 @@ class seq2seqAgent(habitat.Agent):
         self.criterion = nn.CrossEntropyLoss()
         self.losses = []
 
+        # Initializing resnet152 model
+        self.image_model = models.resnet152(pretrained=True)
+        self.image_model=nn.Sequential(*list(self.image_model.children())[:-1])
+        for p in self.image_model.parameters():
+            p.requires_grad = False
+
     def reset(self):
         pass
 
@@ -36,11 +44,32 @@ class seq2seqAgent(habitat.Agent):
         dist = observations[self.goal_sensor_uuid][0]
         return dist <= self.dist_threshold_to_stop
 
+    def _get_image_features(self, im):
+        input_image = Image.Image.fromarray(im)
+        preprocess = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ])
+        input_tensor = preprocess(input_image)
+        input_batch = input_tensor.unsqueeze(0) # create a mini-batch as expected by the model
+
+        # move the input and model to GPU for speed if available
+        if torch.cuda.is_available():
+            input_batch = input_batch.to('cuda')
+
+
+        with torch.no_grad():
+            output = self.image_model(input_batch)
+        # Tensor of shape 1000, with confidence scores over Imagenet's 1000 classes
+        print(output.data)
+        return output.data
+
     def _teacher_actions(self):
         return []
 
     def act(self, observations, episode):
-        print("Performing action")
         # Initialization when the action is start
         batch_size = 1
         # should be a tensor of logits
@@ -50,15 +79,10 @@ class seq2seqAgent(habitat.Agent):
 
         # Forward through encoder, giving initial hidden state and memory cell for decoder
         ctx,h_t,c_t = self.encoder(seq, seq_lengths)
-        print("encoder has been called")
-        print(ctx, h_t, c_t)
-
-        action = ""
-        action_args = {}
-        return {"action": action, "action_args": action_args}
+        im = observations["rgb"][:,:,[2,1,0]]
+        im_features = self._get_image_features(self, im)
 
 '''
-        # Initial action
         a_t = Variable(torch.ones(batch_size).long() * self.model_actions.index('<start>'),
                     requires_grad=False).cuda()
         ended = np.array([False] * batch_size) # Indices match permuation of the model, not env
