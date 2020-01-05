@@ -115,6 +115,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
                         observations,
                         self._env._current_episode,
                         )
+                    print("action has been performed")
                     break
                 break
                     #observations = self._env.step(action)
@@ -146,6 +147,7 @@ def main():
     benchmark = Seq2SeqBenchmark(args.task_config)
 
     metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
+    print("After metrics")
 
 
 if __name__ == "__main__":

@@ -40,7 +40,7 @@ class seq2seqAgent(habitat.Agent):
         return []
 
     def act(self, observations, episode):
-
+        print("Performing action")
         # Initialization when the action is start
         batch_size = 1
         # should be a tensor of logits
@@ -50,9 +50,9 @@ class seq2seqAgent(habitat.Agent):
 
         # Forward through encoder, giving initial hidden state and memory cell for decoder
         ctx,h_t,c_t = self.encoder(seq, seq_lengths)
-
+        print("encoder has been called")
         print(ctx, h_t, c_t)
-        
+
         action = ""
         action_args = {}
         return {"action": action, "action_args": action_args}
