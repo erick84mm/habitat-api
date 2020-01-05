@@ -213,6 +213,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
     train_vocab, train_word2idx = build_vocab(json_file_path, splits=["train"])
     trainval_vocab, trainval_word2idx = \
         build_vocab(json_file_path, splits=["train", "val_seen", "val_unseen"])
+    tokenizer = Tokenizer(trainval_vocab, 100)
 
     for split in splits:
         habitat_episodes = []
@@ -225,6 +226,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                     scan = episode["scan"]
                     distance = 0
                     heading = normalize_heading(episode["heading"])
+
                     if "distance" in episode:
                         distance = episode["distance"]
                     habitat_episode = {
@@ -237,6 +239,8 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                         'info': {"geodesic_distance": distance},
                         'goals': episode["path"],
                         'instruction': instr,
+                        'instruction_encoding':
+                            tokenizer.encode_sentence(instr).tolist(),
                         'scan': scan
                     }
                     habitat_episodes.append(habitat_episode)

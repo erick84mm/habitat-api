@@ -542,7 +542,7 @@ class seq2seqAgent(habitat.Agent):
 
     def _teacher_actions(self):
         return []
-'''
+
     def act(self, observations, action, episode):
 
         # Initialization when the action is start
@@ -611,7 +611,7 @@ class seq2seqAgent(habitat.Agent):
 
         action_args = {}
         return {"action": action, "action_args": action_args}
-'''
+
 
 def main():
 
