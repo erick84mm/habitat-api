@@ -387,12 +387,12 @@ class RandomAgent(habitat.Agent):
                                 if not ob["restricted"]])
         prob = random.random()
 
-        # 10% probability of stopping
-        if prob <= 0.05:
+        # 3% probability of stopping
+        if prob <= 0.03:
             action = "STOP"
 
-        # 40% probability to choice a direction
-        elif prob <= 0.50:
+        # 37% probability to choice a direction
+        elif prob <= 0.40:
             action = "TURN_RIGHT"
 
         elif previous_step_collided:
