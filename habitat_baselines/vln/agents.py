@@ -45,7 +45,7 @@ class seq2seqAgent(habitat.Agent):
         return dist <= self.dist_threshold_to_stop
 
     def _get_image_features(self, im):
-        input_image = Image.Image.fromarray(im)
+        input_image = Image.fromarray(im)
         preprocess = transforms.Compose([
             transforms.Resize(256),
             transforms.CenterCrop(224),
