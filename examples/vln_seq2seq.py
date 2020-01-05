@@ -124,7 +124,6 @@ class Seq2SeqBenchmark(VLNBenchmark):
 
 
 def main():
-    print("main?")
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--task-config", type=str, default="configs/tasks/vln_r2r.yaml"
@@ -142,12 +141,9 @@ def main():
 
     encoder = EncoderLSTM(1300, 100, 128, 0, 0.1, bidirectional=True, num_layers=3)
     decoder = None
-    print("Constructed Encoder")
 
     agent = seq2seqAgent(3.0, "SPL", encoder, decoder)
     benchmark = Seq2SeqBenchmark(args.task_config)
-
-    print("Constructed agent and benchmark")
 
     metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
     print("After metrics")
