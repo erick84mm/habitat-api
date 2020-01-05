@@ -45,7 +45,7 @@ class seq2seqAgent(habitat.Agent):
         batch_size = 1
         # should be a tensor of logits
         seq = torch.LongTensor([episode.instruction.tokens])
-        seq_length = torch.LongTensor([episode.instruction.tokens_length])
+        seq_lengths = torch.LongTensor([episode.instruction.tokens_length])
         #seq_mask = torch.LongTensor([episode.instruction.mask])
 
         # Forward through encoder, giving initial hidden state and memory cell for decoder
