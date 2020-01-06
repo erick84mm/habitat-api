@@ -87,7 +87,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
         ) -> Dict[str, float]:
 
         self.reset_benchmark()  # Removing action history and such
-
+        print("Training for %s episodes" % str(num_episodes))
         if num_episodes is None:
             num_episodes = len(self._env.episodes)
         else:
