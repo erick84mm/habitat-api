@@ -32,6 +32,7 @@ class seq2seqAgent(habitat.Agent):
         self.decoder = decoder
         self.criterion = nn.CrossEntropyLoss()
         self.losses = []
+        self.loss = 0
         self.previous_action = '<start>'
 
         # Initializing resnet152 model

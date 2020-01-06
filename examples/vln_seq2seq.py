@@ -109,12 +109,23 @@ class Seq2SeqBenchmark(VLNBenchmark):
                 agent.reset()
                 observations = self._env.reset()
                 action_history = []
+                elapsed_steps = 0
+                goal_idx = 1
+                last_goal_idx = len(self._env._current_episode.goals) - 1
 
                 while not self._env.episode_over:
+                    goal_viewpoint = self._env._current_episode.goals[goal_idx]
                     action = agent.act(
                         observations,
                         self._env._current_episode,
+                        goal_viewpoint
                         )
+
+                    if action["action"] == "TELEPORT":
+                        if goal_idx < last_goal_idx:
+                            goal_idx += 1
+                        else:
+                            goal_idx = -1
                     print("action has been performed")
                     break
                 break
