@@ -144,9 +144,6 @@ class Seq2SeqBenchmark(VLNBenchmark):
 
                 action_history.append({
                     "action": action["action"],
-                    "action_args_im_id": action["action_args"]["target"].image_id if action["action_args"] else "{}",
-                    "action_args_pos": action["action_args"]["target"].view_point.position if action["action_args"] else "{}",
-                    "action_args_rot": action["action_args"]["target"].view_point.rotation if action["action_args"] else "{}",
                     "prev_image_id": prev_image_id,
                     "prev_heading": prev_heading,
                     "prev_pos": prev_state.position,
