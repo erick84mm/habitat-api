@@ -89,6 +89,15 @@ class Seq2SeqBenchmark(VLNBenchmark):
         self.reset_benchmark()  # Removing action history and such
         print("Training for %s episodes" % str(num_episodes))
         assert num_episodes > 0, "num_episodes should be greater than 0"
+        count_episodes = 0
+        while count_episodes < len(self._env.episodes):
+            observations = self._env.reset()
+            count_episodes += 1
+        observations = self._env.reset()
+        observations = self._env.reset()
+        observations = self._env.reset()
+        observations = self._env.reset()
+        print(observations)
         '''
         count_episodes = 0
         agent.train()
