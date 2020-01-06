@@ -161,6 +161,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
             agent.train_step()
             count_episodes += 1
 
+        agent.reset()
         return {"losses": agent.losses}
 
     def evaluate(
