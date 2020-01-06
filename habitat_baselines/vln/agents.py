@@ -25,7 +25,7 @@ from torch.autograd import Variable
 class seq2seqAgent(habitat.Agent):
     def __init__(self, success_distance, goal_sensor_uuid, encoder, decoder):
 
-        self.model_actions = ['TURN_LEFT', 'TURN_RIGHT', 'LOOK_UP', 'LOOK_DOWN', 'MOVE_FORWARD', 'STOP', '<start>', '<ignore>']
+        self.model_actions = ['TURN_LEFT', 'TURN_RIGHT', 'LOOK_UP', 'LOOK_DOWN', 'TELEPORT', 'STOP', '<start>', '<ignore>']
         self.dist_threshold_to_stop = success_distance
         self.goal_sensor_uuid = goal_sensor_uuid
         self.encoder = encoder
@@ -68,10 +68,63 @@ class seq2seqAgent(habitat.Agent):
 
         return output.data.squeeze().unsqueeze(0)
 
-    def _teacher_actions(self):
-        return []
+    def _teacher_actions(self, observations, goal):
+        action = ""
+        action_args = {}
+        navigable_locations = observations["adjacentViewpoints"]
 
-    def act(self, observations, episode):
+        if goal.image_id == navigable_locations[0]["image_id"]:
+            action = "STOP"
+        else:
+            step_size = np.pi/6.0  # default step in R2R
+            goal_location = None
+            for location in navigable_locations:
+                if location["image_id"] == goal.image_id:
+                    goal_location = location
+                    break
+            # Check if the goal is visible
+            if goal_location:
+
+                rel_heading = goal_location["rel_heading"]
+                rel_elevation = goal_location["rel_elevation"]
+
+                if rel_heading > step_size:
+                    action = "TURN_RIGHT"
+                elif rel_heading < -step_size:
+                    action = "TURN_LEFT"
+                elif rel_elevation > step_size:
+                    action = "LOOK_UP"
+                elif rel_elevation < -step_size:
+                    action = "LOOK_DOWN"
+                else:
+                    if goal_location["restricted"]:
+                        print("WARNING: The target was not in the" +
+                              " Field of view, but the step action " +
+                              "is going to be performed")
+                    action = "TELEPORT"  # Move forward
+                    image_id = goal.image_id
+                    posB = goal_location["start_position"]
+                    rotA = navigable_locations[0]["start_rotation"]
+                    viewpoint = ViewpointData(
+                        image_id=image_id,
+                        view_point=AgentState(position=posB, rotation=rotA)
+                    )
+                    action_args.update({"target": viewpoint})
+            else:
+                # Episode Failure
+                action = 'STOP'
+                print("Target position %s not visible, " % goal.image_id +
+                      "This is an error in the system")
+                '''
+                for ob in observations["images"]:
+                    image = ob
+                    image =  image[:,:, [2,1,0]]
+                    cv2.imshow("RGB", image)
+                    cv2.waitKey(0)
+                '''
+        return action, action_args
+
+    def act(self, observations, episode, goal):
         # Initialization when the action is start
         batch_size = 1
         # should be a tensor of logits
@@ -98,16 +151,21 @@ class seq2seqAgent(habitat.Agent):
 
         h_t,c_t,alpha,logit = self.decoder(a_t.view(-1, 1), f_t, h_t, c_t, ctx, seq_mask)
             # Mask outputs where agent can't move forward
-        print(h_t, c_t, alpha, logit)
+
+        visible_points = sum([1 for ob in observations["adjacentViewpoints"]
+                                if not ob["restricted"]])
+
+        if visible_points == 0:
+            logit[0, self.model_actions.index('TELEPORT')] = -float('inf')
+
+        # Supervised training
+        target_action, action_args = self._teacher_action(observations, goal)
+        target = torch.LongTensor([self.model_actions.index(target_action)])
+        target = Variable(target, requires_grad=False).cuda()
+        self.loss += self.criterion(logit, target)
+
+        print(self.loss)
 '''
-        for i, ob in enumerate(perm_obs):
-            if len(ob['navigableLocations']) <= 1:
-                logit[i, self.model_actions.index('MOVE_FORWARD')] = -float('inf')
-
-            # Supervised training
-            target = self._teacher_action(perm_obs, ended)
-            self.loss += self.criterion(logit, target)
-
             # Determine next model inputs
             if self.feedback == 'teacher':
                 a_t = target                # teacher forcing
