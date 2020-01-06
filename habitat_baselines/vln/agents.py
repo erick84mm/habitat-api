@@ -28,6 +28,10 @@ import torch.distributions as D
 from torch import optim
 from torchvision import transforms
 from torch.autograd import Variable
+from torch.utils.tensorboard import SummaryWriter
+
+# Writer will output to ./runs/ directory by default
+writer = SummaryWriter()
 
 
 class seq2seqAgent(habitat.Agent):
@@ -252,13 +256,14 @@ class seq2seqAgent(habitat.Agent):
                                 weight_decay=weight_decay
                             )
 
-    def train_step(self):
+    def train_step(self, n_iter):
         if self.encoder_optimizer and self.decoder_optimizer:
             self.encoder_optimizer.zero_grad()
             self.decoder_optimizer.zero_grad()
             self.loss.backward()
             self.encoder_optimizer.step()
             self.decoder_optimizer.step()
+            writer.add_scalar('Loss/train', np.random.random(), n_iter)
         else:
             print("Please call train first")
 

@@ -160,7 +160,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
 
             #pprint(self._env._current_episode.goals)
             #pprint(action_history)
-            agent.train_step()
+            agent.train_step(count_episodes)
             count_episodes += 1
 
         agent.reset()
