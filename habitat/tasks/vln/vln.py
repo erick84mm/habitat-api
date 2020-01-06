@@ -137,7 +137,7 @@ class VLNEpisode(Episode):
     distance = None
 
     def reset(self):
-        self.curr_viewpoint = goals[0]
+        self.curr_viewpoint = self.goals[0]
 
 
 @registry.register_sensor
