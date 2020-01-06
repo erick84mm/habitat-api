@@ -193,4 +193,3 @@ class seq2seqAgent(habitat.Agent):
 
 
         return {"action": action, "action_args": action_args}
-'''
