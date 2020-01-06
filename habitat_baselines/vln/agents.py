@@ -263,7 +263,7 @@ class seq2seqAgent(habitat.Agent):
             self.loss.backward()
             self.encoder_optimizer.step()
             self.decoder_optimizer.step()
-            writer.add_scalar('Loss/train', self.losses[-1], n_iter)
+            writer.add_scalar('Loss/train', self.loss.item(), n_iter)
         else:
             print("Please call train first")
 
