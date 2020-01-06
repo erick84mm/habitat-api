@@ -156,9 +156,16 @@ class Seq2SeqBenchmark(VLNBenchmark):
             #pprint(action_history)
             agent.train_step(count_episodes)
             count_episodes += 1
+            metrics = self._env.get_metrics()
+            for m, v in metrics.items():
+                if m != "distance_to_goal":
+                    self.agg_metrics[m] += v
 
         agent.reset()
-        return {"losses": agent.losses}
+
+        avg_metrics = {k: v / count_episodes for k, v in agg_metrics.items()}
+        avg_metrics["losses"] = sum(agent.losses) / len(agent.losses)
+        return avg_metrics
 
     def evaluate(
             self, agent: Agent, num_episodes: Optional[int] = None
