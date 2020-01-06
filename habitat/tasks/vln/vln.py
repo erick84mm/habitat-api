@@ -96,7 +96,7 @@ class ViewpointData:
             self.image_id,
             self.view_point.position,
             self.view_point.rotation
-        ) 
+        )
 
     def get_position(self):
         return self.view_point.position
@@ -835,14 +835,18 @@ class TeleportAction(SimulatorTaskAction):
         """
         position = target.view_point.position
         rotation = target.view_point.rotation
+
+        print("Teleport Action to pos ", target.view_point.position)
         if not isinstance(rotation, list):
             rotation = list(rotation)
 
         if not self._sim.is_navigable(position):
+            print("The destination is not navigable, running snap point")
             # is not navigable then we search for a location close to the target
             new_position = np.array(position, dtype='f')
             new_position = self._sim._sim.pathfinder.snap_point(new_position)
             if np.isnan(new_position[0]):
+                print("Snap point couldn't find a place to land, error.")
                 return self._sim.get_observations_at()
             else:
                 position = new_position.tolist()

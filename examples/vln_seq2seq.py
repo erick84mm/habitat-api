@@ -118,6 +118,12 @@ class Seq2SeqBenchmark(VLNBenchmark):
                     goal_viewpoint
                     )
 
+                action["action_args"].update(
+                    {
+                    "episode": self._env._current_episode
+                    }
+                )
+
                 if action["action"] == "TELEPORT":
                     if goal_idx < last_goal_idx:
                         goal_idx += 1
