@@ -154,6 +154,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
             pprint(self._env._current_episode.goals)
             pprint(action_history)
             agent.train_step()
+            count_episodes += 1
 
         return {"losses": agent.losses}
 
