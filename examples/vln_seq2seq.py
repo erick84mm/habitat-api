@@ -88,16 +88,6 @@ class Seq2SeqBenchmark(VLNBenchmark):
 
         self.reset_benchmark()  # Removing action history and such
         print("Training for %s episodes" % str(num_episodes))
-        if num_episodes is None:
-            num_episodes = len(self._env.episodes)
-        else:
-            assert num_episodes <= len(self._env.episodes), (
-                "num_episodes({}) is larger than number of episodes "
-                "in environment ({})".format(
-                    num_episodes, len(self._env.episodes)
-                )
-            )
-
         assert num_episodes > 0, "num_episodes should be greater than 0"
 
         count_episodes = 0
