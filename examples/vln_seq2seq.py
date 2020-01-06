@@ -123,8 +123,10 @@ class Seq2SeqBenchmark(VLNBenchmark):
                         goal_idx += 1
                     else:
                         goal_idx = -1
-
+                action_history.append(action)
                 observations = self._env.step(action)
+            print(self._env._current_episode.goals)
+            print(action_history)
             agent.train_step()
 
         return {"losses": agent.losses}
