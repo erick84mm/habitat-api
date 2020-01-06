@@ -27,15 +27,20 @@ from torch.autograd import Variable
 class seq2seqAgent(habitat.Agent):
     def __init__(self, success_distance, goal_sensor_uuid, encoder, decoder, episode_len=20):
 
+        # Constants, may change depending on configuration
         self.model_actions = ['TURN_LEFT', 'TURN_RIGHT', 'LOOK_UP', 'LOOK_DOWN', 'TELEPORT', 'STOP', '<start>', '<ignore>']
         self.feedback_options = ['teacher', 'argmax', 'sample']
         self.dist_threshold_to_stop = success_distance
         self.goal_sensor_uuid = goal_sensor_uuid
+
+        # AI variables
         self.encoder = encoder
         self.decoder = decoder
         self.criterion = nn.CrossEntropyLoss()
         self.losses = []
         self.loss = 0
+
+        # Other configurations
         self.previous_action = '<start>'
         self.feedback = 'teacher'
         self.episode_len = episode_len
@@ -47,7 +52,15 @@ class seq2seqAgent(habitat.Agent):
             p.requires_grad = False
 
     def reset(self):
-        pass
+        self.previous_action = '<start>'
+        self.ctx = None
+        self.h_t = None
+        self.c_t = None
+        self.seq_mask = None
+
+        if self.loss:
+            self.losses.append(self.loss.item() / self.episode_len)
+        self.loss = 0
 
     def is_goal_reached(self, observations):
         dist = observations[self.goal_sensor_uuid][0]
@@ -133,14 +146,17 @@ class seq2seqAgent(habitat.Agent):
     def act(self, observations, episode, goal):
         # Initialization when the action is start
         batch_size = 1
-        # should be a tensor of logits
-        seq = torch.LongTensor([episode.instruction.tokens]).cuda()
-        seq_lengths = torch.LongTensor([episode.instruction.tokens_length]).cuda()
-        seq_mask = torch.tensor(np.array([False] * episode.instruction.tokens_length))
-        seq_mask = seq_mask.unsqueeze(0).cuda()
 
-        # Forward through encoder, giving initial hidden state and memory cell for decoder
-        ctx,h_t,c_t = self.encoder(seq, seq_lengths)
+        if self.previous_action == "<start>":
+            # should be a tensor of logits
+            seq = torch.LongTensor([episode.instruction.tokens]).cuda()
+            seq_lengths = torch.LongTensor([episode.instruction.tokens_length]).cuda()
+            seq_mask = torch.tensor(np.array([False] * episode.instruction.tokens_length))
+            self.seq_mask = seq_mask.unsqueeze(0).cuda()
+
+            # Forward through encoder, giving initial hidden state and memory cell for decoder
+            self.ctx, self.h_t, self.c_t = self.encoder(seq, seq_lengths)
+
         im = observations["rgb"][:,:,[2,1,0]]
         f_t = self._get_image_features(im)
 
@@ -149,13 +165,17 @@ class seq2seqAgent(habitat.Agent):
                     requires_grad=False).unsqueeze(0).cuda()
         ended = np.array([False] * batch_size) # Indices match permuation of the model, not env
 
-        # Training cycle until stop action is predicted.
-
         # Do a sequence rollout and calculate the loss
-        self.loss = 0
+        h_t,c_t,alpha,logit = self.decoder(
+                                    a_t.view(-1, 1),
+                                    f_t,
+                                    self.h_t,
+                                    self.c_t,
+                                    self.ctx,
+                                    self.seq_mask
+                            )
 
-        h_t,c_t,alpha,logit = self.decoder(a_t.view(-1, 1), f_t, h_t, c_t, ctx, seq_mask)
-            # Mask outputs where agent can't move forward
+        # Mask outputs where agent can't move forward
 
         visible_points = sum([1 for ob in observations["adjacentViewpoints"]
                                 if not ob["restricted"]])
@@ -168,8 +188,6 @@ class seq2seqAgent(habitat.Agent):
         target = torch.LongTensor([self.model_actions.index(target_action)])
         target = Variable(target, requires_grad=False).cuda()
         self.loss += self.criterion(logit, target)
-
-        print(self.loss)
 
         # Determine next model inputs
         if self.feedback == 'teacher':
@@ -189,7 +207,62 @@ class seq2seqAgent(habitat.Agent):
         else:
             sys.exit('Invalid feedback option')
 
-        self.losses.append(self.loss.item() / self.episode_len)
+        # Teleport to the next locaiton
+        if action == "TELEPORT":
+            for ob in observations["adjacentViewpoints"]:
+                if not ob["restricted"]:
+                    next_location = ob
+                    action = "TELEPORT"
+                    image_id = next_location["image_id"]
+                    pos = next_location["start_position"]
 
+                    # Keeping the same rotation as the previous step
+                    rot = observations["adjacentViewpoints"][0]["start_rotation"]
+
+                    viewpoint = ViewpointData(
+                        image_id=image_id,
+                        view_point=AgentState(position=pos, rotation=rot)
+                    )
+                    action_args = {"target": viewpoint}
+                    break
+
+        self.previous_action = action
 
         return {"action": action, "action_args": action_args}
+
+    def train(self, feedback='teacher'):
+        assert feedback in self.feedback_options
+        self.feedback = feedback
+        self.encoder.train()
+        self.decoder.train()
+        self.encoder_optimizer = optim.Adam(
+                                self.encoder.parameters(),
+                                lr=learning_rate,
+                                weight_decay=weight_decay
+                            )
+        self.decoder_optimizer = optim.Adam(
+                                self.decoder.parameters(),
+                                lr=learning_rate,
+                                weight_decay=weight_decay
+                            )
+        return encoder_optimizer, decoder_optimizer
+
+    def train_step(self):
+        if self.encoder_optimizer and self.decoder_optimizer:
+            self.encoder_optimizer.zero_grad()
+            self.decoder_optimizer.zero_grad()
+            self.loss.backward()
+            self.encoder_optimizer.step()
+            self.decoder_optimizer.step()
+        else:
+            print("Please call train first")
+
+    def save(self, encoder_path, decoder_path):
+        ''' Snapshot models '''
+        torch.save(self.encoder.state_dict(), encoder_path)
+        torch.save(self.decoder.state_dict(), decoder_path)
+
+    def load(self, encoder_path, decoder_path):
+        ''' Loads parameters (but not training state) '''
+        self.encoder.load_state_dict(torch.load(encoder_path))
+        self.decoder.load_state_dict(torch.load(decoder_path))

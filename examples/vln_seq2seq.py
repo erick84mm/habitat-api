@@ -80,6 +80,55 @@ class VLNBenchmark(habitat.Benchmark):
 
 
 class Seq2SeqBenchmark(VLNBenchmark):
+    def train(
+            self,
+            agent: Agent,
+            num_episodes: Optional[int] = None
+        ) -> Dict[str, float]:
+
+        self.reset_benchmark()  # Removing action history and such
+
+        if num_episodes is None:
+            num_episodes = len(self._env.episodes)
+        else:
+            assert num_episodes <= len(self._env.episodes), (
+                "num_episodes({}) is larger than number of episodes "
+                "in environment ({})".format(
+                    num_episodes, len(self._env.episodes)
+                )
+            )
+
+        assert num_episodes > 0, "num_episodes should be greater than 0"
+
+        count_episodes = 0
+        agent.train()
+        while count_episodes < num_episodes:
+            agent.reset()
+            observations = self._env.reset()
+            action_history = []
+            elapsed_steps = 0
+            goal_idx = 1
+            last_goal_idx = len(self._env._current_episode.goals) - 1
+
+            while not self._env.episode_over:
+                goal_viewpoint = self._env._current_episode.goals[goal_idx]
+                action = agent.act(
+                    observations,
+                    self._env._current_episode,
+                    goal_viewpoint
+                    )
+
+                if action["action"] == "TELEPORT":
+                    if goal_idx < last_goal_idx:
+                        goal_idx += 1
+                    else:
+                        goal_idx = -1
+
+                observations = self._env.step(action)
+            agent.train_step()
+
+        return {"losses": agent.losses}
+
     def evaluate(
             self, agent: Agent, num_episodes: Optional[int] = None
         ) -> Dict[str, float]:
@@ -126,7 +175,6 @@ class Seq2SeqBenchmark(VLNBenchmark):
                             goal_idx += 1
                         else:
                             goal_idx = -1
-                    print("action has been performed")
                     break
                 break
                     #observations = self._env.step(action)
@@ -152,11 +200,11 @@ def main():
 
     encoder = EncoderLSTM(1300, 100, 128, 0, 0.1, bidirectional=True, num_layers=3).cuda()
     decoder = AttnDecoderLSTM(8, 6, 32, 256, 0.1).cuda()
+
     agent = seq2seqAgent(3.0, "SPL", encoder, decoder)
     benchmark = Seq2SeqBenchmark(args.task_config)
 
-    metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
-    print("After metrics")
+    metrics = benchmark.train(agent, num_episodes=args.num_episodes)
 
 
 if __name__ == "__main__":
