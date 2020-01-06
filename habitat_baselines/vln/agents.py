@@ -18,14 +18,17 @@ from habitat.sims.habitat_simulator.actions import HabitatSimActions
 import torch
 import torch.nn as nn
 import torchvision.models as models
+import torch.nn.functional as F
+import torch.distributions as D
 from torchvision import transforms
 from torch.autograd import Variable
 
 
 class seq2seqAgent(habitat.Agent):
-    def __init__(self, success_distance, goal_sensor_uuid, encoder, decoder):
+    def __init__(self, success_distance, goal_sensor_uuid, encoder, decoder, episode_len=20):
 
         self.model_actions = ['TURN_LEFT', 'TURN_RIGHT', 'LOOK_UP', 'LOOK_DOWN', 'TELEPORT', 'STOP', '<start>', '<ignore>']
+        self.feedback_options = ['teacher', 'argmax', 'sample']
         self.dist_threshold_to_stop = success_distance
         self.goal_sensor_uuid = goal_sensor_uuid
         self.encoder = encoder
@@ -34,6 +37,8 @@ class seq2seqAgent(habitat.Agent):
         self.losses = []
         self.loss = 0
         self.previous_action = '<start>'
+        self.feedback = 'teacher'
+        self.episode_len = episode_len
 
         # Initializing resnet152 model
         self.image_model = models.resnet152(pretrained=True)
@@ -144,7 +149,6 @@ class seq2seqAgent(habitat.Agent):
                     requires_grad=False).unsqueeze(0).cuda()
         ended = np.array([False] * batch_size) # Indices match permuation of the model, not env
 
-        print(f_t.shape, a_t.shape, h_t.shape, c_t.shape, ctx.shape)
         # Training cycle until stop action is predicted.
 
         # Do a sequence rollout and calculate the loss
@@ -166,42 +170,27 @@ class seq2seqAgent(habitat.Agent):
         self.loss += self.criterion(logit, target)
 
         print(self.loss)
-'''
-            # Determine next model inputs
-            if self.feedback == 'teacher':
-                a_t = target                # teacher forcing
-            elif self.feedback == 'argmax':
-                _,a_t = logit.max(1)        # student forcing - argmax
-                a_t = a_t.detach()
-            elif self.feedback == 'sample':
-                probs = F.softmax(logit, dim=1)
-                m = D.Categorical(probs)
-                a_t = m.sample()            # sampling an action from model
-            else:
-                sys.exit('Invalid feedback option')
 
-            # Updated 'ended' list and make environment action
-            for i,idx in enumerate(perm_idx):
-                action_idx = a_t[i].item()
-                if action_idx == self.model_actions.index('<end>'):
-                    ended[i] = True
-                env_action[idx] = self.env_actions[action_idx]
-
-            obs = np.array(self.env.step(env_action))
-            perm_obs = obs[perm_idx]
-
-            # Save trajectory output
-            for i,ob in enumerate(perm_obs):
-                if not ended[i]:
-                    traj[i]['path'].append((ob['viewpoint'], ob['heading'], ob['elevation']))
-
-            # Early exit if all ended
-            if ended.all():
-                break
+        # Determine next model inputs
+        if self.feedback == 'teacher':
+            a_t = target                # teacher forcing
+            action = target_action
+        elif self.feedback == 'argmax':
+            _,a_t = logit.max(1)        # student forcing - argmax
+            a_t = a_t.detach()
+            action = self.model_actions[a_t.item()]
+            action_args = {}  # What happens if you need to teleport? How to choose?
+        elif self.feedback == 'sample':
+            probs = F.softmax(logit, dim=1)
+            m = D.Categorical(probs)
+            a_t = m.sample()            # sampling an action from model
+            action = self.model_actions[a_t.item()]
+            action_args = {}
+        else:
+            sys.exit('Invalid feedback option')
 
         self.losses.append(self.loss.item() / self.episode_len)
-        return traj
 
-        action_args = {}
+
         return {"action": action, "action_args": action_args}
 '''
