@@ -128,7 +128,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
                 prev_image_id = self._env._current_episode.curr_viewpoint.image_id
                 prev_heading = observations["heading"]
                 prev_nav_locations = observations["adjacentViewpoints"]
-                
+
                 observations = self._env.step(action)
 
                 state = self._env._sim.get_agent_state()
@@ -150,8 +150,8 @@ class Seq2SeqBenchmark(VLNBenchmark):
                     #"nav_locations": nav_locations,
                     })
 
-            print(self._env._current_episode.goals)
-            print(action_history)
+            pprint(self._env._current_episode.goals)
+            pprint(action_history)
             agent.train_step()
 
         return {"losses": agent.losses}
