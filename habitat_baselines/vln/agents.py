@@ -247,7 +247,6 @@ class seq2seqAgent(habitat.Agent):
                                 lr=learning_rate,
                                 weight_decay=weight_decay
                             )
-        return encoder_optimizer, decoder_optimizer
 
     def train_step(self):
         if self.encoder_optimizer and self.decoder_optimizer:
