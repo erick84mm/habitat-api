@@ -31,6 +31,7 @@ class seq2seqAgent(habitat.Agent):
         self.decoder = decoder
         self.criterion = nn.CrossEntropyLoss()
         self.losses = []
+        self.previous_action = '<start>'
 
         # Initializing resnet152 model
         self.image_model = models.resnet152(pretrained=True)
@@ -76,15 +77,15 @@ class seq2seqAgent(habitat.Agent):
         # should be a tensor of logits
         seq = torch.LongTensor([episode.instruction.tokens]).cuda()
         seq_lengths = torch.LongTensor([episode.instruction.tokens_length]).cuda()
-        #seq_mask = torch.LongTensor([episode.instruction.mask])
+        seq_mask = torch.zeros(1,episode.instruction.tokens_length).cuda()
 
         # Forward through encoder, giving initial hidden state and memory cell for decoder
         ctx,h_t,c_t = self.encoder(seq, seq_lengths)
         im = observations["rgb"][:,:,[2,1,0]]
-        im_features = self._get_image_features(im)
+        f_t = self._get_image_features(im)
 
-'''
-        a_t = Variable(torch.ones(batch_size).long() * self.model_actions.index('<start>'),
+        a_t = Variable(torch.ones(batch_size).long() * \
+                self.model_actions.index(self.previous_action),
                     requires_grad=False).cuda()
         ended = np.array([False] * batch_size) # Indices match permuation of the model, not env
 
@@ -92,9 +93,11 @@ class seq2seqAgent(habitat.Agent):
 
         # Do a sequence rollout and calculate the loss
         self.loss = 0
-        f_t = self._feature_variable(perm_obs) # Image features from obs
+
         h_t,c_t,alpha,logit = self.decoder(a_t.view(-1, 1), f_t, h_t, c_t, ctx, seq_mask)
             # Mask outputs where agent can't move forward
+        print(h_t, c_t, alpha, logit)
+'''
         for i, ob in enumerate(perm_obs):
             if len(ob['navigableLocations']) <= 1:
                 logit[i, self.model_actions.index('MOVE_FORWARD')] = -float('inf')
