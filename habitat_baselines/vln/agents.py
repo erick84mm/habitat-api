@@ -215,7 +215,7 @@ class seq2seqAgent(habitat.Agent):
 
         # Teleport to the next locaiton
         if action == "TELEPORT":
-            for ob in observations["adjacentViewpoints"]:
+            for ob in observations["adjacentViewpoints"][1:]:
                 if not ob["restricted"]:
                     next_location = ob
                     action = "TELEPORT"
