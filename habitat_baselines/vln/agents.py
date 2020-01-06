@@ -13,6 +13,7 @@ from PIL import Image
 
 import habitat
 from habitat.config.default import get_config
+from habitat.tasks.vln.vln import ViewpointData
 from habitat.sims.habitat_simulator.actions import HabitatSimActions
 
 import torch
