@@ -232,7 +232,7 @@ class seq2seqAgent(habitat.Agent):
 
         return {"action": action, "action_args": action_args}
 
-    def train(self, feedback='teacher'):
+    def train(self, lr=0.0001, weight_decay=0.0005, feedback='teacher'):
         assert feedback in self.feedback_options
         self.feedback = feedback
         self.encoder.train()
