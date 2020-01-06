@@ -92,11 +92,12 @@ class ViewpointData:
         return self.image_id
 
     def __repr__(self):
-        return {
-            "image_id": self.image_id,
-            "position": self.view_point.position,
-            "rotation": self.view_point.rotation,
-            }
+        return "image_id {0} \n position {1} \n rotation {2} \n".format(
+            self.image_id,
+            self.view_point.position,
+            self.view_point.rotation
+        ) 
+
     def get_position(self):
         return self.view_point.position
 
