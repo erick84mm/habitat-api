@@ -230,7 +230,7 @@ def main():
     args = parser.parse_args()
 
     encoder = EncoderLSTM(1300, 256, 256, 0, 0.5, bidirectional=False).cuda()
-    decoder = AttnDecoderLSTM(8, 6, 32, 512, 0.5).cuda()
+    decoder = AttnDecoderLSTM(8, 6, 32, 256, 0.5).cuda()
 
     agent = seq2seqAgent(3.0, "SPL", encoder, decoder)
     benchmark = Seq2SeqBenchmark(args.task_config)
