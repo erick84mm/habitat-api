@@ -89,7 +89,7 @@ class seq2seqAgent(habitat.Agent):
                     requires_grad=False).unsqueeze(0).cuda()
         ended = np.array([False] * batch_size) # Indices match permuation of the model, not env
 
-        print(f_t.shape, a_t.shape)
+        print(f_t.shape, a_t.shape, h_t.shape, c_t.shape, ctx.shape)
         # Training cycle until stop action is predicted.
 
         # Do a sequence rollout and calculate the loss
