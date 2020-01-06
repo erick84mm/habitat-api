@@ -20,6 +20,8 @@ import torch.nn as nn
 import torchvision.models as models
 import torch.nn.functional as F
 import torch.distributions as D
+
+from torch import optim
 from torchvision import transforms
 from torch.autograd import Variable
 
