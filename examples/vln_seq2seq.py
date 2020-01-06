@@ -85,11 +85,11 @@ class Seq2SeqBenchmark(VLNBenchmark):
             agent: Agent,
             num_episodes: Optional[int] = None
         ) -> Dict[str, float]:
-
+        print("cycle", self._env._episode_iterator.cycle)
         self.reset_benchmark()  # Removing action history and such
         print("Training for %s episodes" % str(num_episodes))
         assert num_episodes > 0, "num_episodes should be greater than 0"
-
+'''
         count_episodes = 0
         agent.train()
         while count_episodes < num_episodes:
@@ -136,6 +136,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
                 heading = observations["heading"]
                 nav_locations = observations["adjacentViewpoints"]
                 '''
+                '''
                 action_history.append({
                     "action": action["action"],
                     "prev_image_id": prev_image_id,
@@ -149,6 +150,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
                     "new_rot": state.rotation,
                     #"nav_locations": nav_locations,
                     })
+                '''
                 '''
                 action_history.append((action["action"], prev_image_id, image_id))
 
@@ -166,7 +168,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
         avg_metrics = {k: v / count_episodes for k, v in self.agg_metrics.items()}
         avg_metrics["losses"] = sum(agent.losses) / len(agent.losses)
         return avg_metrics
-
+'''
     def evaluate(
             self, agent: Agent, num_episodes: Optional[int] = None
         ) -> Dict[str, float]:
