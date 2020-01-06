@@ -19,6 +19,7 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 from torchvision import transforms
+from torch.autograd import Variable
 
 
 class seq2seqAgent(habitat.Agent):
