@@ -85,7 +85,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
             agent: Agent,
             num_episodes: Optional[int] = None
         ) -> Dict[str, float]:
-        
+
         self.reset_benchmark()  # Removing action history and such
         print("Training for %s episodes" % str(num_episodes))
         assert num_episodes > 0, "num_episodes should be greater than 0"
@@ -152,8 +152,8 @@ class Seq2SeqBenchmark(VLNBenchmark):
                 '''
                 action_history.append((action["action"], prev_image_id, image_id))
 
-            #pprint(self._env._current_episode.goals)
-            #pprint(action_history)
+            pprint(self._env._current_episode.goals)
+            pprint(action_history)
             agent.train_step(count_episodes)
             count_episodes += 1
             metrics = self._env.get_metrics()
