@@ -160,7 +160,7 @@ class seq2seqAgent(habitat.Agent):
             logit[0, self.model_actions.index('TELEPORT')] = -float('inf')
 
         # Supervised training
-        target_action, action_args = self._teacher_action(observations, goal)
+        target_action, action_args = self._teacher_actions(observations, goal)
         target = torch.LongTensor([self.model_actions.index(target_action)])
         target = Variable(target, requires_grad=False).cuda()
         self.loss += self.criterion(logit, target)
