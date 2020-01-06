@@ -65,8 +65,7 @@ class seq2seqAgent(habitat.Agent):
 
         with torch.no_grad():
             output = self.image_model(input_batch)
-        # Tensor of shape 1000, with confidence scores over Imagenet's 1000 classes
-        print(output.data.squeeze().unsqueeze(0).shape)
+
         return output.data.squeeze().unsqueeze(0)
 
     def _teacher_actions(self):
@@ -87,7 +86,7 @@ class seq2seqAgent(habitat.Agent):
 
         a_t = Variable(torch.ones(batch_size).long() * \
                 self.model_actions.index(self.previous_action),
-                    requires_grad=False).cuda()
+                    requires_grad=False).unsqueeze(0).cuda()
         ended = np.array([False] * batch_size) # Indices match permuation of the model, not env
 
         print(f_t.shape, a_t.shape)
