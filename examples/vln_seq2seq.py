@@ -89,7 +89,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
         self.reset_benchmark()  # Removing action history and such
         print("Training for %s episodes" % str(num_episodes))
         assert num_episodes > 0, "num_episodes should be greater than 0"
-'''
+        '''
         count_episodes = 0
         agent.train()
         while count_episodes < num_episodes:
@@ -166,7 +166,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
         avg_metrics = {k: v / count_episodes for k, v in self.agg_metrics.items()}
         avg_metrics["losses"] = sum(agent.losses) / len(agent.losses)
         return avg_metrics
-'''
+        '''
     def evaluate(
             self, agent: Agent, num_episodes: Optional[int] = None
         ) -> Dict[str, float]:
