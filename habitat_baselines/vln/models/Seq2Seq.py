@@ -127,6 +127,7 @@ class AttnDecoderLSTM(nn.Module):
         '''
         action_embeds = self.embedding(action)   # (batch, 1, embedding_size)
         action_embeds = action_embeds.squeeze()
+        print(action_embeds.shape)
         concat_input = torch.cat((action_embeds, feature), 1) # (batch, embedding_size+feature_size)
         drop = self.drop(concat_input)
         h_1,c_1 = self.lstm(drop, (h_0,c_0))
