@@ -93,6 +93,10 @@ class Seq2SeqBenchmark(VLNBenchmark):
         count_episodes = 0
         agent.train()
         while count_episodes < num_episodes:
+            if count_episodes % 5001 == 0:
+                agent.save("checkpoints/encoder_train_{}.check".format(count_episodes),
+                "checkpoints/decoder_train_{}.check".format(count_episodes))
+                print("{} episodes have been processed".format(count_episodes))
             agent.reset()
             observations = self._env.reset()
             action_history = []
