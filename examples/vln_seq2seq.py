@@ -242,7 +242,7 @@ def main():
     metrics = benchmark.train(agent, num_episodes=args.num_episodes)
 
     for k, v in metrics.items():
-        print("{}: {:.3f}".format(k, v))
+        print("{0}: {1}".format(k, v))
 
 if __name__ == "__main__":
     main()
