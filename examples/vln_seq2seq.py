@@ -236,7 +236,7 @@ def main():
     )
     args = parser.parse_args()
 
-    encoder = EncoderLSTM(1300, 256, 256, 0, 0.5, bidirectional=False).cuda()
+    encoder = EncoderLSTM(1300, 256, 256, 0, 0.5, bidirectional=False, num_layers=2).cuda()
     decoder = AttnDecoderLSTM(8, 6, 32, 256, 0.5).cuda()
 
     agent = seq2seqAgent(3.0, "SPL", encoder, decoder)
