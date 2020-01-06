@@ -136,6 +136,9 @@ class VLNEpisode(Episode):
     curr_viewpoint: Optional[ViewpointData] = None
     distance = None
 
+    def reset(self):
+        self.curr_viewpoint = goals[0]
+
 
 @registry.register_sensor
 class HeadingSensor(Sensor):

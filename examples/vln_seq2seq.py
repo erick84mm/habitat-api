@@ -99,6 +99,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
                 print("{} episodes have been processed".format(count_episodes))
             agent.reset()
             observations = self._env.reset()
+            self._env._current_episode.reset()
             action_history = []
             elapsed_steps = 0
             goal_idx = 1
