@@ -156,7 +156,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
                     #"nav_locations": nav_locations,
                     })
                 '''
-                action_history.append((action["action"], prev_image_id, image_id)
+                action_history.append((action["action"], prev_image_id, image_id))
 
             pprint(self._env._current_episode.goals)
             pprint(action_history)
