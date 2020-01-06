@@ -77,7 +77,8 @@ class seq2seqAgent(habitat.Agent):
         # should be a tensor of logits
         seq = torch.LongTensor([episode.instruction.tokens]).cuda()
         seq_lengths = torch.LongTensor([episode.instruction.tokens_length]).cuda()
-        seq_mask = torch.tensor(np.array([False] * episode.instruction.tokens_length)).cuda()
+        seq_mask = torch.tensor(np.array([False] * episode.instruction.tokens_length))
+        seq_mask = seq_mask.unsqueeze(0).cuda()
 
         # Forward through encoder, giving initial hidden state and memory cell for decoder
         ctx,h_t,c_t = self.encoder(seq, seq_lengths)
