@@ -66,8 +66,8 @@ class seq2seqAgent(habitat.Agent):
         with torch.no_grad():
             output = self.image_model(input_batch)
         # Tensor of shape 1000, with confidence scores over Imagenet's 1000 classes
-        print(output.data.squeeze().shape)
-        return output.data.squeeze()
+        print(output.data.squeeze().unsqueeze(0).shape)
+        return output.data.squeeze().unsqueeze(0)
 
     def _teacher_actions(self):
         return []
