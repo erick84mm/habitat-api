@@ -135,8 +135,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
                 image_id = self._env._current_episode.curr_viewpoint.image_id
                 heading = observations["heading"]
                 nav_locations = observations["adjacentViewpoints"]
-                '''
-                '''
+
                 action_history.append({
                     "action": action["action"],
                     "prev_image_id": prev_image_id,
@@ -150,8 +149,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
                     "new_rot": state.rotation,
                     #"nav_locations": nav_locations,
                     })
-                '''
-                '''
+
                 action_history.append((action["action"], prev_image_id, image_id))
 
             #pprint(self._env._current_episode.goals)
