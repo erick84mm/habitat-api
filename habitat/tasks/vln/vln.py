@@ -836,20 +836,21 @@ class TeleportAction(SimulatorTaskAction):
         position = target.view_point.position
         rotation = target.view_point.rotation
 
-        print("Teleport Action to pos ", target.view_point.position)
+        #print("Teleport Action to pos ", target.view_point.position)
         if not isinstance(rotation, list):
             rotation = list(rotation)
 
         if not self._sim.is_navigable(position):
-            print("The destination is not navigable, running snap point")
+            #print("The destination is not navigable, running snap point")
             # is not navigable then we search for a location close to the target
             new_position = np.array(position, dtype='f')
             new_position = self._sim._sim.pathfinder.snap_point(new_position)
             if np.isnan(new_position[0]):
-                print("Snap point couldn't find a place to land, error.")
+                #print("Snap point couldn't find a place to land, error.")
                 return self._sim.get_observations_at()
             else:
                 position = new_position.tolist()
+                #print("New position found", position)
 
         if kwargs and "episode" in kwargs:
             last_viewpoint = kwargs["episode"].curr_viewpoint
@@ -960,7 +961,6 @@ class LookDownAction(SimulatorTaskAction):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
         """
-        print("We are running the look down in the simulator")
         if kwargs and 'num_steps' in kwargs and kwargs['num_steps'] > 1:
             for _ in range(kwargs["num_steps"] - 1):
                 self._sim.step(HabitatSimActions.LOOK_DOWN)

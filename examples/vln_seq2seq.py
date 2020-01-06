@@ -158,8 +158,8 @@ class Seq2SeqBenchmark(VLNBenchmark):
                 '''
                 action_history.append((action["action"], prev_image_id, image_id))
 
-            pprint(self._env._current_episode.goals)
-            pprint(action_history)
+            #pprint(self._env._current_episode.goals)
+            #pprint(action_history)
             agent.train_step()
             count_episodes += 1
 
