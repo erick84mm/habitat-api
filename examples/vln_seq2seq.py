@@ -190,10 +190,18 @@ class Seq2SeqBenchmark(VLNBenchmark):
 
             while not self._env.episode_over:
                 goal_viewpoint = self._env._current_episode.goals[goal_idx]
+                episode = self._env._current_episode
+                shortest_path = self._env._task.get_shortest_path_to_target(
+                    episode.scan,
+                    episode.curr_viewpoint.image_id,
+                    goal_viewpoint.image_id
+                )
+                
                 action = agent.act(
                     observations,
                     self._env._current_episode,
-                    goal_viewpoint
+                    goal_viewpoint,
+                    shortest_path
                     )
 
                 action["action_args"].update(

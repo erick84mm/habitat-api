@@ -116,6 +116,9 @@ class R2RDatasetV1(Dataset):
     def get_distance_to_target(self, scan, start, end):
         return self.connectivity[scan]["distances"][start][end]
 
+    def get_shortest_path_to_target(self, scan, start, end):
+        return self.connectivity[scan]["paths"][start][end]
+
     def get_navigable_locations(self, scan, viewpoint):
         observations = []
         default_rotation = [0,0,0,1]

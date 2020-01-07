@@ -995,6 +995,15 @@ class VLNTask(EmbodiedTask):
             )
         return float("inf")
 
+    def get_shortest_path_to_target(self, scan, start_viewpoint, end_viewpoint):
+            if self._dataset:
+                return self._dataset.get_shortest_path_to_target(
+                    scan,
+                    start_viewpoint,
+                    end_viewpoint
+                )
+            return []
+
     def get_navigable_locations(self, scan, viewpoint):
         if self._dataset:
             return self._dataset.get_navigable_locations(scan, viewpoint)

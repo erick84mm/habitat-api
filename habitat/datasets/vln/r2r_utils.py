@@ -95,6 +95,7 @@ def load_connectivity(connectivity_path):
         data = read_json(file_format.format(scan))
         G = load_nav_graph(data)
         distances = dict(nx.all_pairs_dijkstra_path_length(G))
+        paths = dict(nx.all_pairs_dijkstra_path(G))
 
         positions = {}
         visibility = {}
@@ -119,6 +120,7 @@ def load_connectivity(connectivity_path):
         connectivity[scan] = {
                 "viewpoints": positions,
                 "distances": distances,
+                "paths": paths,
                 "visibility": visibility,
                 "idxtoid": idxtoid,
         }

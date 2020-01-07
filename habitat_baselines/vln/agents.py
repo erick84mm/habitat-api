@@ -97,7 +97,7 @@ class seq2seqAgent(habitat.Agent):
 
         return output.data.squeeze().unsqueeze(0)
 
-    def _teacher_actions(self, observations, goal):
+    def _teacher_actions(self, observations, goal, shortest_path):
         action = ""
         action_args = {}
         navigable_locations = observations["adjacentViewpoints"]
@@ -106,11 +106,14 @@ class seq2seqAgent(habitat.Agent):
             action = "STOP"
         else:
             step_size = np.pi/6.0  # default step in R2R
-            goal_location = None
-            for location in navigable_locations:
-                if location["image_id"] == goal.image_id:
-                    goal_location = location
-                    break
+            if shortest_path:
+                goal_location = shortest_path[1]
+            else:
+                goal_location = None
+                for location in navigable_locations:
+                    if location["image_id"] == goal.image_id:
+                        goal_location = location
+                        break
             # Check if the goal is visible
             if goal_location:
 
@@ -141,6 +144,10 @@ class seq2seqAgent(habitat.Agent):
                     action_args.update({"target": viewpoint})
             else:
                 # Episode Failure
+                for location in shortest_path:
+                    if location["image_id"] == goal.image_id:
+                        goal_location = location
+                        break
                 action = 'STOP'
                 print("Target position %s not visible, " % goal.image_id +
                       "This is an error in the system")
@@ -153,7 +160,7 @@ class seq2seqAgent(habitat.Agent):
                 '''
         return action, action_args
 
-    def act(self, observations, episode, goal):
+    def act(self, observations, episode, goal, shortest_path=None):
         # Initialization when the action is start
         batch_size = 1
 
@@ -194,7 +201,7 @@ class seq2seqAgent(habitat.Agent):
             logit[0, self.model_actions.index('TELEPORT')] = -float('inf')
 
         # Supervised training
-        target_action, action_args = self._teacher_actions(observations, goal)
+        target_action, action_args = self._teacher_actions(observations, goal, shortest_path)
         target = torch.LongTensor([self.model_actions.index(target_action)])
         target = Variable(target, requires_grad=False).cuda()
         self.loss += self.criterion(logit, target)
