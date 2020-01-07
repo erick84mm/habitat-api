@@ -176,7 +176,7 @@ class seq2seqAgent(habitat.Agent):
         ended = np.array([False] * batch_size) # Indices match permuation of the model, not env
 
         # Do a sequence rollout and calculate the loss
-        h_t,c_t,alpha,logit = self.decoder(
+        self.h_t,self.c_t,alpha,logit = self.decoder(
                                     a_t.view(-1, 1),
                                     f_t,
                                     self.h_t,
@@ -267,6 +267,15 @@ class seq2seqAgent(habitat.Agent):
             writer.add_scalar('Loss/train', self.loss.item() / self.episode_len, n_iter)
         else:
             print("Please call train first")
+
+    def test(self, use_dropout=False, feedback="argmax"):
+        self.feedback = feedback
+        if use_dropout:
+            self.encoder.train()
+            self.decoder.train()
+        else:
+            self.encoder.eval()
+            self.decoder.eval()
 
     def save(self, encoder_path, decoder_path):
         ''' Snapshot models '''

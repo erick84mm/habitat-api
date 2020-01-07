@@ -180,46 +180,86 @@ class Seq2SeqBenchmark(VLNBenchmark):
                 evaluation should be run.
             :return: dict containing metrics tracked by environment.
             """
-            self.reset_benchmark()
 
-            if num_episodes is None:
-                num_episodes = len(self._env.episodes)
-            else:
-                assert num_episodes <= len(self._env.episodes), (
-                    "num_episodes({}) is larger than number of episodes "
-                    "in environment ({})".format(
-                        num_episodes, len(self._env.episodes)
+        self.reset_benchmark()  # Removing action history and such
+        print("Training for %s episodes" % str(num_episodes))
+        assert num_episodes > 0, "num_episodes should be greater than 0"
+
+        count_episodes = 0
+        agent.test()
+        while count_episodes < num_episodes:
+            agent.reset()
+            observations = self._env.reset()
+            action_history = []
+            elapsed_steps = 0
+            goal_idx = 1
+            last_goal_idx = len(self._env._current_episode.goals) - 1
+
+            while not self._env.episode_over:
+                goal_viewpoint = self._env._current_episode.goals[goal_idx]
+                action = agent.act(
+                    observations,
+                    self._env._current_episode,
+                    goal_viewpoint
                     )
+
+                action["action_args"].update(
+                    {
+                    "episode": self._env._current_episode
+                    }
                 )
 
-            assert num_episodes > 0, "num_episodes should be greater than 0"
+                if action["action"] == "TELEPORT":
+                    if goal_idx < last_goal_idx:
+                        goal_idx += 1
+                    else:
+                        goal_idx = -1
 
-            count_episodes = 0
-            while count_episodes < num_episodes:
-                agent.reset()
-                observations = self._env.reset()
-                action_history = []
-                elapsed_steps = 0
-                goal_idx = 1
-                last_goal_idx = len(self._env._current_episode.goals) - 1
+                prev_state = self._env._sim.get_agent_state()
+                prev_image_id = self._env._current_episode.curr_viewpoint.image_id
+                prev_heading = observations["heading"]
+                prev_nav_locations = observations["adjacentViewpoints"]
 
-                while not self._env.episode_over:
-                    goal_viewpoint = self._env._current_episode.goals[goal_idx]
-                    action = agent.act(
-                        observations,
-                        self._env._current_episode,
-                        goal_viewpoint
-                        )
+                observations = self._env.step(action)
 
-                    if action["action"] == "TELEPORT":
-                        if goal_idx < last_goal_idx:
-                            goal_idx += 1
-                        else:
-                            goal_idx = -1
-                    break
-                break
-                    #observations = self._env.step(action)
-            return
+                state = self._env._sim.get_agent_state()
+                image_id = self._env._current_episode.curr_viewpoint.image_id
+                heading = observations["heading"]
+                nav_locations = observations["adjacentViewpoints"]
+                '''
+                action_history.append({
+                    "action": action["action"],
+                    "prev_image_id": prev_image_id,
+                    "prev_heading": prev_heading,
+                    "prev_pos": prev_state.position,
+                    "prev_rot": prev_state.rotation,
+                    "prev_nav_locations": prev_nav_locations,
+                    "new_image_id": image_id,
+                    "new_heading": heading,
+                    "new_pos": state.position,
+                    "new_rot": state.rotation,
+                    #"nav_locations": nav_locations,
+                    })
+                '''
+                action_history.append((action["action"], prev_image_id, image_id))
+
+            self._env._current_episode.reset()
+
+            #pprint(self._env._current_episode)
+            #pprint(self._env._current_episode.goals)
+            #pprint(action_history)
+            agent.train_step(count_episodes)
+            count_episodes += 1
+            metrics = self._env.get_metrics()
+            for m, v in metrics.items():
+                if m != "distance_to_goal":
+                    self.agg_metrics[m] += v
+
+        agent.reset()
+
+        avg_metrics = {k: v / count_episodes for k, v in self.agg_metrics.items()}
+        avg_metrics["losses"] = sum(agent.losses) / len(agent.losses)
+        return avg_metrics
 
 
 
@@ -243,10 +283,15 @@ def main():
     decoder = AttnDecoderLSTM(8, 6, 32, 256, 0.5).cuda()
 
     agent = seq2seqAgent(3.0, "SPL", encoder, decoder)
+
+    count_episodes = 5001
+    agent.load("checkpoints/encoder_train_{}.check".format(count_episodes),
+    "checkpoints/decoder_train_{}.check".format(count_episodes))
+
     benchmark = Seq2SeqBenchmark(args.task_config)
 
-    metrics = benchmark.train(agent, num_episodes=args.num_episodes)
-
+    #metrics = benchmark.train(agent, num_episodes=args.num_episodes)
+    metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
     for k, v in metrics.items():
         print("{0}: {1}".format(k, v))
 
