@@ -173,13 +173,6 @@ class Seq2SeqBenchmark(VLNBenchmark):
     def evaluate(
             self, agent: Agent, num_episodes: Optional[int] = None
         ) -> Dict[str, float]:
-            r"""..
-
-            :param agent: agent to be evaluated in environment.
-            :param num_episodes: count of number of episodes for which the
-                evaluation should be run.
-            :return: dict containing metrics tracked by environment.
-            """
 
         self.reset_benchmark()  # Removing action history and such
         print("Training for %s episodes" % str(num_episodes))
