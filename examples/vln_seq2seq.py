@@ -196,12 +196,12 @@ class Seq2SeqBenchmark(VLNBenchmark):
                     episode.curr_viewpoint.image_id,
                     goal_viewpoint.image_id
                 )
-                
+                goal_viewpoint = self._env._current_episode.goals[goal_idx]
+
                 action = agent.act(
                     observations,
                     self._env._current_episode,
-                    goal_viewpoint,
-                    shortest_path
+                    goal_viewpoint
                     )
 
                 action["action_args"].update(
@@ -291,8 +291,8 @@ def main():
 
     benchmark = Seq2SeqBenchmark(args.task_config)
 
-    #metrics = benchmark.train(agent, num_episodes=args.num_episodes)
-    metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
+    metrics = benchmark.train(agent, num_episodes=args.num_episodes)
+    #metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
     for k, v in metrics.items():
         print("{0}: {1}".format(k, v))
 
