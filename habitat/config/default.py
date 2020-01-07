@@ -43,6 +43,7 @@ _C.TASK.SENSORS = []
 _C.TASK.MEASUREMENTS = []
 _C.TASK.GOAL_SENSOR_UUID = "pointgoal"
 _C.TASK.POSSIBLE_ACTIONS = ["STOP", "MOVE_FORWARD", "TURN_LEFT", "TURN_RIGHT"]
+_C.TASK.DISCRETE = True
 # -----------------------------------------------------------------------------
 # # ACTIONS
 # -----------------------------------------------------------------------------
@@ -88,6 +89,19 @@ _C.TASK.POINTGOAL_WITH_GPS_COMPASS_SENSOR.TYPE = (
 # -----------------------------------------------------------------------------
 _C.TASK.HEADING_SENSOR = CN()
 _C.TASK.HEADING_SENSOR.TYPE = "HeadingSensor"
+
+# -----------------------------------------------------------------------------
+# ELEVATION SENSOR
+# -----------------------------------------------------------------------------
+_C.TASK.ELEVATION_SENSOR = CN()
+_C.TASK.ELEVATION_SENSOR.TYPE = "ElevationSensor"
+
+# -----------------------------------------------------------------------------
+# ADJACENT_VIEWPOINT SENSOR
+# -----------------------------------------------------------------------------
+_C.TASK.ADJACENT_VIEWPOINTS_SENSOR = CN()
+_C.TASK.ADJACENT_VIEWPOINTS_SENSOR.TYPE = "AdjacentViewpointSensor"
+_C.TASK.ADJACENT_VIEWPOINTS_SENSOR.CONNECTIVITY_PATH = "data/datasets/vln/r2r/v1/connectivity/"
 # -----------------------------------------------------------------------------
 # COMPASS SENSOR
 # -----------------------------------------------------------------------------
@@ -111,6 +125,29 @@ _C.TASK.PROXIMITY_SENSOR.MAX_DETECTION_RADIUS = 2.0
 _C.TASK.SPL = CN()
 _C.TASK.SPL.TYPE = "SPL"
 _C.TASK.SPL.SUCCESS_DISTANCE = 0.2
+_C.TASK.SPL.CONNECTIVITY_PATH = "data/datasets/vln/r2r/v1/connectivity/"
+# -----------------------------------------------------------------------------
+# NAVIGATION ERROR MEASUREMENT
+# -----------------------------------------------------------------------------
+_C.TASK.NAVIGATION_ERROR = CN()
+_C.TASK.NAVIGATION_ERROR.TYPE = "NavigationError"
+# -----------------------------------------------------------------------------
+# TRAJECTORY LENGTH MEASUREMENT
+# -----------------------------------------------------------------------------
+_C.TASK.TRAJECTORY_LENGTH = CN()
+_C.TASK.TRAJECTORY_LENGTH.TYPE = "TrajectoryLength"
+# -----------------------------------------------------------------------------
+# SUCCESS MEASUREMENT
+# -----------------------------------------------------------------------------
+_C.TASK.SUCCESS = CN()
+_C.TASK.SUCCESS.TYPE = "Success"
+_C.TASK.SUCCESS.SUCCESS_DISTANCE = 3.0
+# -----------------------------------------------------------------------------
+# ORACLE SUCCESS MEASUREMENT
+# -----------------------------------------------------------------------------
+_C.TASK.ORACLE_SUCCESS = CN()
+_C.TASK.ORACLE_SUCCESS.TYPE = "OracleSuccess"
+_C.TASK.ORACLE_SUCCESS.ORACLE_SUCCESS_DISTANCE = 5.0
 # -----------------------------------------------------------------------------
 # TopDownMap MEASUREMENT
 # -----------------------------------------------------------------------------
@@ -286,7 +323,7 @@ _C.DATASET.DATA_PATH = (
     "data/datasets/pointnav/habitat-test-scenes/v1/{split}/{split}.json.gz"
 )
 _C.DATASET.CONNECTIVITY_PATH = (
-    "data/datasets/vln/r2r/v1/connectivity/connectivity.json"
+    "data/datasets/vln/r2r/v1/connectivity/"
 )
 # -----------------------------------------------------------------------------
 
