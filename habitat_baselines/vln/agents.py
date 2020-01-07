@@ -49,6 +49,7 @@ class seq2seqAgent(habitat.Agent):
         self.criterion = nn.CrossEntropyLoss()
         self.losses = []
         self.loss = 0
+        self.predicted_actions = []
 
         # Other configurations
         self.previous_action = '<start>'
@@ -184,7 +185,6 @@ class seq2seqAgent(habitat.Agent):
                                     self.ctx,
                                     self.seq_mask
                             )
-
         # Mask outputs where agent can't move forward
 
         visible_points = sum([1 for ob in observations["adjacentViewpoints"]
@@ -198,7 +198,7 @@ class seq2seqAgent(habitat.Agent):
         target = torch.LongTensor([self.model_actions.index(target_action)])
         target = Variable(target, requires_grad=False).cuda()
         self.loss += self.criterion(logit, target)
-
+        print(logit)
         # Determine next model inputs
         if self.feedback == 'teacher':
             a_t = target                # teacher forcing
