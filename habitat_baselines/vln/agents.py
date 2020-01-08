@@ -165,7 +165,7 @@ class seq2seqAgent(habitat.Agent):
             seq = torch.LongTensor([episode.instruction.tokens]).cuda()
             seq_lengths = torch.LongTensor([episode.instruction.tokens_length]).cuda()
             seq_mask = torch.tensor(np.array([False] * episode.instruction.tokens_length))
-            self.seq_mask = seq_mask.unsqueeze(0).cuda()
+            self.seq_mask = seq_mask.unsqueeze(0).byte().cuda()
 
             # Forward through encoder, giving initial hidden state and memory cell for decoder
             self.ctx, self.h_t, self.c_t = self.encoder(seq, seq_lengths)
