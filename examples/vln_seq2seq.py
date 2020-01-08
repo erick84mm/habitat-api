@@ -294,9 +294,9 @@ def main():
     encoder = EncoderLSTM(1300, 256, 256, 0, 0.5, bidirectional=False, num_layers=2).to(device)
     decoder = AttnDecoderLSTM(8, 6, 32, 256, 0.5).to(device)
 
-    agent = seq2seqAgent(3.0, "SPL", encoder, decoder).to(device)
+    agent = seq2seqAgent(3.0, "SPL", encoder, decoder)
 
-    benchmark = Seq2SeqBenchmark(args.task_config).to(device)
+    benchmark = Seq2SeqBenchmark(args.task_config)
 
     if args.train:
         assert 0 <= args.feedback <= 2, "Incorrect feedback option"
