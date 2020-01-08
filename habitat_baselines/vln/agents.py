@@ -199,7 +199,7 @@ class seq2seqAgent(habitat.Agent):
         target = torch.LongTensor([self.model_actions.index(target_action)])
         target = Variable(target, requires_grad=False).cuda()
         self.loss += self.criterion(logit, target)
-        print(logit)
+        #print(logit)
         # Determine next model inputs
         if self.feedback == 'teacher':
             self.a_t = target                # teacher forcing
@@ -236,7 +236,7 @@ class seq2seqAgent(habitat.Agent):
                     )
                     action_args = {"target": viewpoint}
                     break
-
+        print(action, target_action, self.loss.item())
         self.previous_action = action
 
         return {"action": action, "action_args": action_args}
