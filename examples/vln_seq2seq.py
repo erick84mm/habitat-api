@@ -286,8 +286,8 @@ def main():
 
     benchmark = Seq2SeqBenchmark(args.task_config)
 
-    metrics = benchmark.train(agent, num_episodes=args.num_episodes)
-    #metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
+    #metrics = benchmark.train(agent, num_episodes=args.num_episodes)
+    metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
     for k, v in metrics.items():
         print("{0}: {1}".format(k, v))
 
