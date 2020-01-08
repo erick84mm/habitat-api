@@ -92,7 +92,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
         assert num_episodes > 0, "num_episodes should be greater than 0"
 
         count_episodes = 0
-        agent.train(feedback)
+        agent.train(feedback=feedback)
         while count_episodes < num_episodes:
             if count_episodes % 5001 == 0:
                 agent.save("checkpoints/encoder_train_{}.check".format(count_episodes),
