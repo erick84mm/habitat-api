@@ -165,7 +165,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
                     self.agg_metrics[m] += v
 
         agent.reset()
-
+        print(count_episodes)
         avg_metrics = {k: v / count_episodes for k, v in self.agg_metrics.items()}
         avg_metrics["losses"] = sum(agent.losses) / len(agent.losses)
         return avg_metrics
