@@ -294,6 +294,9 @@ class alignmentAgent(habitat.Agent):
     def __init__(self):
         return
 
+    def _get_image_features(self):
+        return
+
     def reset(self):
         pass
 

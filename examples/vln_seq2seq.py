@@ -272,6 +272,12 @@ def main():
     parser.add_argument(
         "--discrete", action='store_true'
     )
+    parser.add_argument(
+            "--train", action='store_true'
+    )
+    parser.add_argument(
+            "--val", action='store_true'
+    )
     args = parser.parse_args()
 
     encoder = EncoderLSTM(1300, 256, 256, 0, 0.5, bidirectional=False, num_layers=2).cuda()
@@ -285,10 +291,15 @@ def main():
 
     benchmark = Seq2SeqBenchmark(args.task_config)
 
-    #metrics = benchmark.train(agent, num_episodes=args.num_episodes)
-    metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
-    for k, v in metrics.items():
-        print("{0}: {1}".format(k, v))
+    if args.train:
+        metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
+        for k, v in metrics.items():
+            print("{0}: {1}".format(k, v))
+
+    if args.val:
+        metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
+        for k, v in metrics.items():
+            print("{0}: {1}".format(k, v))
 
 if __name__ == "__main__":
     main()
