@@ -286,6 +286,7 @@ def main():
     feedback_options = ["teacher", "argmax", "sample"]
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(device)
 
     encoder = EncoderLSTM(1300, 256, 256, 0, 0.5, bidirectional=False, num_layers=2).to(device)
     decoder = AttnDecoderLSTM(8, 6, 32, 256, 0.5).to(device)
