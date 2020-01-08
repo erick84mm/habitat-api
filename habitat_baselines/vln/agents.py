@@ -174,7 +174,7 @@ class seq2seqAgent(habitat.Agent):
                         requires_grad=False).unsqueeze(0).to('cuda')
 
         im = observations["rgb"][:,:,[2,1,0]]
-        f_t = self._get_image_features(im).to('cuda')
+        f_t = self._get_image_features(im) #.to('cuda')
 
         ended = np.array([False] * batch_size) # Indices match permuation of the model, not env
 
