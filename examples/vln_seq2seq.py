@@ -83,7 +83,8 @@ class Seq2SeqBenchmark(VLNBenchmark):
     def train(
             self,
             agent: Agent,
-            num_episodes: Optional[int] = None
+            num_episodes: Optional[int] = None,
+            feedback="teacher"
         ) -> Dict[str, float]:
 
         self.reset_benchmark()  # Removing action history and such
@@ -91,7 +92,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
         assert num_episodes > 0, "num_episodes should be greater than 0"
 
         count_episodes = 0
-        agent.train()
+        agent.train(feedback)
         while count_episodes < num_episodes:
             if count_episodes % 5001 == 0:
                 agent.save("checkpoints/encoder_train_{}.check".format(count_episodes),
@@ -278,7 +279,11 @@ def main():
     parser.add_argument(
             "--val", action='store_true'
     )
+    parser.add_argument(
+        "--feedback", type=int, default=0
+    )
     args = parser.parse_args()
+    feedback_options = ["teacher", "argmax", "sample"]
 
     encoder = EncoderLSTM(1300, 256, 256, 0, 0.5, bidirectional=False, num_layers=2).cuda()
     decoder = AttnDecoderLSTM(8, 6, 32, 256, 0.5).cuda()
@@ -288,7 +293,8 @@ def main():
     benchmark = Seq2SeqBenchmark(args.task_config)
 
     if args.train:
-        metrics = benchmark.train(agent, num_episodes=args.num_episodes)
+        assert 0 <= arg.feedback <= 2, "Incorrect feedback option"
+        metrics = benchmark.train(agent, num_episodes=args.num_episodes, feedback=feedback_options[args.feedback])
         for k, v in metrics.items():
             print("{0}: {1}".format(k, v))
 
