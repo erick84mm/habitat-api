@@ -67,6 +67,7 @@ class seq2seqAgent(habitat.Agent):
         self.ctx = None
         self.h_t = None
         self.c_t = None
+        self.a_t = None
         self.seq_mask = None
 
         if self.loss:
@@ -167,18 +168,18 @@ class seq2seqAgent(habitat.Agent):
 
             # Forward through encoder, giving initial hidden state and memory cell for decoder
             self.ctx, self.h_t, self.c_t = self.encoder(seq, seq_lengths)
+            self.a_t = Variable(torch.ones(batch_size).long() * \
+                    self.model_actions.index(self.previous_action),
+                        requires_grad=False).unsqueeze(0).cuda()
 
         im = observations["rgb"][:,:,[2,1,0]]
         f_t = self._get_image_features(im)
 
-        a_t = Variable(torch.ones(batch_size).long() * \
-                self.model_actions.index(self.previous_action),
-                    requires_grad=False).unsqueeze(0).cuda()
         ended = np.array([False] * batch_size) # Indices match permuation of the model, not env
 
         # Do a sequence rollout and calculate the loss
         self.h_t,self.c_t,alpha,logit = self.decoder(
-                                    a_t.view(-1, 1),
+                                    self.a_t.view(-1, 1),
                                     f_t,
                                     self.h_t,
                                     self.c_t,
@@ -201,18 +202,18 @@ class seq2seqAgent(habitat.Agent):
         print(logit)
         # Determine next model inputs
         if self.feedback == 'teacher':
-            a_t = target                # teacher forcing
+            self.a_t = target                # teacher forcing
             action = target_action
         elif self.feedback == 'argmax':
-            _,a_t = logit.max(1)        # student forcing - argmax
-            a_t = a_t.detach()
-            action = self.model_actions[a_t.item()]
+            _,self.a_t = logit.max(1)        # student forcing - argmax
+            self.a_t = self.a_t.detach()
+            action = self.model_actions[self.a_t.item()]
             action_args = {}  # What happens if you need to teleport? How to choose?
         elif self.feedback == 'sample':
             probs = F.softmax(logit, dim=1)
             m = D.Categorical(probs)
-            a_t = m.sample()            # sampling an action from model
-            action = self.model_actions[a_t.item()]
+            self.a_t = m.sample()            # sampling an action from model
+            action = self.model_actions[self.a_t.item()]
             action_args = {}
         else:
             sys.exit('Invalid feedback option')
