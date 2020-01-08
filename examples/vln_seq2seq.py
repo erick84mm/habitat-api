@@ -285,10 +285,6 @@ def main():
 
     agent = seq2seqAgent(3.0, "SPL", encoder, decoder)
 
-    count_episodes = 5001
-    agent.load("checkpoints/encoder_train_{}.check".format(count_episodes),
-    "checkpoints/decoder_train_{}.check".format(count_episodes))
-
     benchmark = Seq2SeqBenchmark(args.task_config)
 
     if args.train:
@@ -297,6 +293,10 @@ def main():
             print("{0}: {1}".format(k, v))
 
     if args.val:
+        
+        count_episodes = 5001
+        agent.load("checkpoints/encoder_train_{}.check".format(count_episodes),
+        "checkpoints/decoder_train_{}.check".format(count_episodes))
         metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
         for k, v in metrics.items():
             print("{0}: {1}".format(k, v))
