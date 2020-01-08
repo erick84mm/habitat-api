@@ -162,16 +162,16 @@ class seq2seqAgent(habitat.Agent):
 
         if self.previous_action == "<start>":
             # should be a tensor of logits
-            seq = torch.LongTensor([episode.instruction.tokens]).cuda()
-            seq_lengths = torch.LongTensor([episode.instruction.tokens_length]).cuda()
+            seq = torch.LongTensor([episode.instruction.tokens]).to('cuda')
+            seq_lengths = torch.LongTensor([episode.instruction.tokens_length]).to('cuda')
             seq_mask = torch.tensor(np.array([False] * episode.instruction.tokens_length))
-            self.seq_mask = seq_mask.unsqueeze(0).byte().cuda()
+            self.seq_mask = seq_mask.unsqueeze(0).byte().to('cuda')
 
             # Forward through encoder, giving initial hidden state and memory cell for decoder
             self.ctx, self.h_t, self.c_t = self.encoder(seq, seq_lengths)
             self.a_t = Variable(torch.ones(batch_size).long() * \
                     self.model_actions.index(self.previous_action),
-                        requires_grad=False).unsqueeze(0).cuda()
+                        requires_grad=False).unsqueeze(0).to('cuda')
 
         im = observations["rgb"][:,:,[2,1,0]]
         f_t = self._get_image_features(im)
