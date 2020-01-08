@@ -111,7 +111,10 @@ class Seq2SeqBenchmark(VLNBenchmark):
                     episode.curr_viewpoint.image_id,
                     final_goal
                 )
-                goal_viewpoint = shortest_path[1]
+                if len(shortest_path) > 1:
+                    goal_viewpoint = shortest_path[1]
+                else:
+                    goal_viewpoint = final_goal
 
                 action = agent.act(
                     observations,
