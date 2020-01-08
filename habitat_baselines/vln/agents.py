@@ -159,7 +159,7 @@ class seq2seqAgent(habitat.Agent):
     def act(self, observations, episode, goal):
         # Initialization when the action is start
         batch_size = 1
-        print(observation.is_cuda, episode.is_cuda, goal.is_cuda)
+        print(observations.is_cuda, episode.is_cuda, goal.is_cuda)
 
         if self.previous_action == "<start>":
             # should be a tensor of logits
