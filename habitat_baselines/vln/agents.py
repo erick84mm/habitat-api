@@ -237,6 +237,7 @@ class seq2seqAgent(habitat.Agent):
                     action_args = {"target": viewpoint}
                     break
         #print(action, target_action, self.loss.item())
+        #self.predicted_actions.append(action)
         self.previous_action = action
 
         return {"action": action, "action_args": action_args}
@@ -266,6 +267,7 @@ class seq2seqAgent(habitat.Agent):
             self.decoder_optimizer.step()
             print("The resulting loss is ", self.loss.item() / self.episode_len)
             writer.add_scalar('Loss/train', self.loss.item() / self.episode_len, n_iter)
+            #writer.add_text('Predicted_Actions', ','.join([str(a) for a in self.predicted_actions]), n_iter)
         else:
             print("Please call train first")
 
