@@ -103,13 +103,13 @@ class seq2seqAgent(habitat.Agent):
         action_args = {}
         navigable_locations = observations["adjacentViewpoints"]
 
-        if goal.image_id == navigable_locations[0]["image_id"]:
+        if goal == navigable_locations[0]["image_id"]:
             action = "STOP"
         else:
             step_size = np.pi/6.0  # default step in R2R
             goal_location = None
             for location in navigable_locations:
-                if location["image_id"] == goal.image_id:
+                if location["image_id"] == goal:
                     goal_location = location
                     break
             # Check if the goal is visible
@@ -132,7 +132,7 @@ class seq2seqAgent(habitat.Agent):
                               " Field of view, but the step action " +
                               "is going to be performed")
                     action = "TELEPORT"  # Move forward
-                    image_id = goal.image_id
+                    image_id = goal
                     posB = goal_location["start_position"]
                     rotA = navigable_locations[0]["start_rotation"]
                     viewpoint = ViewpointData(
@@ -143,7 +143,7 @@ class seq2seqAgent(habitat.Agent):
             else:
                 # Episode Failure
                 action = 'STOP'
-                print("Target position %s not visible, " % goal.image_id +
+                print("Target position %s not visible, " % goal +
                       "This is an error in the system")
                 '''
                 for ob in observations["images"]:
@@ -286,3 +286,15 @@ class seq2seqAgent(habitat.Agent):
         ''' Loads parameters (but not training state) '''
         self.encoder.load_state_dict(torch.load(encoder_path))
         self.decoder.load_state_dict(torch.load(decoder_path))
+
+
+
+class alignmentAgent(habitat.Agent):
+    def __init__(self):
+        return
+
+    def reset(self):
+        pass
+
+    def act(self):
+        return {"action": action, "action_args": action_args}

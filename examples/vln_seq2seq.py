@@ -185,18 +185,19 @@ class Seq2SeqBenchmark(VLNBenchmark):
             observations = self._env.reset()
             action_history = []
             elapsed_steps = 0
-            goal_idx = 1
-            last_goal_idx = len(self._env._current_episode.goals) - 1
 
             while not self._env.episode_over:
-                goal_viewpoint = self._env._current_episode.goals[goal_idx]
+                final_goal = self._env._current_episode.goals[-1].image_id
                 episode = self._env._current_episode
                 shortest_path = self._env._task.get_shortest_path_to_target(
                     episode.scan,
                     episode.curr_viewpoint.image_id,
-                    goal_viewpoint.image_id
+                    final_goal
                 )
-                goal_viewpoint = self._env._current_episode.goals[goal_idx]
+                if len(shortest_path) > 1:
+                    goal_viewpoint = shortest_path[1]
+                else:
+                    goal_viewpoint = final_goal
 
                 action = agent.act(
                     observations,
@@ -209,12 +210,6 @@ class Seq2SeqBenchmark(VLNBenchmark):
                     "episode": self._env._current_episode
                     }
                 )
-
-                if action["action"] == "TELEPORT":
-                    if goal_idx < last_goal_idx:
-                        goal_idx += 1
-                    else:
-                        goal_idx = -1
 
                 prev_state = self._env._sim.get_agent_state()
                 prev_image_id = self._env._current_episode.curr_viewpoint.image_id
