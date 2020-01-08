@@ -105,6 +105,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
 
             while not self._env.episode_over:
                 final_goal = self._env._current_episode.goals[-1]
+                episode = self._env._current_episode
                 shortest_path = self._env._task.get_shortest_path_to_target(
                     episode.scan,
                     episode.curr_viewpoint.image_id,
