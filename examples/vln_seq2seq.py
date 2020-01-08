@@ -285,8 +285,10 @@ def main():
     args = parser.parse_args()
     feedback_options = ["teacher", "argmax", "sample"]
 
-    encoder = EncoderLSTM(1300, 256, 256, 0, 0.5, bidirectional=False, num_layers=2).cuda()
-    decoder = AttnDecoderLSTM(8, 6, 32, 256, 0.5).cuda()
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    encoder = EncoderLSTM(1300, 256, 256, 0, 0.5, bidirectional=False, num_layers=2).to(device)
+    decoder = AttnDecoderLSTM(8, 6, 32, 256, 0.5).to(device)
 
     agent = seq2seqAgent(3.0, "SPL", encoder, decoder)
 
