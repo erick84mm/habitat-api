@@ -109,7 +109,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
                 action = agent.act(
                     observations,
                     self._env._current_episode,
-                    goal_viewpoint
+                    goal_viewpoint.image_id
                     )
 
                 action["action_args"].update(
