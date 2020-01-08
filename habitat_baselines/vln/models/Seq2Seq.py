@@ -14,16 +14,16 @@ class EncoderLSTM(nn.Module):
         super(EncoderLSTM, self).__init__()
         self.embedding_size = embedding_size
         self.hidden_size = hidden_size
-        self.drop = nn.Dropout(p=dropout_ratio)
+        self.drop = nn.Dropout(p=dropout_ratio).to('cuda')
         self.num_directions = 2 if bidirectional else 1
         self.num_layers = num_layers
-        self.embedding = nn.Embedding(vocab_size, embedding_size, padding_idx)
+        self.embedding = nn.Embedding(vocab_size, embedding_size, padding_idx).to('cuda')
         self.lstm = nn.LSTM(embedding_size, hidden_size, self.num_layers,
                             batch_first=True, dropout=dropout_ratio,
-                            bidirectional=bidirectional)
+                            bidirectional=bidirectional).to('cuda')
         self.encoder2decoder = nn.Linear(hidden_size * self.num_directions,
             hidden_size * self.num_directions
-        )
+        ).to('cuda')
 
     def init_state(self, inputs):
         ''' Initialize to zero cell states and hidden states.'''
@@ -38,7 +38,7 @@ class EncoderLSTM(nn.Module):
             batch_size,
             self.hidden_size
         ), requires_grad=False)
-        return h0.cuda(), c0.cuda()
+        return h0.to('cuda'), c0.to('cuda')
 
     def forward(self, inputs, lengths):
         ''' Expects input vocab indices as (batch, seq_len). Also requires a

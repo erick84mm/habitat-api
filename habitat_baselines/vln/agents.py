@@ -46,7 +46,7 @@ class seq2seqAgent(habitat.Agent):
         # AI variables
         self.encoder = encoder
         self.decoder = decoder
-        self.criterion = nn.CrossEntropyLoss()
+        self.criterion = nn.CrossEntropyLoss().to('cuda')
         self.losses = []
         self.loss = 0
         self.predicted_actions = []
@@ -174,7 +174,7 @@ class seq2seqAgent(habitat.Agent):
                         requires_grad=False).unsqueeze(0).to('cuda')
 
         im = observations["rgb"][:,:,[2,1,0]]
-        f_t = self._get_image_features(im)
+        f_t = self._get_image_features(im).to('cuda')
 
         ended = np.array([False] * batch_size) # Indices match permuation of the model, not env
 
@@ -198,7 +198,7 @@ class seq2seqAgent(habitat.Agent):
         # Supervised training
         target_action, action_args = self._teacher_actions(observations, goal)
         target = torch.LongTensor([self.model_actions.index(target_action)])
-        target = Variable(target, requires_grad=False).cuda()
+        target = Variable(target, requires_grad=False).to('cuda')
         self.loss += self.criterion(logit, target)
         #print(logit)
         # Determine next model inputs
