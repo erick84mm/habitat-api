@@ -50,6 +50,7 @@ class seq2seqAgent(habitat.Agent):
         self.losses = []
         self.loss = 0
         self.predicted_actions = []
+        self.accuracy = 0
 
         # Other configurations
         self.previous_action = '<start>'

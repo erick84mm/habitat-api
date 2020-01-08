@@ -296,7 +296,7 @@ def main():
     benchmark = Seq2SeqBenchmark(args.task_config)
 
     if args.train:
-        assert 0 <= arg.feedback <= 2, "Incorrect feedback option"
+        assert 0 <= args.feedback <= 2, "Incorrect feedback option"
         metrics = benchmark.train(agent, num_episodes=args.num_episodes, feedback=feedback_options[args.feedback])
         for k, v in metrics.items():
             print("{0}: {1}".format(k, v))
