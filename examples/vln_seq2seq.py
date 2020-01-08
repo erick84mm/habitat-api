@@ -102,15 +102,20 @@ class Seq2SeqBenchmark(VLNBenchmark):
             observations = self._env.reset()
             action_history = []
             elapsed_steps = 0
-            goal_idx = 1
-            last_goal_idx = len(self._env._current_episode.goals) - 1
 
             while not self._env.episode_over:
-                goal_viewpoint = self._env._current_episode.goals[goal_idx]
+                final_goal = self._env._current_episode.goals[-1]
+                shortest_path = self._env._task.get_shortest_path_to_target(
+                    episode.scan,
+                    episode.curr_viewpoint.image_id,
+                    final_goal
+                )
+                goal_viewpoint = shortest_path[1]
+
                 action = agent.act(
                     observations,
                     self._env._current_episode,
-                    goal_viewpoint.image_id
+                    goal_viewpoint
                     )
 
                 action["action_args"].update(
@@ -118,12 +123,6 @@ class Seq2SeqBenchmark(VLNBenchmark):
                     "episode": self._env._current_episode
                     }
                 )
-
-                if action["action"] == "TELEPORT":
-                    if goal_idx < last_goal_idx:
-                        goal_idx += 1
-                    else:
-                        goal_idx = -1
 
                 prev_state = self._env._sim.get_agent_state()
                 prev_image_id = self._env._current_episode.curr_viewpoint.image_id
@@ -297,6 +296,7 @@ def main():
 
     if args.train:
         assert 0 <= args.feedback <= 2, "Incorrect feedback option"
+        print("Running training with feedback %s" % feedback_options[args.feedback])
         metrics = benchmark.train(agent, num_episodes=args.num_episodes, feedback=feedback_options[args.feedback])
         for k, v in metrics.items():
             print("{0}: {1}".format(k, v))
