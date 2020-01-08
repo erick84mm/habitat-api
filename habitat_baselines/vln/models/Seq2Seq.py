@@ -46,7 +46,7 @@ class EncoderLSTM(nn.Module):
         embeds = self.embedding(inputs)   # (batch, seq_len, embedding_size)
         embeds = self.drop(embeds)
         h0, c0 = self.init_state(inputs)
-        packed_embeds = pack_padded_sequence(embeds, lengths, batch_first=True)
+        packed_embeds = pack_padded_sequence(embeds, lengths, batch_first=True).to('cuda')
         enc_h, (enc_h_t, enc_c_t) = self.lstm(packed_embeds, (h0, c0))
 
         if self.num_directions == 2:
