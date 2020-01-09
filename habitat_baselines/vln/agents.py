@@ -255,7 +255,7 @@ class seq2seqAgent(habitat.Agent):
                     # camera rotation
                     rot = observations["adjacentViewpoints"][0][14:18]
                     #print("Teleporting to ",image_id, goal, pos, rot, ob,
-                    [ ob[:3] for ob in sorted_obs if ob[0] != -1])
+                    #[ ob[:3] for ob in sorted_obs if ob[0] != -1])
                     viewpoint = ViewpointData(
                         image_id=image_id,
                         view_point=AgentState(position=pos, rotation=rot)
