@@ -70,11 +70,12 @@ def main():
     #agent = seq2seqAgent(3.0, "SPL", encoder, decoder)
 
     #benchmark = Seq2SeqBenchmark(args.task_config)
+    cfg = get_config(config_paths)
 
     if args.train:
         assert 0 <= args.feedback <= 2, "Incorrect feedback option"
         print("Running training with feedback %s" % feedback_options[args.feedback])
-        trainer = vln_trainer.VLNTrainer(args.task_config)
+        trainer = vln_trainer.VLNTrainer(cfg)
         trainer.train()
 
 
