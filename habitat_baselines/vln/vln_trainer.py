@@ -34,6 +34,8 @@ class VLNTrainer(BaseTrainer):
     def _collect_rollout_step(
         self, rollouts, current_episode_reward, episode_rewards, episode_counts
     ):
+        return
+        '''
         pth_time = 0.0
         env_time = 0.0
 
@@ -93,6 +95,7 @@ class VLNTrainer(BaseTrainer):
         pth_time += time.time() - t_update_stats
 
         return pth_time, env_time, self.envs.num_envs
+        '''
 
     def train(self):
         # Get environments for training
@@ -159,7 +162,7 @@ class VLNTrainer(BaseTrainer):
             optimizer=self.agent.optimizer,
             lr_lambda=lambda x: linear_decay(x, self.config.NUM_UPDATES),
         )
-
+        '''
         with TensorboardWriter(
             self.config.TENSORBOARD_DIR, flush_secs=self.flush_secs
         ) as writer:
@@ -255,6 +258,7 @@ class VLNTrainer(BaseTrainer):
                     count_checkpoints += 1
 
             self.envs.close()
+            '''
 
     def save_checkpoint(self):
         ''' Snapshot models '''
