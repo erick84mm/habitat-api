@@ -277,7 +277,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                     'UNK_INDEX': 1,
                     'PAD_INDEX': 0
                 },
-                "scenes":list(set(scenes)).sort()
+                "scenes":list(set(scenes))
             }
 
             print("writting", len(habitat_episodes))
