@@ -7,21 +7,26 @@ import torch
 from habitat import Config, logger
 from habitat_baselines.common.base_trainer import BaseTrainer
 from habitat_baselines.common.env_utils import construct_envs
+from habitat_baselines.common.rollout_storage import RolloutStorage
 from habitat_baselines.common.environments import get_env_class
+from habitat_baselines.common.utils import (
+    batch_obs,
+    generate_video,
+    linear_decay,
+)
 
 
 @baseline_registry.register_trainer(name="vln")
 class VLNTrainer(BaseTrainer):
     def __init__(self, config):
         super().__init__(config)
-        self.actor_critic = None
         self.agent = None
         self.envs = None
         if config is not None:
             logger.info(f"config: {config}")
 
     def train(self):
-
+        print("VLNTrainer train method")
         # Get environments for training
         self.envs = construct_envs(
             self.config, get_env_class(self.config.ENV_NAME)

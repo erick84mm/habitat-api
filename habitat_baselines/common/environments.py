@@ -99,8 +99,8 @@ class NavRLEnv(habitat.RLEnv):
         return self.habitat_env.get_metrics()
 
 
-#@baseline_registry.register_env(name="VLNEnv")
-class VLNEnv(habitat.Env):
+@baseline_registry.register_env(name="VLNRLEnv")
+class VLNEnv(habitat.RLEnv):
     def get_shortest_path_to_target(self):
         if self._current_episode and self._dataset:
             goal_viewpoint = self._current_episode.goals[-1].image_id
