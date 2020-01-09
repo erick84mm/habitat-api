@@ -105,20 +105,20 @@ class seq2seqAgent(habitat.Agent):
         action_args = {}
         navigable_locations = observations["adjacentViewpoints"]
 
-        if goal == navigable_locations[0]["image_id"]:
+        if goal == navigable_locations[0][1]:  # image_id
             action = "STOP"
         else:
             step_size = np.pi/6.0  # default step in R2R
             goal_location = None
             for location in navigable_locations:
-                if location["image_id"] == goal:
+                if location[1] == goal:  # image_id
                     goal_location = location
                     break
             # Check if the goal is visible
             if goal_location:
 
-                rel_heading = goal_location["rel_heading"]
-                rel_elevation = goal_location["rel_elevation"]
+                rel_heading = goal_location[2]  # rel_heading
+                rel_elevation = goal_location[3]  #rel_elevation
 
                 if rel_heading > step_size:
                     action = "TURN_RIGHT"
@@ -129,14 +129,14 @@ class seq2seqAgent(habitat.Agent):
                 elif rel_elevation < -step_size:
                     action = "LOOK_DOWN"
                 else:
-                    if goal_location["restricted"]:
+                    if goal_location[0]:  # restricted
                         print("WARNING: The target was not in the" +
                               " Field of view, but the step action " +
                               "is going to be performed")
                     action = "TELEPORT"  # Move forward
                     image_id = goal
-                    posB = goal_location["start_position"]
-                    rotA = navigable_locations[0]["start_rotation"]
+                    posB = goal_location[4:6]  # start_position
+                    rotA = navigable_locations[0][14:17]  # camera_rotation
                     viewpoint = ViewpointData(
                         image_id=image_id,
                         view_point=AgentState(position=posB, rotation=rotA)
@@ -189,8 +189,7 @@ class seq2seqAgent(habitat.Agent):
                             )
         # Mask outputs where agent can't move forward
 
-        visible_points = sum([1 for ob in observations["adjacentViewpoints"]
-                                if not ob["restricted"]])
+        visible_points = sum([1 - ob[0] for ob in observations["adjacentViewpoints"]])
 
         if visible_points == 0:
             logit[0, self.model_actions.index('TELEPORT')] = -float('inf')
@@ -222,14 +221,14 @@ class seq2seqAgent(habitat.Agent):
         # Teleport to the next locaiton
         if action == "TELEPORT" and self.feedback != 'teacher':
             for ob in observations["adjacentViewpoints"][1:]:
-                if not ob["restricted"]:
+                if not ob[0]: # restricted
                     next_location = ob
                     action = "TELEPORT"
-                    image_id = next_location["image_id"]
-                    pos = next_location["start_position"]
+                    image_id = next_location[1]
+                    pos = next_location[4:6]
 
                     # Keeping the same rotation as the previous step
-                    rot = observations["adjacentViewpoints"][0]["start_rotation"]
+                    rot = observations["adjacentViewpoints"][0][14:17]
 
                     viewpoint = ViewpointData(
                         image_id=image_id,
