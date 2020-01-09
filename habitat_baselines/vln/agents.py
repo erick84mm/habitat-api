@@ -287,7 +287,6 @@ class seq2seqAgent(habitat.Agent):
         ):
             self.encoder_optimizer.zero_grad()
             self.decoder_optimizer.zero_grad()
-            print(self.encoder.requires_grad, self.decoder.requires_grad, self.loss.requires_grad)
             self.loss.backward()
             self.encoder_optimizer.step()
             self.decoder_optimizer.step()
