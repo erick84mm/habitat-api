@@ -70,7 +70,7 @@ def main():
     #agent = seq2seqAgent(3.0, "SPL", encoder, decoder)
 
     #benchmark = Seq2SeqBenchmark(args.task_config)
-    cfg = get_config(config_paths)
+    cfg = get_config(args.task_config)
 
     if args.train:
         assert 0 <= args.feedback <= 2, "Incorrect feedback option"
