@@ -204,6 +204,7 @@ class seq2seqAgent(habitat.Agent):
                                     self.seq_mask
                             )
         # Mask outputs where agent can't move forward
+        # Release memory?
         f_t = None
         visible_points = sum([1 - ob[0] for ob in observations["adjacentViewpoints"]
                                             if ob[0] != -1])
