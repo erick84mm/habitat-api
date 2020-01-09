@@ -115,6 +115,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
                 if len(shortest_path) > 1:
                     goal_viewpoint = shortest_path[1]
                 else:
+                    print("Shortest Path is not good!!!")
                     goal_viewpoint = final_goal
 
                 action = agent.act(
