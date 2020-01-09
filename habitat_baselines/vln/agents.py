@@ -216,7 +216,7 @@ class seq2seqAgent(habitat.Agent):
         target = torch.LongTensor(1)
         target[0] = self.model_actions.index(target_action)
         target = target.to('cuda')
-        print(logit, target)
+
         self.loss += self.criterion(logit, target)
         #print(logit)
         # Determine next model inputs
@@ -287,6 +287,7 @@ class seq2seqAgent(habitat.Agent):
         ):
             self.encoder_optimizer.zero_grad()
             self.decoder_optimizer.zero_grad()
+            print(self.encoder.requires_grad, self.decoder.requires_grad, self.loss.requires_grad)
             self.loss.backward()
             self.encoder_optimizer.step()
             self.decoder_optimizer.step()
