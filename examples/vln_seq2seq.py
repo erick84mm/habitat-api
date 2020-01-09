@@ -156,7 +156,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
                     #"nav_locations": nav_locations,
                     })
                 '''
-                action_history.append((action["action"], prev_image_id, image_id))
+                #action_history.append((action["action"], prev_image_id, image_id))
 
             self._env._current_episode.reset()
 
@@ -217,17 +217,17 @@ class Seq2SeqBenchmark(VLNBenchmark):
                     }
                 )
 
-                prev_state = self._env._sim.get_agent_state()
-                prev_image_id = self._env._current_episode.curr_viewpoint.image_id
-                prev_heading = observations["heading"]
-                prev_nav_locations = observations["adjacentViewpoints"]
+                #prev_state = self._env._sim.get_agent_state()
+                #prev_image_id = self._env._current_episode.curr_viewpoint.image_id
+                #prev_heading = observations["heading"]
+                #prev_nav_locations = observations["adjacentViewpoints"]
 
                 observations = self._env.step(action)
 
-                state = self._env._sim.get_agent_state()
-                image_id = self._env._current_episode.curr_viewpoint.image_id
-                heading = observations["heading"]
-                nav_locations = observations["adjacentViewpoints"]
+                #state = self._env._sim.get_agent_state()
+                #image_id = self._env._current_episode.curr_viewpoint.image_id
+                #heading = observations["heading"]
+                #nav_locations = observations["adjacentViewpoints"]
                 '''
                 action_history.append({
                     "action": action["action"],
@@ -242,9 +242,9 @@ class Seq2SeqBenchmark(VLNBenchmark):
                     "new_rot": state.rotation,
                     #"nav_locations": nav_locations,
                     })
-                '''
-                action_history.append((action["action"], prev_image_id, image_id))
 
+                action_history.append((action["action"], prev_image_id, image_id))
+                '''
             self._env._current_episode.reset()
 
             #pprint(self._env._current_episode)
