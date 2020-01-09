@@ -300,7 +300,7 @@ class AdjacentViewpointSensor(Sensor):
         return rel_elevation - elevation_angle
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
-        sensor_shape = (1, 18)
+        sensor_shape = (18, )
 
         return spaces.Box(
             low=np.finfo(np.float32).min,
