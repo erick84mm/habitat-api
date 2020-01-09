@@ -288,6 +288,9 @@ def main():
     parser.add_argument(
         "--feedback", type=int, default=0
     )
+    parser.add_argument(
+        "--checkpoint_num", type=int, default=0
+    )
     args = parser.parse_args()
     feedback_options = ["teacher", "argmax", "sample"]
 
@@ -309,8 +312,9 @@ def main():
             print("{0}: {1}".format(k, v))
 
     if args.val:
-
-        count_episodes = 5001
+        count_episodes = 0
+        if args.checkpoint_num:
+            count_episodes = args.checkpoint_num
         agent.load("checkpoints/encoder_train_{}.check".format(count_episodes),
         "checkpoints/decoder_train_{}.check".format(count_episodes))
         metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
