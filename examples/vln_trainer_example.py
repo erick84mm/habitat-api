@@ -21,7 +21,6 @@ import random
 from collections import defaultdict
 from typing import Dict, Optional
 from habitat.core.agent import Agent
-from habitat_baselines.config.default import get_config
 from habitat.core.env import Env
 from habitat.tasks.vln.vln import ViewpointData
 
@@ -32,6 +31,7 @@ import argparse
 from habitat_baselines.vln.models.Seq2Seq import EncoderLSTM, AttnDecoderLSTM
 from habitat_baselines.vln.agents import seq2seqAgent
 from habitat_baselines.vln import vln_trainer
+from habitat_baselines.config.default import get_config
 
 
 
@@ -70,7 +70,7 @@ def main():
     #agent = seq2seqAgent(3.0, "SPL", encoder, decoder)
 
     #benchmark = Seq2SeqBenchmark(args.task_config)
-    cfg = get_config(args.task_config)
+    cfg = get_config()
 
     if args.train:
         assert 0 <= args.feedback <= 2, "Incorrect feedback option"
