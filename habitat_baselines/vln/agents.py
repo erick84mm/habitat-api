@@ -178,8 +178,8 @@ class seq2seqAgent(habitat.Agent):
             seq_lengths = np.argmax(tokens == 0, axis=1)
             seq_lengths[seq_lengths==0] = self.max_tokens
 
-            seq_tensor = torch.from_numpy(tokens)
-            seq_lengths = torch.from_numpy(seq_lengths)
+            seq_tensor = torch.from_numpy(tokens).to('cuda')
+            seq_lengths = torch.from_numpy(seq_lengths).to('cuda')
             seq_mask = (seq_tensor == 0)[:,:seq_lengths[0]]
             self.seq_mask = seq_mask.unsqueeze(0).byte().to('cuda')
 
