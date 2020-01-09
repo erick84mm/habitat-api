@@ -310,6 +310,7 @@ class seq2seqAgent(habitat.Agent):
 
     def test(self, use_dropout=False, feedback="argmax"):
         self.feedback = feedback
+        torch.no_grad()
         if use_dropout:
             self.encoder.train()
             self.decoder.train()
