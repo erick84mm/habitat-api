@@ -45,7 +45,7 @@ class seq2seqAgent(habitat.Agent):
         # AI variables
         self.encoder = encoder
         self.decoder = decoder
-        self.criterion = nn.CrossEntropyLoss().to('cuda')
+        self.criterion = nn.CrossEntropyLoss(ignore_index = self.model_actions.index('<ignore>'))
         self.losses = []
         self.loss = 0
         self.predicted_actions = []
@@ -60,6 +60,7 @@ class seq2seqAgent(habitat.Agent):
         self.previous_action = '<start>'
         self.feedback = 'teacher'
         self.episode_len = episode_len
+        self.max_tokens = 80
 
         # Initializing resnet152 model
         self.image_model = models.resnet152(pretrained=True)
@@ -165,13 +166,21 @@ class seq2seqAgent(habitat.Agent):
 
         if self.previous_action == "<start>":
             # should be a tensor of logits
-            seq = torch.LongTensor([episode.instruction.tokens]).to('cuda')
-            seq_lengths = torch.LongTensor([episode.instruction.tokens_length]).to('cuda')
-            seq_mask = torch.tensor(np.array([False] * episode.instruction.tokens_length))
-            self.seq_mask = seq_mask.unsqueeze(0).to('cuda')
+
+            pad = self.max_tokens - episode.instruction.tokens_length
+            tokens = episode.instruction.tokens
+            tokens.extend([0] * pad)
+
+            seq_lengths = np.argmax(tokens == 0, axis=0)
+            seq_lengths[seq_lengths==0] = tokens.shape[1]
+
+            seq_tensor = tensor.from_numpy(tokens)
+            seq_lengths = tensor.from_numpy(seq_lengths)
+            seq_mask = (seq_tensor == 0)[:,:seq_lengths[0]]
+            self.seq_mask = seq_mask.unsqueeze(0).byte().to('cuda')
 
             # Forward through encoder, giving initial hidden state and memory cell for decoder
-            self.ctx, self.h_t, self.c_t = self.encoder(seq, seq_lengths)
+            self.ctx, self.h_t, self.c_t = self.encoder(seq_tensor, seq_lengths)
             self.a_t = torch.ones(batch_size).long() * \
                     self.model_actions.index(self.previous_action)
             self.a_t = self.a_t.unsqueeze(0).to('cuda')
