@@ -1,13 +1,15 @@
 import torch
 import torch.nn as nn
+from habitat_baselines.vln.models import visual_encoder
 
 
-class Seq2Seq(nn.Module):
-    def __init__(self, encoder, decoder, dim_actions):
+class Seq2SeqActor(nn.Module):
+    def __init__(self, observation_space, encoder, decoder, dim_actions):
         super().__init__()
         self.encoder = encoder
         self.decoder = decoder
         self.criterion = nn.CrossEntropyLoss()
+        self.visual_encoder = visual_encoder.ResNet(observation_space)
 
     def forward(self, *x):
         raise NotImplementedError
@@ -20,6 +22,10 @@ class Seq2Seq(nn.Module):
         masks,
         deterministic=False,
     ):
+    
+        ctx, h_t, c_t = self.encoder(seq, seq_lengths)
+
+
         features, rnn_hidden_states = self.net(
             observations, rnn_hidden_states, prev_actions, masks
         )

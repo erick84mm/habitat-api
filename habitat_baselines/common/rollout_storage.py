@@ -26,13 +26,11 @@ class RolloutStorage:
         self.observations = {}
 
         for sensor in observation_space.spaces:
-            print("The sensor ", sensor, " has shape ", observation_space.spaces[sensor].shape)
             self.observations[sensor] = torch.zeros(
                 num_steps + 1,
                 num_envs,
                 *observation_space.spaces[sensor].shape
             )
-            print("The resulting shape is ", self.observations[sensor].shape)
 
         self.recurrent_hidden_states = torch.zeros(
             num_steps + 1,

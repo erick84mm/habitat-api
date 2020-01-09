@@ -59,7 +59,7 @@ class seq2seqAgent(habitat.Agent):
 
         # Initializing resnet152 model
         self.image_model = models.resnet152(pretrained=True)
-        self.image_model=nn.Sequential(*list(self.image_model.children())[:-1])
+        self.image_model = nn.Sequential(*list(self.image_model.children())[:-1])
         for p in self.image_model.parameters():
             p.requires_grad = False
 
@@ -175,6 +175,7 @@ class seq2seqAgent(habitat.Agent):
 
         im = observations["rgb"][:,:,[2,1,0]]
         f_t = self._get_image_features(im) #.to('cuda')
+        f_t = Variable(torch.from_numpy(f_t), requires_grad=False).cuda()
 
         ended = np.array([False] * batch_size) # Indices match permuation of the model, not env
 
@@ -196,7 +197,8 @@ class seq2seqAgent(habitat.Agent):
 
         # Supervised training
         target_action, action_args = self._teacher_actions(observations, goal)
-        target = torch.LongTensor([self.model_actions.index(target_action)])
+        target = torch.LongTensor(1)
+        target[0] = self.model_actions.index(target_action)
         target = Variable(target, requires_grad=False).to('cuda')
         self.loss += self.criterion(logit, target)
         #print(logit)
