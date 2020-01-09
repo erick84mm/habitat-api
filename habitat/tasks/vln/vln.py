@@ -833,7 +833,6 @@ class DistanceToGoal(Measure):
             current_position, episode.goals[-1].get_position()
         )
 
-
         start = episode.curr_viewpoint.image_id
         end = episode.goals[-1].image_id
         distance_to_target = task.get_distance_to_target(
@@ -876,8 +875,8 @@ class TeleportAction(SimulatorTaskAction):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
         """
-        position = target.view_point.position
-        rotation = target.view_point.rotation
+        position = np.array(target.view_point.position)
+        rotation = np.array(target.view_point.rotation)
 
         #print("Teleport Action to pos ", target.view_point.position)
         if not isinstance(rotation, list):
@@ -892,7 +891,7 @@ class TeleportAction(SimulatorTaskAction):
                 #print("Snap point couldn't find a place to land, error.")
                 return self._sim.get_observations_at()
             else:
-                position = new_position.tolist()
+                position = new_position #.tolist()
                 #print("New position found", position)
 
         if kwargs and "episode" in kwargs:
@@ -900,8 +899,8 @@ class TeleportAction(SimulatorTaskAction):
             kwargs["episode"].curr_viewpoint = ViewpointData(
                             image_id=target.image_id,
                             view_point=AgentState(
-                                position=position,
-                                rotation=rotation)
+                                position=position.tolist(),
+                                rotation=rotation.tolist())
                             )
 
         return self._sim.get_observations_at(
