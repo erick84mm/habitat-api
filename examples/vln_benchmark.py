@@ -437,10 +437,11 @@ class DiscreteRandomAgent(habitat.Agent):
                     goal = ob
                     action = "TELEPORT"
                     image_id = goal[1]
-                    pos = goal[4:6]  # agent_position
+                    pos = goal[4:7]  # agent_position
 
                     # Keeping the same rotation as the previous step
-                    rot = observations["adjacentViewpoints"][0][14:17]
+                    # camera rotation
+                    rot = observations["adjacentViewpoints"][0][14:18]
 
                     viewpoint = ViewpointData(
                         image_id=image_id,
@@ -500,8 +501,8 @@ class DiscreteShortestPathAgent(habitat.Agent):
                               "is going to be performed")
                     action = "TELEPORT"  # Move forward
                     image_id = goal.image_id
-                    posB = goal_location[4:6] # agent_position
-                    rotA = navigable_locations[0][14:17] # camera_rotation
+                    posB = goal_location[4:7] # agent_position
+                    rotA = navigable_locations[0][14:18] # camera_rotation
                     viewpoint = ViewpointData(
                         image_id=image_id,
                         view_point=AgentState(position=posB, rotation=rotA)

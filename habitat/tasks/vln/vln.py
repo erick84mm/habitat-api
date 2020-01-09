@@ -875,10 +875,10 @@ class TeleportAction(SimulatorTaskAction):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
         """
-        position = np.array(target.view_point.position, dtype='f')
-        rotation = np.array(target.view_point.rotation, dtype='f')
+        position = target.view_point.position
+        rotation = target.view_point.rotation
 
-        print("Teleport Action to pos ", target.view_point.position)
+        #print("Teleport Action to pos ", target.view_point.position)
         if not isinstance(rotation, list):
             rotation = list(rotation)
 
@@ -891,7 +891,7 @@ class TeleportAction(SimulatorTaskAction):
                 #print("Snap point couldn't find a place to land, error.")
                 return self._sim.get_observations_at()
             else:
-                position = new_position #.tolist()
+                position = new_position.tolist()
                 #print("New position found", position)
 
         if kwargs and "episode" in kwargs:
@@ -899,8 +899,8 @@ class TeleportAction(SimulatorTaskAction):
             kwargs["episode"].curr_viewpoint = ViewpointData(
                             image_id=target.image_id,
                             view_point=AgentState(
-                                position=position.tolist(),
-                                rotation=rotation.tolist())
+                                position=position,
+                                rotation=rotation)
                             )
 
         return self._sim.get_observations_at(
