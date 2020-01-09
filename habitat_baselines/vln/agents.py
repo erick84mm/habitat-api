@@ -278,8 +278,8 @@ class seq2seqAgent(habitat.Agent):
             print("The resulting loss is ", self.loss.item() / self.episode_len)
             writer.add_scalar('Loss/train', self.loss.item() / self.episode_len, n_iter)
             #writer.add_text('Predicted_Actions', ','.join([str(a) for a in self.predicted_actions]), n_iter)
-        else:
-            print("Please call train first")
+        #else:
+            #print("Please call train first")
 
     def test(self, use_dropout=False, feedback="argmax"):
         self.feedback = feedback

@@ -900,7 +900,7 @@ class TeleportAction(SimulatorTaskAction):
                 #print("Snap point couldn't find a place to land, error.")
                 return self._sim.get_observations_at()
             else:
-                position = new_position.tolist()
+                position = new_position#.tolist()
                 #print("New position found", position)
 
         if kwargs and "episode" in kwargs:
