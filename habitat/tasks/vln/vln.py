@@ -231,7 +231,7 @@ class AdjacentViewpointSensor(Sensor):
         self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
     ):
         self._sim = sim
-        self.max_locations = 50
+        self.max_locations = 20
         super().__init__(config=config)
 
     def _get_uuid(self, *args: Any, **kwargs: Any):
@@ -887,21 +887,21 @@ class TeleportAction(SimulatorTaskAction):
         position = target.view_point.position
         rotation = target.view_point.rotation
 
-        print("Teleport Action to pos ", target.view_point.position)
+        #print("Teleport Action to pos ", target.view_point.position)
         if not isinstance(rotation, list):
             rotation = list(rotation)
 
         if not self._sim.is_navigable(position):
-            print("The destination is not navigable, running snap point")
+            #print("The destination is not navigable, running snap point")
             # is not navigable then we search for a location close to the target
             new_position = np.array(position, dtype='f')
             new_position = self._sim._sim.pathfinder.snap_point(new_position)
             if np.isnan(new_position[0]):
-                print("Snap point couldn't find a place to land, error.")
+                #print("Snap point couldn't find a place to land, error.")
                 return self._sim.get_observations_at()
             else:
                 position = new_position#.tolist()
-                print("New position found", position)
+                #print("New position found", position)
 
         if kwargs and "episode" in kwargs:
             last_viewpoint = kwargs["episode"].curr_viewpoint
