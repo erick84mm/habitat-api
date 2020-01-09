@@ -166,14 +166,17 @@ class seq2seqAgent(habitat.Agent):
 
         if self.previous_action == "<start>":
             # should be a tensor of logits
+            if episode.instruction.tokens_length < self.max_tokens:
+                pad = self.max_tokens - episode.instruction.tokens_length
+                tokens = episode.instruction.tokens
+                tokens.extend([0] * pad)
+                tokens = np.array([tokens])
+            else:
+                tokens = episode.instruction.tokens[:self.max_tokens]
+                tokens = np.array([tokens])
 
-            pad = self.max_tokens - episode.instruction.tokens_length
-            tokens = episode.instruction.tokens
-            tokens.extend([0] * pad)
-            tokens = np.array(tokens)
-
-            seq_lengths = np.argmax(tokens == 0, axis=0)
-            seq_lengths[seq_lengths==0] = tokens.shape[1]
+            seq_lengths = np.argmax(tokens == 0, axis=1)
+            seq_lengths[seq_lengths==0] = self.max_tokens
 
             seq_tensor = tensor.from_numpy(tokens)
             seq_lengths = tensor.from_numpy(seq_lengths)
