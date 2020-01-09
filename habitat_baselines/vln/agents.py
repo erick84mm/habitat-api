@@ -72,6 +72,7 @@ class seq2seqAgent(habitat.Agent):
         self.c_t = None
         self.a_t = None
         self.seq_mask = None
+        print("Agent Reset")
 
 
 
