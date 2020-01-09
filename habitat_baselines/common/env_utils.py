@@ -88,7 +88,7 @@ def construct_envs(
         config.TASK_CONFIG = task_config
         config.freeze()
         configs.append(config.clone())
-
+    print("Spawning %s of envs" % len(configs))
     envs = habitat.VectorEnv(
         make_env_fn=make_env_fn,
         env_fn_args=tuple(
