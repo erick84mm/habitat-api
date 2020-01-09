@@ -237,9 +237,14 @@ class seq2seqAgent(habitat.Agent):
         else:
             sys.exit('Invalid feedback option')
 
-        # Teleport to the next locaiton
+        # Teleport to the next location, the one with lower rel heading
+
         if action == "TELEPORT" and self.feedback != 'teacher':
-            for ob in observations["adjacentViewpoints"][1:]:
+            sorted_obs = sorted(
+                observations["adjacentViewpoints"][1:],
+                key=lambda x : abs(x[2])
+            ) # sort by relative heading
+            for ob in sorted_obs:
                 if not ob[0]: # restricted
                     next_location = ob
                     action = "TELEPORT"

@@ -168,4 +168,5 @@ class R2RDatasetV1(Dataset):
                             }
                         )
         # In VLN the observations are from left to right but here is backwards.
+        # The observations must be sorted by absolute relative heading
         return observations[::1]
