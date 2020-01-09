@@ -99,7 +99,7 @@ class NavRLEnv(habitat.RLEnv):
         return self.habitat_env.get_metrics()
 
 
-@baseline_registry.register_env(name="VLNEnv")
+#@baseline_registry.register_env(name="VLNEnv")
 class VLNEnv(habitat.Env):
     def get_shortest_path_to_target(self):
         if self._current_episode and self._dataset:
