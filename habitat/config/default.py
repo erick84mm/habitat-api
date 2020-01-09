@@ -349,7 +349,7 @@ def get_config(
                 config_paths = config_paths.split(CONFIG_FILE_SEPARATOR)
             else:
                 config_paths = [config_paths]
-
+        print(config_paths)
         for config_path in config_paths:
             config.merge_from_file(config_path)
 
