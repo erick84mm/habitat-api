@@ -46,7 +46,7 @@ class R2RDatasetV1(Dataset):
     @staticmethod
     def get_scenes_to_load(config: Config) -> List[str]:
         assert R2RDatasetV1.check_config_paths_exist(config)
-
+        print(config)
         with gzip.open(config.DATA_PATH.format(split=config.SPLIT), "rt") as f:
             data = json.loads(f.read())
             scenes = data["scenes"]
@@ -57,7 +57,7 @@ class R2RDatasetV1(Dataset):
         return os.path.exists(config.DATA_PATH.format(split=config.SPLIT))
 
     def __init__(self, config: Config = None) -> None:
-        
+
         if config is None:
             return
 
