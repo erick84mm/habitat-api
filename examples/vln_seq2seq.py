@@ -317,7 +317,7 @@ def main():
         agent.load("checkpoints/encoder_train_{}.check".format(count_episodes),
         "checkpoints/decoder_train_{}.check".format(count_episodes))
 
-        print("checkpoint loaded %s" str(args.checkpoint_num))
+        print("checkpoint loaded %s" % str(args.checkpoint_num))
         metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
         for k, v in metrics.items():
             print("{0}: {1}".format(k, v))
