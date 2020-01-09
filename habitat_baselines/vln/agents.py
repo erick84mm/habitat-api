@@ -73,9 +73,7 @@ class seq2seqAgent(habitat.Agent):
         self.a_t = None
         self.seq_mask = None
 
-        if self.loss:
-            self.losses.append(self.loss.item() / self.episode_len)
-        self.loss = 0
+
 
     def is_goal_reached(self, observations):
         dist = observations[self.goal_sensor_uuid][0]
@@ -271,12 +269,14 @@ class seq2seqAgent(habitat.Agent):
         ):
             self.encoder_optimizer.zero_grad()
             self.decoder_optimizer.zero_grad()
-            self.loss = self.loss / 10
             self.loss.backward()
             self.encoder_optimizer.step()
             self.decoder_optimizer.step()
             print("The resulting loss is ", self.loss.item() / self.episode_len)
             writer.add_scalar('Loss/train', self.loss.item() / self.episode_len, n_iter)
+            if self.loss:
+                self.losses.append(self.loss.item() / self.episode_len)
+            self.loss = 0
             #writer.add_text('Predicted_Actions', ','.join([str(a) for a in self.predicted_actions]), n_iter)
         #else:
             #print("Please call train first")
