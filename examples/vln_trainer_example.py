@@ -21,7 +21,7 @@ import random
 from collections import defaultdict
 from typing import Dict, Optional
 from habitat.core.agent import Agent
-from habitat.config.default import get_config
+from habitat_baselines.config.default import get_config
 from habitat.core.env import Env
 from habitat.tasks.vln.vln import ViewpointData
 
