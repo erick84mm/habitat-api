@@ -29,7 +29,7 @@ from habitat.core.simulator import (
     AgentState,
 )
 import argparse
-from habitat_baselines.vln.models.Seq2Seq import EncoderLSTM, AttnDecoderLSTM
+from habitat_baselines.vln.models.model import EncoderLSTM, AttnDecoderLSTM
 from habitat_baselines.vln.agents import seq2seqAgent
 
 
