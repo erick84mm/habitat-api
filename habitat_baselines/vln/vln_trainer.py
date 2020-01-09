@@ -20,7 +20,7 @@ from habitat_baselines.common.utils import (
 @baseline_registry.register_trainer(name="vln")
 class VLNTrainer(BaseTrainer):
     def __init__(self, config):
-        super().__init__(config)
+        #super().__init__(config)
         self.agent = None
         self.envs = None
         if config is not None:
