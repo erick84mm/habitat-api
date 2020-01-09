@@ -62,14 +62,14 @@ def main():
     feedback_options = ["teacher", "argmax", "sample"]
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(device)
+    #print(device)
 
-    encoder = EncoderLSTM(1300, 256, 256, 0, 0.5, bidirectional=False, num_layers=2).to(device)
-    decoder = AttnDecoderLSTM(8, 6, 32, 256, 0.5).to(device)
+    #encoder = EncoderLSTM(1300, 256, 256, 0, 0.5, bidirectional=False, num_layers=2).to(device)
+    #decoder = AttnDecoderLSTM(8, 6, 32, 256, 0.5).to(device)
 
-    agent = seq2seqAgent(3.0, "SPL", encoder, decoder)
+    #agent = seq2seqAgent(3.0, "SPL", encoder, decoder)
 
-    benchmark = Seq2SeqBenchmark(args.task_config)
+    #benchmark = Seq2SeqBenchmark(args.task_config)
 
     if args.train:
         assert 0 <= args.feedback <= 2, "Incorrect feedback option"
