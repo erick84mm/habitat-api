@@ -232,9 +232,9 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
             for episode in data:
                 for i, instr in enumerate(episode["instructions"]):
                     scan = episode["scan"]
-                    path = []
+                    goals = []
                     for vp in episode["path"]:
-                        path.append(connectivity[scan]["idtoidx"][vp])
+                        goals.append(connectivity[scan]["idtoidx"][vp])
                     viewpoint = episode["path"][0]
                     scenes.append(scan)
                     distance = 0
@@ -250,7 +250,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                         'start_rotation':
                             heading_to_rotation(heading),
                         'info': {"geodesic_distance": distance},
-                        'goals': path,
+                        'goals': goals,
                         'instruction': instr,
                         'instruction_encoding':
                             tokenizer.encode_sentence(instr).tolist(),
