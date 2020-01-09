@@ -102,7 +102,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
             observations = self._env.reset()
             action_history = []
             elapsed_steps = 0
-            print("Path", [ vp.image_id for vp in self._env._current_episode.goals])
+            #print("Path", [ vp.image_id for vp in self._env._current_episode.goals])
 
             while not self._env.episode_over:
                 final_goal = self._env._current_episode.goals[-1].image_id
@@ -112,11 +112,11 @@ class Seq2SeqBenchmark(VLNBenchmark):
                     episode.curr_viewpoint.image_id,
                     final_goal
                 )
-                print("shortest_path", shortest_path)
+                #print("shortest_path", shortest_path)
                 if len(shortest_path) > 1:
                     goal_viewpoint = shortest_path[1]
                 else:
-                    print("Shortest Path is not good!!!")
+                    #print("Shortest Path is not good!!!")
                     goal_viewpoint = final_goal
 
                 action = agent.act(

@@ -237,7 +237,7 @@ class seq2seqAgent(habitat.Agent):
                     )
                     action_args = {"target": viewpoint}
                     break
-        print(action, target_action, self.loss.item())
+        #print(action, target_action, self.loss.item())
         #self.predicted_actions.append(action)
         self.previous_action = action
 
