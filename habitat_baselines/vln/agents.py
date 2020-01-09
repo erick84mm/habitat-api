@@ -267,11 +267,11 @@ class seq2seqAgent(habitat.Agent):
             self.encoder_optimizer and
             self.decoder_optimizer and
             n_iter and
-            n_iter % 25 == 0
+            n_iter % 10 == 0
         ):
             self.encoder_optimizer.zero_grad()
             self.decoder_optimizer.zero_grad()
-            self.loss = self.loss / 25
+            self.loss = self.loss / 10
             self.loss.backward()
             self.encoder_optimizer.step()
             self.decoder_optimizer.step()
