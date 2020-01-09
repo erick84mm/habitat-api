@@ -64,6 +64,9 @@ class VLNTrainer(BaseTrainer):
 
         observations = self.envs.reset()
         batch = batch_obs(observations)
+        for sensor in rollouts.observations:
+            print(batch[sensor].shape)
+
 
         # Copy the information to the wrapper
         for sensor in rollouts.observations:
