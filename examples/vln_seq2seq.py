@@ -30,7 +30,16 @@ from habitat.core.simulator import (
 import argparse
 from habitat_baselines.vln.models.model import EncoderLSTM, AttnDecoderLSTM
 from habitat_baselines.vln.agents import seq2seqAgent
+import gc
 
+
+def check_memory():
+    for obj in gc.get_objects():
+        try:
+            if torch.is_tensor(obj) or (hasattr(obj, 'data') and torch.is_tensor(obj.data)):
+                print(type(obj), obj.size())
+        except:
+            pass
 
 class VLNBenchmark(habitat.Benchmark):
 
@@ -191,6 +200,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
             observations = self._env.reset()
             action_history = []
             elapsed_steps = 0
+            check_memory()
 
             while not self._env.episode_over:
                 final_goal = self._env._current_episode.goals[-1].image_id
