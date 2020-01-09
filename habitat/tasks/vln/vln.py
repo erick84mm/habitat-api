@@ -337,7 +337,7 @@ class AdjacentViewpointSensor(Sensor):
         formatted_location.extend(target_pos)
         formatted_location.extend(agent_rot)
         formatted_location.extend(camera_pos)
-        formatted_location.extend(cameara_rot)
+        formatted_location.extend(camera_rot)
 
         return formatted_location
 
