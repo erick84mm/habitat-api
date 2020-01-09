@@ -24,8 +24,8 @@ class VLNTrainer(BaseTrainer):
         self.agent = None
         self.envs = None
         self.config = config
-        if config is not None:
-            logger.info(f"config: {config}")
+        #if config is not None:
+        #    logger.info(f"config: {config}")
 
     def train(self):
         print("VLNTrainer train method")
