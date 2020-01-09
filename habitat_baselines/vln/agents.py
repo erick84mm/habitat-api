@@ -75,7 +75,7 @@ class seq2seqAgent(habitat.Agent):
         self.c_t = None
         self.a_t = None
         self.seq_mask = None
-        print("Agent Reset")
+        #print("Agent Reset")
 
 
 
@@ -254,7 +254,7 @@ class seq2seqAgent(habitat.Agent):
                     # Keeping the same rotation as the previous step
                     # camera rotation
                     rot = observations["adjacentViewpoints"][0][14:18]
-                    print("Teleporting to ",image_id, goal, pos, rot, ob,
+                    #print("Teleporting to ",image_id, goal, pos, rot, ob,
                     [ ob[:3] for ob in sorted_obs if ob[0] != -1])
                     viewpoint = ViewpointData(
                         image_id=image_id,
@@ -262,7 +262,7 @@ class seq2seqAgent(habitat.Agent):
                     )
                     action_args = {"target": viewpoint}
                     break
-        print(action, target_action, self.loss.item())
+        #print(action, target_action, self.loss.item())
         #self.predicted_actions.append(action)
         self.previous_action = action
 
