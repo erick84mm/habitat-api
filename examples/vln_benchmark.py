@@ -355,7 +355,7 @@ class VLNShortestPathBenchmark(VLNBenchmark):
                 pprint(metrics)
                 if "navigationError" in metrics and  metrics["navigationError"] > 0:
                     print("Scan %s" % self._env._current_episode.scan)
-                    print("image_id %s" % self._env._current_episode.goals[0].image_id)
+                    print("image_id %s" % str(self._env._current_episode.goals[0].image_id))
 
                 for m, v in metrics.items():
                     if m != "distance_to_goal":
@@ -383,8 +383,7 @@ class RandomAgent(habitat.Agent):
     def act(self, observations, previous_step_collided):
         action = ""
         action_args = {}
-        visible_points = sum([1 for ob in observations["adjacentViewpoints"]
-                                if not ob["restricted"]])
+        visible_points = sum([1 - ob[0] for ob in observations["adjacentViewpoints"]])
         prob = random.random()
 
         # 3% probability of stopping
@@ -418,8 +417,7 @@ class DiscreteRandomAgent(habitat.Agent):
     def act(self, observations, elapsed_steps, previous_step_collided):
         action = ""
         action_args = {}
-        visible_points = sum([1 for ob in observations["adjacentViewpoints"]
-                                if not ob["restricted"]])
+        visible_points = sum([1 - ob[0] for ob in observations["adjacentViewpoints"]])
 
         if elapsed_steps == 0:
             # Turn right (direction choosing)
@@ -434,15 +432,15 @@ class DiscreteRandomAgent(habitat.Agent):
 
         # Turn right until we can go forward
         elif visible_points > 0:
-            for ob in  observations["adjacentViewpoints"]:
-                if not ob["restricted"]:
+            for ob in observations["adjacentViewpoints"]:
+                if not ob[0]:
                     goal = ob
                     action = "TELEPORT"
-                    image_id = goal["image_id"]
-                    pos = goal["start_position"]
+                    image_id = goal[1]
+                    pos = goal[4:6]  # agent_position
 
                     # Keeping the same rotation as the previous step
-                    rot = observations["adjacentViewpoints"][0]["start_rotation"]
+                    rot = observations["adjacentViewpoints"][0][14:17]
 
                     viewpoint = ViewpointData(
                         image_id=image_id,
@@ -484,8 +482,8 @@ class DiscreteShortestPathAgent(habitat.Agent):
             # Check if the goal is visible
             if goal_location:
 
-                rel_heading = goal_location["rel_heading"]
-                rel_elevation = goal_location["rel_elevation"]
+                rel_heading = goal_location[2]
+                rel_elevation = goal_location[3]
 
                 if rel_heading > step_size:
                     action = "TURN_RIGHT"
@@ -496,14 +494,14 @@ class DiscreteShortestPathAgent(habitat.Agent):
                 elif rel_elevation < -step_size:
                     action = "LOOK_DOWN"
                 else:
-                    if goal_location["restricted"]:
+                    if goal_location[0]:
                         print("WARNING: The target was not in the" +
                               " Field of view, but the step action " +
                               "is going to be performed")
                     action = "TELEPORT"  # Move forward
                     image_id = goal.image_id
-                    posB = goal_location["start_position"]
-                    rotA = navigable_locations[0]["start_rotation"]
+                    posB = goal_location[4:6] # agent_position
+                    rotA = navigable_locations[0][14:17] # camera_rotation
                     viewpoint = ViewpointData(
                         image_id=image_id,
                         view_point=AgentState(position=posB, rotation=rotA)

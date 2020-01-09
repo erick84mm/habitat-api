@@ -87,9 +87,12 @@ def load_datasets(splits, data_path):
     return data
 
 
-def load_connectivity(connectivity_path):
+def load_connectivity(connectivity_path, scenes=None):
     file_format = connectivity_path + "{}_connectivity.json"
-    scans = read(connectivity_path + "scans.txt")
+    if scenes:
+        scans = scenes
+    else:
+        scans = read(connectivity_path + "scans.txt")
     connectivity = {}
     for scan in scans:
         data = read_json(file_format.format(scan))
@@ -100,8 +103,10 @@ def load_connectivity(connectivity_path):
         positions = {}
         visibility = {}
         idxtoid = {}
+        idtoidx = {}
         for i, item in enumerate(data):
-            idxtoid[str(i)] = item['image_id']
+            idxtoid[i] = item['image_id']
+            idtoidx[item['image_id']] = i
             pt_mp3d = np.array([item['pose'][3],
                 item['pose'][7], item['pose'][11] - item['height']])
 
@@ -123,6 +128,7 @@ def load_connectivity(connectivity_path):
                 "paths": paths,
                 "visibility": visibility,
                 "idxtoid": idxtoid,
+                "idtoidx": idtoidx,
         }
 
     return connectivity
@@ -219,13 +225,18 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
 
     for split in splits:
         habitat_episodes = []
+        scenes = []
         if force or not path.exists(config.DATA_PATH.format(split=split)):
             data = load_dataset(split,
                                 json_file_path.format(split=split))
             for episode in data:
                 for i, instr in enumerate(episode["instructions"]):
-                    viewpoint = episode["path"][0]
                     scan = episode["scan"]
+                    path = []
+                    for vp in episode["path"]:
+                        path.append(connectivity[scan]["idtoidx"][vp])
+                    viewpoint = episode["path"][0]
+                    scenes.append(scan)
                     distance = 0
                     heading = normalize_heading(episode["heading"])
 
@@ -239,7 +250,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                         'start_rotation':
                             heading_to_rotation(heading),
                         'info': {"geodesic_distance": distance},
-                        'goals': episode["path"],
+                        'goals': path,
                         'instruction': instr,
                         'instruction_encoding':
                             tokenizer.encode_sentence(instr).tolist(),
@@ -266,6 +277,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                     'UNK_INDEX': 1,
                     'PAD_INDEX': 0
                 },
+                "scenes":list(set(scenes)).sort()
             }
 
             print("writting", len(habitat_episodes))

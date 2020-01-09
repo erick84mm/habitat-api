@@ -97,3 +97,30 @@ class NavRLEnv(habitat.RLEnv):
 
     def get_info(self, observations):
         return self.habitat_env.get_metrics()
+
+
+@baseline_registry.register_env(name="VLNEnv")
+class VLNEnv(habitat.Env):
+    def get_shortest_path_to_target(self):
+        if self._current_episode and self._dataset:
+            goal_viewpoint = self._current_episode.goals[-1].image_id
+            return self._dataset.get_shortest_path_to_target(
+                self._current_episode.scan,
+                self._current_episode.curr_viewpoint.image_id,
+                goal_viewpoint
+            )
+        return []
+
+    def get_distance_to_target(self):
+        if self._current_episode and self._dataset:
+            return self._dataset.get_distance_to_target(
+                self._current_episode.scan,
+                self._current_episode.curr_viewpoint.image_id,
+                goal_viewpoint
+            )
+        return float("inf")
+
+    def get_navigable_locations(self, scan, viewpoint):
+        if self._current_episode and self._dataset:
+            return self._dataset.get_navigable_locations(scan, viewpoint)
+        return {}

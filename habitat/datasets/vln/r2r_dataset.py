@@ -44,6 +44,15 @@ class R2RDatasetV1(Dataset):
     trainval_vocab: VocabDict
 
     @staticmethod
+    def get_scenes_to_load(config: Config) -> List[str]:
+        assert R2RDatasetV1.check_config_paths_exist(config)
+
+        with gzip.open(config.DATA_PATH.format(split=config.SPLIT), "rt") as f:
+            data = json.loads(f.read())
+            scenes = data["scenes"]
+        return scenes
+
+    @staticmethod
     def check_config_paths_exist(config: Config) -> bool:
         return os.path.exists(config.DATA_PATH.format(split=config.SPLIT))
 
@@ -52,7 +61,8 @@ class R2RDatasetV1(Dataset):
         self.episodes: List[VLNEpisode] = []
         self.train_vocab: VocabDict = []
         self.trainval_vocab: VocabDict = []
-        self.connectivity = load_connectivity(config.CONNECTIVITY_PATH)
+        self.connectivity = []
+        self.scenes: List[str] = []
 
         if config is None:
             return
@@ -71,6 +81,13 @@ class R2RDatasetV1(Dataset):
         )
         self.trainval_vocab = VocabDict(
             word_list=deserialized["trainval_vocab"]["word_list"]
+        )
+
+        self.scenes = deserialized["scenes"]
+
+        self.connectivity = load_connectivity(
+            config.CONNECTIVITY_PATH,
+            self.scenes
         )
 
         for ep_index, r2r_episode in enumerate(deserialized["episodes"]):
@@ -95,12 +112,12 @@ class R2RDatasetV1(Dataset):
                 instruction=r2r_episode["instruction"],
                 tokens=instruction_encoding,
                 tokens_length=len(instruction_encoding)
-
             )
 
             scan = episode.scan
             for v_index, viewpoint in enumerate(episode.goals):
-                pos = self.connectivity[scan]["viewpoints"][viewpoint]
+                viewpoint_id = self.connectivity[scan]["idxtoid"][viewpoint]
+                pos = self.connectivity[scan]["viewpoints"][viewpoint_id]
                 rot = default_rotation
                 episode.goals[v_index] = ViewpointData(
                     image_id=viewpoint,
@@ -114,20 +131,25 @@ class R2RDatasetV1(Dataset):
             self.episodes.append(episode)
 
     def get_distance_to_target(self, scan, start, end):
-        return self.connectivity[scan]["distances"][start][end]
+        start_vp = self.connectivity[scan]["idxtoid"][start]
+        end_vp = self.connectivity[scan]["idxtoid"][start]
+        return self.connectivity[scan]["distances"][start_vp][end_vp]
 
     def get_shortest_path_to_target(self, scan, start, end):
-        return self.connectivity[scan]["paths"][start][end]
+        start_vp = self.connectivity[scan]["idxtoid"][start]
+        end_vp = self.connectivity[scan]["idxtoid"][start]
+        return self.connectivity[scan]["paths"][start_vp][end_vp]
 
     def get_navigable_locations(self, scan, viewpoint):
         observations = []
         default_rotation = [0,0,0,1]
         scan_inf = self.connectivity[scan]
-        viewpoint_inf = scan_inf["visibility"][viewpoint]
+        viewpoint_id = scan_inf["idxtoid"][viewpoint]
+        viewpoint_inf = scan_inf["visibility"][viewpoint_id]
         for i in range(len(viewpoint_inf["visible"])):
             if viewpoint_inf["included"] and viewpoint_inf["unobstructed"][i]:
-                adjacent_viewpoint_name = scan_inf["idxtoid"][str(i)]
-                if adjacent_viewpoint_name != viewpoint:
+                if i != viewpoint:
+                    adjacent_viewpoint_name = scan_inf["idxtoid"][i]
                     adjacent_viewpoint_pos = \
                         scan_inf["viewpoints"][adjacent_viewpoint_name]
                     adjacent_viewpoint = \
@@ -135,7 +157,7 @@ class R2RDatasetV1(Dataset):
                     if adjacent_viewpoint["included"]:
                         observations.append(
                             {
-                                "image_id": adjacent_viewpoint_name,
+                                "image_id": i,
                                 "start_position":
                                     adjacent_viewpoint_pos,
                                 "start_rotation":

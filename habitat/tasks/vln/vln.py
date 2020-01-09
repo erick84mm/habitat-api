@@ -84,12 +84,12 @@ class InstructionData:
 class ViewpointData:
     r"""Base class for a viewpoint specification.
     """
-    image_id: str = attr.ib(default=None, validator=not_none_validator)
+    image_id: int = attr.ib(default=None, validator=not_none_validator)
     view_point: AgentState = None
     radius: Optional[float] = None
 
     def __str__(self):
-        return self.image_id
+        return str(self.image_id)
 
     def __repr__(self):
         return "image_id {0} \n position {1} \n rotation {2} \n".format(
@@ -302,8 +302,45 @@ class AdjacentViewpointSensor(Sensor):
     def _get_observation_space(self, *args: Any, **kwargs: Any):
         if "task" in kwargs and "scan" in kwargs and \
         "curr_viewpoint" in kwargs:
-            return kwargs["task"].get_navigable_locations()
+            return kwargs["task"].get_navigable_locations(
+                kwargs["scan"],
+                kwargs["curr_viewpoint"]
+            )
         return []
+
+    def format_location(
+        self,
+        restricted,
+        image_id,
+        rel_heading,
+        rel_elevation,
+        target_pos,
+        agent_rot,
+        camera_pos,
+        camera_rot,
+    ):
+        '''
+        Format:
+        [restricted, image_id, rel_heading, rel_elevation,
+            x, y, z, rx, ry, rz, rw, cx, cy, cz, crx, cry, crz, crw]
+
+        restricted = True if the viewpoint is within the FOV
+        image_id: int = viewpoint id
+        rel_heading: float = relative heading from the initial point (radians)
+        rel_elevation: float = relative elevation from the initial point (radians)
+        x, y, z: float = position coordinates
+        rx, ry, rz, rw = quaternion values
+        cx, cy, cz: float = position coordinates of the camera
+        crx, cry, crz, crw = quaternion values of the camera
+        '''
+        formatted_location = [restricted, image_id, rel_heading, rel_elevation]
+        formatted_location += target_pos
+        formatted_location += agent_rot
+        formatted_location += camera_pos
+        formatted_location += cameara_rot
+
+        return formatted_location
+
 
     def get_observation(
         self, observations, episode, task, *args: Any, **kwargs: Any
@@ -323,16 +360,16 @@ class AdjacentViewpointSensor(Sensor):
         angle = self._sim.config.RGB_SENSOR.HFOV * 2 * np.pi / 360 / 2
 
         navigable_viewpoints = [
-            {
-                "image_id": curr_viewpoint,
-                "start_position": agent_state.position,
-                "start_rotation": agent_rot,
-                "camera_rotation": camera_rot,
-                "camera_pos": camera_pos,
-                "rel_heading": 0,
-                "rel_elevation": 0,
-                "restricted": True
-            }
+            self.format_location(
+                1,
+                curr_viewpoint,
+                0,
+                0
+                agent_state.position,
+                agent_rot,
+                camera_pos,
+                camera_rot,
+            )
         ]
 
         for viewpoint in near_viewpoints:
@@ -349,21 +386,24 @@ class AdjacentViewpointSensor(Sensor):
                     camera_rot,
                     target_pos
             )
-            restricted = True
+            restricted = 1
 
             if -angle <= rel_heading <= angle:
-                restricted = False
+                restricted = 0
 
-            navigable_viewpoints.append({
-                "image_id": image_id,
-                "start_position": target_pos,
-                "start_rotation": agent_rot,
-                "camera_rotation": camera_rot,
-                "camera_pos": camera_pos,
-                "rel_heading": rel_heading,
-                "rel_elevation": rel_elevation,
-                "restricted": restricted
-            })
+            navigable_viewpoints.append(
+                self.format_location
+                (
+                    restricted,
+                    image_id,
+                    rel_heading,
+                    rel_elevation,
+                    target_pos,
+                    agent_rot,
+                    camera_pos,
+                    camera_rot,
+                )
+            )
 
         return navigable_viewpoints
 
@@ -411,7 +451,7 @@ class SPL(Measure):
         self._metric = None
 
     def _euclidean_distance(self, position_a, position_b):
-        position_a[1]=0
+        position_a[1]=0 
         position_b[1]=0
         return np.linalg.norm(
             np.array(position_b) - np.array(position_a)#, ord=2
