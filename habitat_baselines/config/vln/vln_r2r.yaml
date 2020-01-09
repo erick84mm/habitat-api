@@ -1,6 +1,6 @@
 BASE_TASK_CONFIG_PATH: "configs/tasks/vln_r2r.yaml"
 TRAINER_NAME: "vln"
-ENV_NAME: "VLNEnv"
+ENV_NAME: "VLNRLEnv"
 SIMULATOR_GPU_ID: 0
 TORCH_GPU_ID: 0
 VIDEO_OPTION: ["disk", "tensorboard"]
