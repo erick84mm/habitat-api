@@ -364,8 +364,8 @@ class AdjacentViewpointSensor(Sensor):
                 1,
                 curr_viewpoint,
                 0,
-                0
-                agent_state.position,
+                0,
+                agent_pos,
                 agent_rot,
                 camera_pos,
                 camera_rot,
@@ -451,7 +451,7 @@ class SPL(Measure):
         self._metric = None
 
     def _euclidean_distance(self, position_a, position_b):
-        position_a[1]=0 
+        position_a[1]=0
         position_b[1]=0
         return np.linalg.norm(
             np.array(position_b) - np.array(position_a)#, ord=2
