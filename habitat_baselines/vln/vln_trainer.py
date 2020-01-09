@@ -28,68 +28,69 @@ class VLNTrainer(BaseTrainer):
         self.config = config
         #if config is not None:
         #    logger.info(f"config: {config}")
-def _collect_rollout_step(
-    self, rollouts, current_episode_reward, episode_rewards, episode_counts
-):
-    pth_time = 0.0
-    env_time = 0.0
 
-    t_sample_action = time.time()
+    def _collect_rollout_step(
+        self, rollouts, current_episode_reward, episode_rewards, episode_counts
+    ):
+        pth_time = 0.0
+        env_time = 0.0
 
-    # sample actions
-    with torch.no_grad():
-        step_observation = {
-            k: v[rollouts.step] for k, v in rollouts.observations.items()
-        }
+        t_sample_action = time.time()
 
-        (
-            values,
-            actions,
-            actions_log_probs,
-            recurrent_hidden_states,
-        ) = self.actor_critic.act(
-            step_observation,
-            rollouts.recurrent_hidden_states[rollouts.step],
-            rollouts.prev_actions[rollouts.step],
-            rollouts.masks[rollouts.step],
+        # sample actions
+        with torch.no_grad():
+            step_observation = {
+                k: v[rollouts.step] for k, v in rollouts.observations.items()
+            }
+
+            (
+                values,
+                actions,
+                actions_log_probs,
+                recurrent_hidden_states,
+            ) = self.actor_critic.act(
+                step_observation,
+                rollouts.recurrent_hidden_states[rollouts.step],
+                rollouts.prev_actions[rollouts.step],
+                rollouts.masks[rollouts.step],
+            )
+
+        pth_time += time.time() - t_sample_action
+
+        t_step_env = time.time()
+
+        outputs = self.envs.step([a[0].item() for a in actions])
+        observations, rewards, dones, infos = [list(x) for x in zip(*outputs)]
+
+        env_time += time.time() - t_step_env
+
+        t_update_stats = time.time()
+        batch = batch_obs(observations)
+        rewards = torch.tensor(rewards, dtype=torch.float)
+        rewards = rewards.unsqueeze(1)
+
+        masks = torch.tensor(
+            [[0.0] if done else [1.0] for done in dones], dtype=torch.float
         )
 
-    pth_time += time.time() - t_sample_action
+        current_episode_reward += rewards
+        episode_rewards += (1 - masks) * current_episode_reward
+        episode_counts += 1 - masks
+        current_episode_reward *= masks
 
-    t_step_env = time.time()
+        rollouts.insert(
+            batch,
+            recurrent_hidden_states,
+            actions,
+            actions_log_probs,
+            values,
+            rewards,
+            masks,
+        )
 
-    outputs = self.envs.step([a[0].item() for a in actions])
-    observations, rewards, dones, infos = [list(x) for x in zip(*outputs)]
+        pth_time += time.time() - t_update_stats
 
-    env_time += time.time() - t_step_env
-
-    t_update_stats = time.time()
-    batch = batch_obs(observations)
-    rewards = torch.tensor(rewards, dtype=torch.float)
-    rewards = rewards.unsqueeze(1)
-
-    masks = torch.tensor(
-        [[0.0] if done else [1.0] for done in dones], dtype=torch.float
-    )
-
-    current_episode_reward += rewards
-    episode_rewards += (1 - masks) * current_episode_reward
-    episode_counts += 1 - masks
-    current_episode_reward *= masks
-
-    rollouts.insert(
-        batch,
-        recurrent_hidden_states,
-        actions,
-        actions_log_probs,
-        values,
-        rewards,
-        masks,
-    )
-
-    pth_time += time.time() - t_update_stats
-
-    return pth_time, env_time, self.envs.num_envs
+        return pth_time, env_time, self.envs.num_envs
 
     def train(self):
         # Get environments for training
