@@ -50,9 +50,10 @@ class seq2seqAgent(habitat.Agent):
         self.loss = 0
         self.predicted_actions = []
         self.accuracy = 0
-        print(self.encoder)
-        print(self.decoder)
         print(self.criterion)
+        print("criterion", self.criterion.parameters())
+        print("encoder", self.encoder.parameters())
+        print("decoder", self.decoder.parameters())
         # Other configurations
         self.previous_action = '<start>'
         self.feedback = 'teacher'
@@ -270,7 +271,6 @@ class seq2seqAgent(habitat.Agent):
         ):
             self.encoder_optimizer.zero_grad()
             self.decoder_optimizer.zero_grad()
-            print(self.loss)
             self.loss.backward()
             self.encoder_optimizer.step()
             self.decoder_optimizer.step()
