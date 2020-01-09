@@ -128,7 +128,7 @@ class VectorEnv:
         )
 
         self._is_closed = False
-
+        print(self._connection_read_fns)
         for write_fn in self._connection_write_fns:
             write_fn((OBSERVATION_SPACE_COMMAND, None))
         self.observation_spaces = [
