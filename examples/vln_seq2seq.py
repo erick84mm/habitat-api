@@ -200,7 +200,7 @@ class Seq2SeqBenchmark(VLNBenchmark):
             observations = self._env.reset()
             action_history = []
             elapsed_steps = 0
-            check_memory()
+            gc.collect()
 
             while not self._env.episode_over:
                 final_goal = self._env._current_episode.goals[-1].image_id
