@@ -875,10 +875,10 @@ class TeleportAction(SimulatorTaskAction):
         r"""Update ``_metric``, this method is called from ``Env`` on each
         ``step``.
         """
-        position = np.array(target.view_point.position)
-        rotation = np.array(target.view_point.rotation)
+        position = np.array(target.view_point.position, dtype='f')
+        rotation = np.array(target.view_point.rotation, dtype='f')
 
-        #print("Teleport Action to pos ", target.view_point.position)
+        print("Teleport Action to pos ", target.view_point.position)
         if not isinstance(rotation, list):
             rotation = list(rotation)
 
