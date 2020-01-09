@@ -23,6 +23,7 @@ class VLNTrainer(BaseTrainer):
         #super().__init__(config)
         self.agent = None
         self.envs = None
+        self.config = config
         if config is not None:
             logger.info(f"config: {config}")
 
