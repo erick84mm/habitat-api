@@ -57,6 +57,7 @@ class R2RDatasetV1(Dataset):
         return os.path.exists(config.DATA_PATH.format(split=config.SPLIT))
 
     def __init__(self, config: Config = None) -> None:
+        print(config)
         serialize_r2r(config, splits=[config.SPLIT])  # R2R to Habitat convertion
         self.episodes: List[VLNEpisode] = []
         self.train_vocab: VocabDict = []

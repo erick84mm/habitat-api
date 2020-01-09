@@ -114,7 +114,6 @@ def get_config(
         0.5]`. Argument can be used for parameter sweeping or quick tests.
     """
     config = _C.clone()
-
     if config_paths:
         if isinstance(config_paths, str):
             if CONFIG_FILE_SEPARATOR in config_paths:
