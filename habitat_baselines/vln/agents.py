@@ -175,7 +175,6 @@ class seq2seqAgent(habitat.Agent):
 
         im = observations["rgb"][:,:,[2,1,0]]
         f_t = self._get_image_features(im) #.to('cuda')
-        f_t = Variable(torch.from_numpy(f_t), requires_grad=False).cuda()
 
         ended = np.array([False] * batch_size) # Indices match permuation of the model, not env
 
