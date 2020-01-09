@@ -31,7 +31,7 @@ from habitat.core.simulator import (
 import argparse
 from habitat_baselines.vln.models.Seq2Seq import EncoderLSTM, AttnDecoderLSTM
 from habitat_baselines.vln.agents import seq2seqAgent
-from habitat_baselines.vln import VLNTrainer
+from habitat_baselines.vln import vln_trainer
 
 
 
@@ -74,7 +74,7 @@ def main():
     if args.train:
         assert 0 <= args.feedback <= 2, "Incorrect feedback option"
         print("Running training with feedback %s" % feedback_options[args.feedback])
-        trainer = VLNTrainer(args.task_config)
+        trainer = vln_trainer.VLNTrainer(args.task_config)
         trainer.train()
 
 
