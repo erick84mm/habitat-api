@@ -177,11 +177,11 @@ class seq2seqAgent(habitat.Agent):
 
             seq_lengths = np.argmax(tokens == 0, axis=1)
             seq_lengths[seq_lengths==0] = self.max_tokens
-
             seq_tensor = torch.from_numpy(tokens).to('cuda')
             seq_lengths = torch.from_numpy(seq_lengths).to('cuda')
             seq_mask = (seq_tensor == 0)[:,:seq_lengths[0]]
             self.seq_mask = seq_mask.to('cuda')
+            tokens = None
 
             # Forward through encoder, giving initial hidden state and memory cell for decoder
             self.ctx, self.h_t, self.c_t = self.encoder(seq_tensor, seq_lengths)
@@ -191,7 +191,8 @@ class seq2seqAgent(habitat.Agent):
 
         im = observations["rgb"][:,:,[2,1,0]]
         f_t = self._get_image_features(im) #.to('cuda')
-
+        
+        im = None
         ended = np.array([False] * batch_size) # Indices match permuation of the model, not env
 
         # Do a sequence rollout and calculate the loss
