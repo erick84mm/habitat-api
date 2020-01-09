@@ -231,6 +231,7 @@ class AdjacentViewpointSensor(Sensor):
         self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
     ):
         self._sim = sim
+        self.max_locations = 50
         super().__init__(config=config)
 
     def _get_uuid(self, *args: Any, **kwargs: Any):
@@ -300,7 +301,8 @@ class AdjacentViewpointSensor(Sensor):
         return rel_elevation - elevation_angle
 
     def _get_observation_space(self, *args: Any, **kwargs: Any):
-        sensor_shape = (18, 1)
+        # This number is the maximum connections per node
+        sensor_shape = (self.max_locations, 18)
 
         return spaces.Box(
             low=np.finfo(np.float32).min,
@@ -308,6 +310,12 @@ class AdjacentViewpointSensor(Sensor):
             shape=sensor_shape,
             dtype=np.float32,
         )
+
+    def pad_locations(self, nav_locations):
+        pad = [0] * 18
+        seq = [pad] * (self.max_locations - len(nav_locations))
+        nav_locations.extend(seq)
+        return nav_locations
 
     def format_location(
         self,
@@ -406,7 +414,7 @@ class AdjacentViewpointSensor(Sensor):
                 )
             )
 
-        return navigable_viewpoints
+        return self.pad_locations(navigable_viewpoints)
 
 
 @registry.register_measure
