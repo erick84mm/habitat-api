@@ -46,11 +46,10 @@ class R2RDatasetV1(Dataset):
     @staticmethod
     def get_scenes_to_load(config: Config) -> List[str]:
         if not R2RDatasetV1.check_config_paths_exist(config):
-            serialize_r2r(config, splits=[config.SPLIT]) 
+            serialize_r2r(config, splits=[config.SPLIT])
         with gzip.open(config.DATA_PATH.format(split=config.SPLIT), "rt") as f:
             data = json.loads(f.read())
             scenes = data["scenes"]
-            print(scenes)
         return scenes
 
     @staticmethod
@@ -69,9 +68,6 @@ class R2RDatasetV1(Dataset):
         self.connectivity = []
         self.scenes: List[str] = []
         self.config = config
-
-        if config is None:
-            return
 
         with gzip.open(config.DATA_PATH.format(split=config.SPLIT), "rt") as f:
             self.from_json(f.read(), scenes_dir=config.SCENES_DIR)

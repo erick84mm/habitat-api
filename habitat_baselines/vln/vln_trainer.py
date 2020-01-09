@@ -30,6 +30,7 @@ class VLNTrainer(BaseTrainer):
     def train(self):
         print("VLNTrainer train method")
         # Get environments for training
+        print(get_env_class(self.config.ENV_NAME))
         self.envs = construct_envs(
             self.config, get_env_class(self.config.ENV_NAME)
         )
