@@ -334,10 +334,10 @@ class AdjacentViewpointSensor(Sensor):
         crx, cry, crz, crw = quaternion values of the camera
         '''
         formatted_location = [restricted, image_id, rel_heading, rel_elevation]
-        formatted_location += target_pos
-        formatted_location += agent_rot
-        formatted_location += camera_pos
-        formatted_location += cameara_rot
+        formatted_location.extend(target_pos)
+        formatted_location.extend(agent_rot)
+        formatted_location.extend(camera_pos)
+        formatted_location.extend(cameara_rot)
 
         return formatted_location
 
