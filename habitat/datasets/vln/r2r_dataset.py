@@ -132,11 +132,14 @@ class R2RDatasetV1(Dataset):
             self.episodes.append(episode)
 
     def get_distance_to_target(self, scan, start, end):
+
+        print("get_distance_to_target", scan, start, end)
         start_vp = self.connectivity[scan]["idxtoid"][start]
         end_vp = self.connectivity[scan]["idxtoid"][start]
         return self.connectivity[scan]["distances"][start_vp][end_vp]
 
     def get_shortest_path_to_target(self, scan, start, end):
+        print("get_shortest_path_to_target", scan, start, end)
         start_vp = self.connectivity[scan]["idxtoid"][start]
         end_vp = self.connectivity[scan]["idxtoid"][start]
         return self.connectivity[scan]["paths"][start_vp][end_vp]
