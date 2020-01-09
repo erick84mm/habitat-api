@@ -63,6 +63,7 @@ class R2RDatasetV1(Dataset):
         self.trainval_vocab: VocabDict = []
         self.connectivity = []
         self.scenes: List[str] = []
+        self.config = config
 
         if config is None:
             return
@@ -86,7 +87,7 @@ class R2RDatasetV1(Dataset):
         self.scenes = deserialized["scenes"]
 
         self.connectivity = load_connectivity(
-            config.CONNECTIVITY_PATH,
+            self.config.CONNECTIVITY_PATH,
             self.scenes
         )
 
