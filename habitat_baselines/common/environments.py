@@ -101,6 +101,15 @@ class NavRLEnv(habitat.RLEnv):
 
 @baseline_registry.register_env(name="VLNRLEnv")
 class VLNEnv(habitat.RLEnv):
+    def __init__(self, config: Config, dataset: Optional[Dataset] = None):
+        self._rl_config = config.RL
+        self._core_env_config = config.TASK_CONFIG
+        self._previous_target_distance = None
+        self._previous_action = None
+        self._episode_distance_covered = None
+        self._success_distance = self._core_env_config.TASK.SUCCESS_DISTANCE
+        super().__init__(self._core_env_config, dataset)
+
     def get_shortest_path_to_target(self):
         if self._current_episode and self._dataset:
             goal_viewpoint = self._current_episode.goals[-1].image_id
