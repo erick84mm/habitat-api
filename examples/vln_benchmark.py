@@ -16,7 +16,6 @@ from PIL import Image
 import torch
 import torch.nn as nn
 import torch.distributions as D
-from torch.autograd import variable
 from torch import optim
 import torch.nn.functional as F
 
@@ -383,7 +382,8 @@ class RandomAgent(habitat.Agent):
     def act(self, observations, previous_step_collided):
         action = ""
         action_args = {}
-        visible_points = sum([1 - ob[0] for ob in observations["adjacentViewpoints"]])
+        visible_points = sum([1 - ob[0] for ob in observations["adjacentViewpoints"]
+                                    if ob[0] != -1])  # Padding = -1
         prob = random.random()
 
         # 3% probability of stopping
@@ -417,7 +417,8 @@ class DiscreteRandomAgent(habitat.Agent):
     def act(self, observations, elapsed_steps, previous_step_collided):
         action = ""
         action_args = {}
-        visible_points = sum([1 - ob[0] for ob in observations["adjacentViewpoints"]])
+        visible_points = sum([1 - ob[0] for ob in observations["adjacentViewpoints"]
+                                        if ob[0] != -1])
 
         if elapsed_steps == 0:
             # Turn right (direction choosing)
@@ -495,7 +496,7 @@ class DiscreteShortestPathAgent(habitat.Agent):
                 elif rel_elevation < -step_size:
                     action = "LOOK_DOWN"
                 else:
-                    if goal_location[0]:
+                    if goal_location[0] == 1:
                         print("WARNING: The target was not in the" +
                               " Field of view, but the step action " +
                               "is going to be performed")

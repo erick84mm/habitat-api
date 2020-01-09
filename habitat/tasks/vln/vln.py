@@ -312,7 +312,7 @@ class AdjacentViewpointSensor(Sensor):
         )
 
     def pad_locations(self, nav_locations):
-        pad = [0] * 18
+        pad = [-1] * 18
         seq = [pad] * (self.max_locations - len(nav_locations))
         nav_locations.extend(seq)
         return nav_locations

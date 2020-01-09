@@ -129,7 +129,7 @@ class seq2seqAgent(habitat.Agent):
                 elif rel_elevation < -step_size:
                     action = "LOOK_DOWN"
                 else:
-                    if goal_location[0]:  # restricted
+                    if goal_location[0] == 1:  # restricted
                         print("WARNING: The target was not in the" +
                               " Field of view, but the step action " +
                               "is going to be performed")
@@ -189,7 +189,8 @@ class seq2seqAgent(habitat.Agent):
                             )
         # Mask outputs where agent can't move forward
 
-        visible_points = sum([1 - ob[0] for ob in observations["adjacentViewpoints"]])
+        visible_points = sum([1 - ob[0] for ob in observations["adjacentViewpoints"]
+                                            if ob[0] != -1])
 
         if visible_points == 0:
             logit[0, self.model_actions.index('TELEPORT')] = -float('inf')
