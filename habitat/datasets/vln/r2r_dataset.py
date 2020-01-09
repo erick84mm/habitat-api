@@ -45,11 +45,12 @@ class R2RDatasetV1(Dataset):
 
     @staticmethod
     def get_scenes_to_load(config: Config) -> List[str]:
-        assert R2RDatasetV1.check_config_paths_exist(config)
-        print(config)
+        if not R2RDatasetV1.check_config_paths_exist(config):
+            serialize_r2r(config, splits=[config.SPLIT]) 
         with gzip.open(config.DATA_PATH.format(split=config.SPLIT), "rt") as f:
             data = json.loads(f.read())
             scenes = data["scenes"]
+            print(scenes)
         return scenes
 
     @staticmethod
