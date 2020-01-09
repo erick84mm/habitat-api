@@ -170,6 +170,7 @@ class seq2seqAgent(habitat.Agent):
             pad = self.max_tokens - episode.instruction.tokens_length
             tokens = episode.instruction.tokens
             tokens.extend([0] * pad)
+            tokens = np.array(tokens)
 
             seq_lengths = np.argmax(tokens == 0, axis=0)
             seq_lengths[seq_lengths==0] = tokens.shape[1]
