@@ -139,9 +139,9 @@ class R2RDatasetV1(Dataset):
         return self.connectivity[scan]["distances"][start_vp][end_vp]
 
     def get_shortest_path_to_target(self, scan, start, end):
-        print("get_shortest_path_to_target", scan, start_vp, start, end_vp, end)
         start_vp = self.connectivity[scan]["idxtoid"][start]
         end_vp = self.connectivity[scan]["idxtoid"][start]
+        print("get_shortest_path_to_target", scan, start_vp, start, end_vp, end)
         return self.connectivity[scan]["paths"][start_vp][end_vp]
 
     def get_navigable_locations(self, scan, viewpoint):
