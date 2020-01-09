@@ -51,7 +51,9 @@ class seq2seqAgent(habitat.Agent):
         self.loss = 0
         self.predicted_actions = []
         self.accuracy = 0
-
+        print(self.encoder)
+        print(self.decoder)
+        print(self.criterion)
         # Other configurations
         self.previous_action = '<start>'
         self.feedback = 'teacher'
