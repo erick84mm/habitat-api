@@ -95,4 +95,5 @@ def construct_envs(
             tuple(zip(configs, env_classes, range(num_processes)))
         ),
     )
+    print("Spawning %s of envs" % envs.num_envs)
     return envs
