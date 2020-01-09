@@ -232,11 +232,11 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
             for episode in data:
                 for i, instr in enumerate(episode["instructions"]):
                     scan = episode["scan"]
+                    scenes.append(scan)
                     goals = []
                     for vp in episode["path"]:
                         goals.append(connectivity[scan]["idtoidx"][vp])
                     viewpoint = episode["path"][0]
-                    scenes.append(scan)
                     distance = 0
                     heading = normalize_heading(episode["heading"])
 
@@ -259,6 +259,10 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                     habitat_episodes.append(habitat_episode)
 
         if habitat_episodes:
+            print(scenes)
+            print(set(scenes))
+            print(list(set(scenes)))
+            
             habitat_formatted_data = {
                 "episodes": habitat_episodes,
                 "train_vocab": {
@@ -277,7 +281,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                     'UNK_INDEX': 1,
                     'PAD_INDEX': 0
                 },
-                "scenes":list(set(scenes))
+                "scenes":scenes
             }
 
             print("writting", len(habitat_episodes))
