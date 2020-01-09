@@ -249,7 +249,7 @@ class seq2seqAgent(habitat.Agent):
                     # Keeping the same rotation as the previous step
                     # camera rotation
                     rot = observations["adjacentViewpoints"][0][14:18]
-                    print("Teleporting to ",image_id, pos, rot, ob)
+                    print("Teleporting to ",image_id, goal, pos, rot, ob)
                     viewpoint = ViewpointData(
                         image_id=image_id,
                         view_point=AgentState(position=pos, rotation=rot)
