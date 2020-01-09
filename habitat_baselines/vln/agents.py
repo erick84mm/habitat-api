@@ -191,7 +191,7 @@ class seq2seqAgent(habitat.Agent):
 
         im = observations["rgb"][:,:,[2,1,0]]
         f_t = self._get_image_features(im) #.to('cuda')
-        
+
         im = None
         ended = np.array([False] * batch_size) # Indices match permuation of the model, not env
 
@@ -264,6 +264,7 @@ class seq2seqAgent(habitat.Agent):
                     )
                     action_args = {"target": viewpoint}
                     break
+        sorted_obs = None
         #print(action, target_action, self.loss.item())
         #self.predicted_actions.append(action)
         self.previous_action = action
