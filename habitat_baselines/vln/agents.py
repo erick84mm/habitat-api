@@ -27,7 +27,6 @@ import torch.distributions as D
 
 from torch import optim
 from torchvision import transforms
-from torch.autograd import Variable
 from torch.utils.tensorboard import SummaryWriter
 
 # Writer will output to ./runs/ directory by default
@@ -170,9 +169,9 @@ class seq2seqAgent(habitat.Agent):
 
             # Forward through encoder, giving initial hidden state and memory cell for decoder
             self.ctx, self.h_t, self.c_t = self.encoder(seq, seq_lengths)
-            self.a_t = Variable(torch.ones(batch_size).long() * \
-                    self.model_actions.index(self.previous_action),
-                        requires_grad=False).unsqueeze(0).to('cuda')
+            self.a_t = torch.ones(batch_size).long() * \
+                    self.model_actions.index(self.previous_action)
+            self.a_t = self.a_t.unsqueeze(0).to('cuda')
 
         im = observations["rgb"][:,:,[2,1,0]]
         f_t = self._get_image_features(im) #.to('cuda')
@@ -199,7 +198,7 @@ class seq2seqAgent(habitat.Agent):
         target_action, action_args = self._teacher_actions(observations, goal)
         target = torch.LongTensor(1)
         target[0] = self.model_actions.index(target_action)
-        target = Variable(target, requires_grad=False).to('cuda')
+        target = target.to('cuda')
         self.loss += self.criterion(logit, target)
         #print(logit)
         # Determine next model inputs
