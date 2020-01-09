@@ -11,7 +11,6 @@ from PIL import Image
 import torch
 import torch.nn as nn
 import torch.distributions as D
-from torch.autograd import variable
 from torch import optim
 import torch.nn.functional as F
 

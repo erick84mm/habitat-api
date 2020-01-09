@@ -555,8 +555,8 @@ class seq2seqAgent(habitat.Agent):
         ctx,h_t,c_t = self.encoder(seq, seq_lengths)
 
         # Initial action
-        a_t = Variable(torch.ones(batch_size).long() * self.model_actions.index('<start>'),
-                    requires_grad=False).cuda()
+        a_t = torch.ones(batch_size, requires_grad=False).long() * self.model_actions.index('<start>')
+        a_t = a_t.cuda() 
         ended = np.array([False] * batch_size) # Indices match permuation of the model, not env
 
         # Training cycle until stop action is predicted.

@@ -178,14 +178,14 @@ class seq2seqAgent(habitat.Agent):
             seq_lengths = np.argmax(tokens == 0, axis=1)
             seq_lengths[seq_lengths==0] = self.max_tokens
 
-            seq_tensor = torch.from_numpy(tokens).to('cuda')
+            seq_tensor = torch.from_numpy(tokens, requires_grad=False).to('cuda')
             seq_lengths = torch.from_numpy(seq_lengths).to('cuda')
             seq_mask = (seq_tensor == 0)[:,:seq_lengths[0]]
             self.seq_mask = seq_mask.to('cuda')
 
             # Forward through encoder, giving initial hidden state and memory cell for decoder
             self.ctx, self.h_t, self.c_t = self.encoder(seq_tensor, seq_lengths)
-            self.a_t = torch.ones(batch_size).long() * \
+            self.a_t = torch.ones(batch_size, requires_grad=False).long() * \
                     self.model_actions.index(self.previous_action)
             self.a_t = self.a_t.unsqueeze(0).to('cuda')
 

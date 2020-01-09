@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
 import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
@@ -28,16 +27,16 @@ class EncoderLSTM(nn.Module):
     def init_state(self, inputs):
         ''' Initialize to zero cell states and hidden states.'''
         batch_size = inputs.size(0)
-        h0 = Variable(torch.zeros(
+        h0 = torch.zeros(
             self.num_layers * self.num_directions,
             batch_size,
             self.hidden_size
-        ), requires_grad=False)
-        c0 = Variable(torch.zeros(
+        , requires_grad=False)
+        c0 = torch.zeros(
             self.num_layers * self.num_directions,
             batch_size,
             self.hidden_size
-        ), requires_grad=False)
+        , requires_grad=False)
         return h0.to('cuda'), c0.to('cuda')
 
     def forward(self, inputs, lengths):
