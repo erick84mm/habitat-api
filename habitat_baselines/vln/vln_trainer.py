@@ -44,11 +44,11 @@ class VLNTrainer(BaseTrainer):
         if not os.path.isdir(self.config.CHECKPOINT_FOLDER):
             os.makedirs(self.config.CHECKPOINT_FOLDER)
 
-        logger.info(
-            "agent number of parameters: {}".format(
-                sum(param.numel() for param in self.agent.parameters())
-            )
-        )
+        #logger.info(
+        #    "agent number of parameters: {}".format(
+        #        sum(param.numel() for param in self.agent.parameters())
+        #    )
+        #)
 
         # Change for the actual value
         cfg = self.config.RL.PPO
