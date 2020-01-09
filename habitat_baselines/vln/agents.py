@@ -270,6 +270,7 @@ class seq2seqAgent(habitat.Agent):
         ):
             self.encoder_optimizer.zero_grad()
             self.decoder_optimizer.zero_grad()
+            print(self.loss)
             self.loss.backward()
             self.encoder_optimizer.step()
             self.decoder_optimizer.step()
