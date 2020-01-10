@@ -200,7 +200,6 @@ class Seq2SeqBenchmark(VLNBenchmark):
             observations = self._env.reset()
             action_history = []
             elapsed_steps = 0
-            print(torch.memory_allocated(), torch.memory_cached())
             gc.collect()
 
             while not self._env.episode_over:
