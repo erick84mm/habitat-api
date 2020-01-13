@@ -21,36 +21,31 @@ class VLNBenchmark(habitat.Benchmark):
         feedback="teacher"
     ) -> Dict[str, float]:
 
-        observations = self._env.reset()
-        action = agent.act(
-            observations,
-            self._env._current_episode
-        )
-        observations = self._env.reset()
-        action = agent.act(
-            observations,
-            self._env._current_episode
-        )
-        observations = self._env.reset()
-        action = agent.act(
-            observations,
-            self._env._current_episode
-        )
-        observations = self._env.reset()
-        action = agent.act(
-            observations,
-            self._env._current_episode
-        )
-        observations = self._env.reset()
-        action = agent.act(
-            observations,
-            self._env._current_episode
-        )
-        observations = self._env.reset()
-        action = agent.act(
-            observations,
-            self._env._current_episode
-        )
+        count = 300
+        while count:
+            observations = self._env.reset()
+            action = agent.act(
+                observations,
+                self._env._current_episode
+            )
+            action["action_args"].update(
+                {
+                "episode": self._env._current_episode
+                }
+            )
+            observations = self._env.step(action) # Step 1
+
+            action = agent.act(
+                observations,
+                self._env._current_episode
+            )
+            action["action_args"].update(
+                {
+                "episode": self._env._current_episode
+                }
+            )
+            observations = self._env.step(action) # Step 2
+            count -= 1
         return
 
 
