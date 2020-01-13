@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import habitat
-from models.vilbert import VILBertForVLTasks, BertConfig
+from habitat_baselines.vln.models.vilbert import VILBertForVLTasks, BertConfig
 import caffe
 
 class alignmentAgent(habitat.Agent):
