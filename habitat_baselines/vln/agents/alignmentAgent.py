@@ -95,18 +95,19 @@ class alignmentAgent(habitat.Agent):
 
         blob = self.im_list_to_blob(processed_ims)
         im_scales = np.array(im_scale_factors)
-        blobs = {"data": blob, "rois": None}
-        blobs['im_info'] = np.array([[
+        im_info = np.array([[
             blob.shape[2],
             blob.shape[3],
             im_scales[0]
         ]], dtype=np.float32)
 
-        print(blob.shape, blobs['im_info'].shape)
+        forward_kwargs = {
+            "data": blob.astype(np.float32, copy=False),
+            "im_info": im_info.astype(np.float32, copy=False)
+        }
 
-
-        print("_get_image_features")
-        return
+        output = self.image_model.forward(**forward_kwargs)
+        return output
 
     def reset(self):
         pass
