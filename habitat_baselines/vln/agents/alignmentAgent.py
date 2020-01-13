@@ -49,7 +49,7 @@ class alignmentAgent(habitat.Agent):
         )
 
         ## Modifying the network to be the network
-        #self.image_model.blobs["data"].reshape(*(self.caffe_default_shape))
+        self.image_model.blobs["data"].reshape(*(self.caffe_default_shape))
         #self.image_model.blobs["im_info"].reshape(*(self.caffe_default_shape))
 
     def im_list_to_blob(self, ims):
@@ -93,8 +93,15 @@ class alignmentAgent(habitat.Agent):
             processed_ims.append(img)
 
         blob = self.im_list_to_blob(processed_ims)
-        im_scale_factors = np.array(im_scale_factors)
-        print(blob.shape)
+        im_scale = np.array(im_scale_factors)
+        blobs = {"data": blob, "rois": None}
+        blobs['im_info'] = np.array([[
+            blob.shape[2],
+            blob.shape[3],
+            im_scales[0]
+        ]], dtype=np.float32)
+
+        print(blob.shape, blobs['im_info'].shape)
 
 
         print("_get_image_features")
