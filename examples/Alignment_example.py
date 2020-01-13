@@ -33,7 +33,7 @@ def main():
     args = parser.parse_args()
 
 
-    experiment_config = get_config(config_paths)
+    experiment_config = get_config()
     task_config = experiment_config.TASK_CONFIG
     agent = alignmentAgent(experiment_config)
 
