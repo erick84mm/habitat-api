@@ -15,7 +15,7 @@ class VLNBenchmark(habitat.Benchmark):
 
     def train(
         self,
-        agent: Agent,
+        agent,
         num_episodes: Optional[int] = None,
         feedback="teacher"
     ) -> Dict[str, float]:
