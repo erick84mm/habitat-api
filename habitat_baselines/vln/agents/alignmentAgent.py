@@ -116,6 +116,7 @@ class alignmentAgent(habitat.Agent):
         im = observations["rgb"]
         im_features, boxes = self._get_image_features(im)
         action = "TURN_LEFT"
+        action_args = {}
 
 
         return {"action": action, "action_args": action_args}
