@@ -33,7 +33,7 @@ class alignmentAgent(habitat.Agent):
         caffe.set_mode_gpu()
 
         print("Loading Caffe model")
-        self.image_model = caffe.net(
+        self.image_model = caffe.Net(
             self.prototxt,
             caffe.TEST,
             weights=self.weights
