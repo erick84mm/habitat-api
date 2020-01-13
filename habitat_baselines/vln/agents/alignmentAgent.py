@@ -41,7 +41,8 @@ class alignmentAgent(habitat.Agent):
         cfg_from_file(self.caffe_cfg_file)
 
         print("Loading Caffe model")
-        self.caffe_default_shape = config.CAFFE_DEFAULT_SHAPE
+        self.caffe_default_img_shape = config.CAFFE_DEFAULT_IMG_SHAPE
+        self.caffe_default_info_shape = config.CAFFE_DEFAULT_INFO_SHAPE
         self.image_model = caffe.Net(
             self.prototxt,
             caffe.TEST,
@@ -50,7 +51,7 @@ class alignmentAgent(habitat.Agent):
 
         ## Modifying the network to be the network
         self.image_model.blobs["data"].reshape(*(self.caffe_default_shape))
-        #self.image_model.blobs["im_info"].reshape(*(self.caffe_default_shape))
+        self.image_model.blobs["im_info"].reshape(*(self.caffe_default_info_shape))
 
     def im_list_to_blob(self, ims):
         """Convert a list of images into a network input.
@@ -93,7 +94,7 @@ class alignmentAgent(habitat.Agent):
             processed_ims.append(img)
 
         blob = self.im_list_to_blob(processed_ims)
-        im_scale = np.array(im_scale_factors)
+        im_scales = np.array(im_scale_factors)
         blobs = {"data": blob, "rois": None}
         blobs['im_info'] = np.array([[
             blob.shape[2],
