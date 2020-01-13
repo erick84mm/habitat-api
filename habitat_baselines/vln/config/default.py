@@ -18,7 +18,7 @@ CONFIG_FILE_SEPARATOR = ","
 # -----------------------------------------------------------------------------
 _C = CN()
 _C.BASE_TASK_CONFIG_PATH = "configs/tasks/vln_r2r.yaml"
-_C.BERT_CONFIG = "habitat_baselines/vln/config/bert_base_6layer_6connect.json"
+_C.BERT_CONFIG = "/home/aa5944/Research/habitat/habitat-api/habitat_baselines/vln/config/bert_base_6layer_6connect.json"
 _C.BERT_PRE_TRAINED_MODEL = "bert-base-uncased"
 _C.TASK_CONFIG = CN()  # task_config will be stored as a config node
 _C.CMD_TRAILING_OPTS = []  # store command line options as list of strings
