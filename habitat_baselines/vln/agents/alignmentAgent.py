@@ -17,17 +17,22 @@ class alignmentAgent(habitat.Agent):
 
     def __init__(self, config):
         # Load vilBert config
+        print("Loading ViLBERT model configuration")
         self.vilbert_config = BertConfig.from_json_file(config.BERT_CONFIG)
         self.pre_trained_model = config.BERT_PRE_TRAINED_MODEL
+
+        print("Loading ViLBERT model")
         self.model = VILBertForVLTasks.from_pretrained(
             self.pre_trained_model,
             self.vilbert_config,
             num_labels=len(self.model_actions) - 2, # number of predicted actions 6
             default_gpu=0
             )
+
         caffe.set_device(0)
         caffe.set_mode_gpu()
 
+        print("Loading Caffe model")
         self.image_model = caffe.net(
             self.prototxt,
             caffe.TEST,
