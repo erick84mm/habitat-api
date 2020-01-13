@@ -49,9 +49,6 @@ class alignmentAgent(habitat.Agent):
             weights=self.weights
         )
 
-        ## Modifying the network to be the network
-        self.image_model.blobs["data"].reshape(*(self.caffe_default_img_shape))
-        self.image_model.blobs["im_info"].reshape(*(self.caffe_default_info_shape))
 
     def im_list_to_blob(self, ims):
         """Convert a list of images into a network input.
@@ -101,6 +98,13 @@ class alignmentAgent(habitat.Agent):
             im_scales[0]
         ]], dtype=np.float32)
 
+        ## Modifying the network to be the network
+        self.image_model.blobs["data"].reshape(*(blob.shape))
+        self.image_model.blobs["im_info"].reshape(*(im_info.shape))
+
+        ## Modifying the network to be the network
+        #self.image_model.blobs["data"].reshape(*(self.caffe_default_img_shape))
+        #self.image_model.blobs["im_info"].reshape(*(self.caffe_default_info_shape))
         forward_kwargs = {
             "data": blob.astype(np.float32, copy=False),
             "im_info": im_info.astype(np.float32, copy=False)
