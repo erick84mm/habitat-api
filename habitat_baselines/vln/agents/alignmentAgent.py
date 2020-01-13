@@ -50,7 +50,7 @@ class alignmentAgent(habitat.Agent):
         )
 
         ## Modifying the network to be the network
-        self.image_model.blobs["data"].reshape(*(self.caffe_default_shape))
+        self.image_model.blobs["data"].reshape(*(self.caffe_default_img_shape))
         self.image_model.blobs["im_info"].reshape(*(self.caffe_default_info_shape))
 
     def im_list_to_blob(self, ims):
