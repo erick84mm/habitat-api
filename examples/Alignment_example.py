@@ -1,6 +1,8 @@
 import argparse
 import torch
 import habitat
+
+from typing import Dict, Optional
 from habitat_baselines.vln.config.default import get_config
 from habitat_baselines.vln.agents.alignmentAgent import alignmentAgent
 
@@ -60,7 +62,7 @@ def main():
     agent = alignmentAgent(experiment_config)
     benchmark = VLNBenchmark()
     benchmark.train(agent)
-    
+
 
 
 
