@@ -22,7 +22,35 @@ class VLNBenchmark(habitat.Benchmark):
     ) -> Dict[str, float]:
 
         observations = self._env.reset()
-        action = agent.act(observations)
+        action = agent.act(
+            observations,
+            self._env._current_episode
+        )
+        observations = self._env.reset()
+        action = agent.act(
+            observations,
+            self._env._current_episode
+        )
+        observations = self._env.reset()
+        action = agent.act(
+            observations,
+            self._env._current_episode
+        )
+        observations = self._env.reset()
+        action = agent.act(
+            observations,
+            self._env._current_episode
+        )
+        observations = self._env.reset()
+        action = agent.act(
+            observations,
+            self._env._current_episode
+        )
+        observations = self._env.reset()
+        action = agent.act(
+            observations,
+            self._env._current_episode
+        )
         return
 
 
