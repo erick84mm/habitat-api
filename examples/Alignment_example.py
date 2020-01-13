@@ -22,8 +22,7 @@ class VLNBenchmark(habitat.Benchmark):
     ) -> Dict[str, float]:
 
         observations = self._env.reset()
-        im = observations["rgb"]
-        agent._get_image_features(im)
+        action = agent.act(observations)
         return
 
 

@@ -73,7 +73,6 @@ class alignmentAgent(habitat.Agent):
         return blob
 
     def _get_image_features(self, im):
-        im_file = '/home/aa5944/Research/bottom-up-attention/data/demo/000542.jpg'
         im_orig = im - cfg.PIXEL_MEANS
 
         im_shape = im_orig.shape
@@ -106,12 +105,17 @@ class alignmentAgent(habitat.Agent):
             "data": blob.astype(np.float32, copy=False),
             "im_info": im_info.astype(np.float32, copy=False)
         }
-
         output = self.image_model.forward(**forward_kwargs)
-        return output
+        boxes = self.image_model.blobs["rois"].data.copy()
+        return output, boxes
 
     def reset(self):
         pass
 
-    def act(self):
+    def act(self, observations, episode):
+        im = observations["rgb"]
+        im_features, boxes = self._get_image_features(im)
+        action = "TURN_LEFT"
+
+
         return {"action": action, "action_args": action_args}
