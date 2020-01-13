@@ -3,6 +3,7 @@ import torch
 import habitat
 
 from typing import Dict, Optional
+from habitat.core.env import Env
 from habitat_baselines.vln.config.default import get_config
 from habitat_baselines.vln.agents.alignmentAgent import alignmentAgent
 
