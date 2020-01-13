@@ -1,8 +1,30 @@
 import argparse
 import torch
-
+import habitat
 from habitat_baselines.vln.config.default import get_config
 from habitat_baselines.vln.agents.alignmentAgent import alignmentAgent
+
+
+class VLNBenchmark(habitat.Benchmark):
+
+    def __init__(self, config_paths: Optional[str] = None) -> None:
+        config_env = get_config()
+        self._env = Env(config=config_env.TASK_CONFIG)
+
+    def train(
+        self,
+        agent: Agent,
+        num_episodes: Optional[int] = None,
+        feedback="teacher"
+    ) -> Dict[str, float]:
+
+        observations = self._env.reset()
+        im = observations["rgb"]
+        agent._get_image_features(im)
+        return
+
+
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -36,6 +58,9 @@ def main():
     experiment_config = get_config()
     task_config = experiment_config.TASK_CONFIG
     agent = alignmentAgent(experiment_config)
+    benchmark = VLNBenchmark()
+    benchmark.train(agent)
+    
 
 
 
