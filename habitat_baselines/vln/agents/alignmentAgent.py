@@ -38,8 +38,9 @@ class alignmentAgent(habitat.Agent):
 
         caffe.set_device(0)
         caffe.set_mode_gpu()
-        cfg_from_file(self.base_path + self.caffe_cfg_file)
         self.base_path = config.CAFFE_BASE_PATH
+        
+        cfg_from_file(self.base_path + self.caffe_cfg_file)
         print("Loading Caffe model")
         self.caffe_default_img_shape = config.CAFFE_DEFAULT_IMG_SHAPE
         self.caffe_default_info_shape = config.CAFFE_DEFAULT_INFO_SHAPE
