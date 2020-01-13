@@ -17,10 +17,10 @@ from fast_rcnn.config import cfg, cfg_from_file
 class alignmentAgent(habitat.Agent):
 
     model_actions = ['TURN_LEFT', 'TURN_RIGHT', 'LOOK_UP', 'LOOK_DOWN', 'TELEPORT', 'STOP', '<start>', '<ignore>']
-    base_path = '/home/aa5944/Research/bottom-up-attention/'
-    weights = base_path + 'data/faster_rcnn_models/resnet101_faster_rcnn_final.caffemodel'
-    prototxt = base_path + 'models/vg/ResNet-101/faster_rcnn_end2end_final/test.prototxt'
-    caffe_cfg_file = base_path + 'experiments/cfgs/habitat_navigation.yml'
+
+    weights = 'data/faster_rcnn_models/resnet101_faster_rcnn_final.caffemodel'
+    prototxt = 'models/vg/ResNet-101/faster_rcnn_end2end_final/test.prototxt'
+    caffe_cfg_file = 'experiments/cfgs/habitat_navigation.yml'
 
     def __init__(self, config):
         # Load vilBert config
@@ -38,15 +38,15 @@ class alignmentAgent(habitat.Agent):
 
         caffe.set_device(0)
         caffe.set_mode_gpu()
-        cfg_from_file(self.caffe_cfg_file)
-
+        cfg_from_file(self.base_path + self.caffe_cfg_file)
+        self.base_path = config.CAFFE_BASE_PATH
         print("Loading Caffe model")
         self.caffe_default_img_shape = config.CAFFE_DEFAULT_IMG_SHAPE
         self.caffe_default_info_shape = config.CAFFE_DEFAULT_INFO_SHAPE
         self.image_model = caffe.Net(
-            self.prototxt,
+            self.base_path + self.prototxt,
             caffe.TEST,
-            weights=self.weights
+            weights=self.base_path + self.weights
         )
 
         ## Modifying the network to be the network

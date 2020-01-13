@@ -22,6 +22,7 @@ _C.BERT_CONFIG = "/home/aa5944/Research/habitat/habitat-api/habitat_baselines/vl
 _C.BERT_PRE_TRAINED_MODEL = "bert-base-uncased"
 _C.CAFFE_DEFAULT_IMG_SHAPE = (1,3,600,800)
 _C.CAFFE_DEFAULT_INFO_SHAPE = (1,3)
+_C.CAFFE_BASE_PATH = '/home/erick/Research/bottom-up-attention/'
 _C.TASK_CONFIG = CN()  # task_config will be stored as a config node
 _C.CMD_TRAILING_OPTS = []  # store command line options as list of strings
 _C.TRAINER_NAME = "vln"
