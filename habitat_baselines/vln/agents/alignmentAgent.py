@@ -41,11 +41,34 @@ class alignmentAgent(habitat.Agent):
         cfg_from_file(self.caffe_cfg_file)
 
         print("Loading Caffe model")
+        self.caffe_default_shape = config.CAFFE_DEFAULT_SHAPE
         self.image_model = caffe.Net(
             self.prototxt,
             caffe.TEST,
             weights=self.weights
         )
+
+        ## Modifying the network to be the network
+        #self.image_model.blobs["data"].reshape(*(self.caffe_default_shape))
+        #self.image_model.blobs["im_info"].reshape(*(self.caffe_default_shape))
+
+    def im_list_to_blob(self, ims):
+        """Convert a list of images into a network input.
+
+        Assumes images are already prepared (means subtracted, BGR order, ...).
+        """
+        max_shape = np.array([im.shape for im in ims]).max(axis=0)
+        num_images = len(ims)
+        blob = np.zeros((num_images, max_shape[0], max_shape[1], 3),
+                        dtype=np.float32)
+        for i in range(num_images):
+            im = ims[i]
+            blob[i, 0:im.shape[0], 0:im.shape[1], :] = im
+        # Move channels (axis 3) to axis 1
+        # Axis order will become: (batch elem, channel, height, width)
+        channel_swap = (0, 3, 1, 2)
+        blob = blob.transpose(channel_swap)
+        return blob
 
     def _get_image_features(self, im):
         im_file = '/home/aa5944/Research/bottom-up-attention/data/demo/000542.jpg'
@@ -69,7 +92,9 @@ class alignmentAgent(habitat.Agent):
             im_scale_factors.append(im_scale)
             processed_ims.append(img)
 
-            print(img.shape)
+        blob = self.im_list_to_blob(processed_ims)
+        im_scale_factors = np.array(im_scale_factors)
+        print(blob.shape)
 
 
         print("_get_image_features")
