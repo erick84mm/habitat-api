@@ -9,6 +9,7 @@ import habitat
 import caffe
 import cv2
 import numpy as np
+import torch
 
 from habitat_baselines.vln.models.vilbert import VILBertForVLTasks, BertConfig
 from fast_rcnn.config import cfg, cfg_from_file
