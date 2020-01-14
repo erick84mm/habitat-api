@@ -23,23 +23,24 @@ class alignmentAgent(habitat.Agent):
     caffe_cfg_file = 'experiments/cfgs/habitat_navigation.yml'
 
     def __init__(self, config):
-        # Load vilBert config
-        #print("Loading ViLBERT model configuration")
-        #self.vilbert_config = BertConfig.from_json_file(config.BERT_CONFIG)
-        #self.pre_trained_model = config.BERT_PRE_TRAINED_MODEL
+        #Load vilBert config
+        print("Loading ViLBERT model configuration")
+        self.vilbert_config = BertConfig.from_json_file(config.BERT_CONFIG)
+        self.pre_trained_model = config.BERT_PRE_TRAINED_MODEL
+        self.bert_gpu = config.BERT_GPU
+        self.caffe_gpu = config.CAFFE_GPU
+        print("Loading ViLBERT model")
+        self.model = VILBertForVLTasks.from_pretrained(
+            self.pre_trained_model,
+            self.vilbert_config,
+            num_labels=len(self.model_actions) - 2, # number of predicted actions 6
+            default_gpu=self.bert_gpu
+            )
 
-        #print("Loading ViLBERT model")
-        #self.model = VILBertForVLTasks.from_pretrained(
-        #    self.pre_trained_model,
-        #    self.vilbert_config,
-        #    num_labels=len(self.model_actions) - 2, # number of predicted actions 6
-        #    default_gpu=0
-        #    )
-
-        caffe.set_device(0)
+        caffe.set_device(self.caffe_gpu)
         caffe.set_mode_gpu()
         self.base_path = config.CAFFE_BASE_PATH
-        
+
         cfg_from_file(self.base_path + self.caffe_cfg_file)
         print("Loading Caffe model")
         self.caffe_default_img_shape = config.CAFFE_DEFAULT_IMG_SHAPE
@@ -114,6 +115,7 @@ class alignmentAgent(habitat.Agent):
         pass
 
     def act(self, observations, episode):
+        # Observations come in Caffe GPU
         im = observations["rgb"]
         im_features, boxes = self._get_image_features(im)
         action = "TURN_LEFT"
