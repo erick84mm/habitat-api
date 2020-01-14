@@ -267,7 +267,7 @@ _C.SIMULATOR.HABITAT_SIM_V0.GPU_DEVICE_ID = 0
 # This will generally imply sharing CUDA tensors between processes.
 # Read here: https://pytorch.org/docs/stable/multiprocessing.html#sharing-cuda-tensors
 # for the caveats that results in
-_C.SIMULATOR.HABITAT_SIM_V0.GPU_GPU = False
+_C.SIMULATOR.HABITAT_SIM_V0.GPU_GPU = True
 # -----------------------------------------------------------------------------
 # PYROBOT
 # -----------------------------------------------------------------------------
@@ -349,7 +349,7 @@ def get_config(
                 config_paths = config_paths.split(CONFIG_FILE_SEPARATOR)
             else:
                 config_paths = [config_paths]
-                
+
         for config_path in config_paths:
             config.merge_from_file(config_path)
 

@@ -119,8 +119,8 @@ class alignmentAgent(habitat.Agent):
 
     def act(self, observations, episode):
         # Observations come in Caffe GPU
-        im = observations["rgb"].to(self.caffe_gpu_device)
-        im_features, boxes = self._get_image_features(im).to(self.bert_gpu_device)
+        im = observations["rgb"]#.to(self.caffe_gpu_device)
+        im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
 
 
         action = "TURN_LEFT"
