@@ -29,6 +29,8 @@ class alignmentAgent(habitat.Agent):
         self.pre_trained_model = config.BERT_PRE_TRAINED_MODEL
         self.bert_gpu = config.BERT_GPU
         self.caffe_gpu = config.CAFFE_GPU
+        self.bert_gpu_device = torch.device('cuda:' + str(self.bert_gpu))
+        self.caffe_gpu_device = torch.device('cuda:' + str(self.caffe_gpu))
         print("Loading ViLBERT model")
         self.model = VILBertForVLTasks.from_pretrained(
             self.pre_trained_model,
@@ -116,8 +118,10 @@ class alignmentAgent(habitat.Agent):
 
     def act(self, observations, episode):
         # Observations come in Caffe GPU
-        im = observations["rgb"]
-        im_features, boxes = self._get_image_features(im)
+        im = observations["rgb"].to(self.caffe_gpu_device)
+        im_features, boxes = self._get_image_features(im).to(self.bert_gpu_device)
+
+
         action = "TURN_LEFT"
 
         action_args = {}
