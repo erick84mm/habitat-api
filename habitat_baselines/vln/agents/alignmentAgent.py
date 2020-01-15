@@ -25,22 +25,22 @@ class alignmentAgent(habitat.Agent):
 
     def __init__(self, config):
         #Load vilBert config
-        print("Loading ViLBERT model configuration")
-        self.vilbert_config = BertConfig.from_json_file(config.BERT_CONFIG)
-        self.pre_trained_model = config.BERT_PRE_TRAINED_MODEL
-        self.bert_gpu = config.BERT_GPU
+        #print("Loading ViLBERT model configuration")
+        #self.vilbert_config = BertConfig.from_json_file(config.BERT_CONFIG)
+        #self.pre_trained_model = config.BERT_PRE_TRAINED_MODEL
+        #self.bert_gpu = config.BERT_GPU
         self.caffe_gpu = config.CAFFE_GPU
         self.bert_gpu_device = torch.device(self.bert_gpu)
         self.caffe_gpu_device = torch.device(self.caffe_gpu)
 
-        print("Loading ViLBERT model on gpu {}".format(self.bert_gpu))
-        self.model = VILBertForVLTasks.from_pretrained(
-            self.pre_trained_model,
-            self.vilbert_config,
-            num_labels=len(self.model_actions) - 2, # number of predicted actions 6
-            )
-        self.model.to(self.bert_gpu_device)
-        print("ViLBERT loaded on GPU {}".format(self.bert_gpu))
+        #print("Loading ViLBERT model on gpu {}".format(self.bert_gpu))
+        #self.model = VILBertForVLTasks.from_pretrained(
+        #    self.pre_trained_model,
+        #    self.vilbert_config,
+        #    num_labels=len(self.model_actions) - 2, # number of predicted actions 6
+        #    )
+        #self.model.to(self.bert_gpu_device)
+        #print("ViLBERT loaded on GPU {}".format(self.bert_gpu))
 
         caffe.set_device(self.caffe_gpu)
         caffe.set_mode_gpu()
@@ -84,52 +84,50 @@ class alignmentAgent(habitat.Agent):
     def _get_image_features(self, im):
 
         print("_get_image_features")
-        print(cv2.getBuildInformation())
-        with torch.device(self.caffe_gpu_device):
-            im_orig = im - cfg.PIXEL_MEANS
+        im_orig = im - cfg.PIXEL_MEANS
 
-            im_shape = im_orig.shape
-            im_size_min = np.min(im_shape[0:2])
-            im_size_max = np.max(im_shape[0:2])
+        im_shape = im_orig.shape
+        im_size_min = np.min(im_shape[0:2])
+        im_size_max = np.max(im_shape[0:2])
 
-            processed_ims = []
-            im_scale_factors = []
+        processed_ims = []
+        im_scale_factors = []
 
-            for target_size in cfg.TEST.SCALES:
-                im_scale = float(target_size) / float(im_size_min)
+        for target_size in cfg.TEST.SCALES:
+            im_scale = float(target_size) / float(im_size_min)
 
-                # Prevent the biggest axis from being more than MAX_SIZE
-                if np.round(im_scale * im_size_max) > cfg.TEST.MAX_SIZE:
-                    im_scale = float(cfg.TEST.MAX_SIZE) / float(im_size_max)
-                img = cv2.resize(im_orig, None, None, fx=im_scale, fy=im_scale,
-                                interpolation=cv2.INTER_LINEAR)
-                im_scale_factors.append(im_scale)
-                processed_ims.append(img)
+            # Prevent the biggest axis from being more than MAX_SIZE
+            if np.round(im_scale * im_size_max) > cfg.TEST.MAX_SIZE:
+                im_scale = float(cfg.TEST.MAX_SIZE) / float(im_size_max)
+            img = cv2.resize(im_orig, None, None, fx=im_scale, fy=im_scale,
+                            interpolation=cv2.INTER_LINEAR)
+            im_scale_factors.append(im_scale)
+            processed_ims.append(img)
 
-            blob = self.im_list_to_blob(processed_ims)
-            im_scales = np.array(im_scale_factors)
-            im_info = np.array([[
-                blob.shape[2],
-                blob.shape[3],
-                im_scales[0]
-            ]], dtype=np.float32)
+        blob = self.im_list_to_blob(processed_ims)
+        im_scales = np.array(im_scale_factors)
+        im_info = np.array([[
+            blob.shape[2],
+            blob.shape[3],
+            im_scales[0]
+        ]], dtype=np.float32)
 
-            forward_kwargs = {
-                "data": blob.astype(np.float32, copy=False),
-                "im_info": im_info.astype(np.float32, copy=False)
-            }
-            print("_get_image_features forward_kwargs creted")
-            print("The current device in im features is ", torch.cuda.current_device())
-            output = self.image_model.forward(**forward_kwargs)
-            boxes = self.image_model.blobs["rois"].data.copy()
-            return output, boxes
+        forward_kwargs = {
+            "data": blob.astype(np.float32, copy=False),
+            "im_info": im_info.astype(np.float32, copy=False)
+        }
+        print("_get_image_features forward_kwargs creted")
+        print("The current device in im features is ", torch.cuda.current_device())
+        output = self.image_model.forward(**forward_kwargs)
+        boxes = self.image_model.blobs["rois"].data.copy()
+        return output, boxes
 
     def reset(self):
         pass
 
     def act(self, observations, episode):
         # Observations come in Caffe GPU
-        im = observations["rgb"]
+        im = observations["rgb"].to('cpu')
         print(torch.cuda.current_device())
         im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         print("features")
