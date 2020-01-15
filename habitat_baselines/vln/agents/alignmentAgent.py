@@ -15,7 +15,7 @@ from habitat_baselines.vln.models.vilbert import VILBertForVLTasks, BertConfig
 from fast_rcnn.config import cfg, cfg_from_file
 
 
-class alignmentAgent:
+class alignmentAgent(habitat.Agent):
 
     model_actions = ['TURN_LEFT', 'TURN_RIGHT', 'LOOK_UP', 'LOOK_DOWN', 'TELEPORT', 'STOP', '<start>', '<ignore>']
 
@@ -38,8 +38,10 @@ class alignmentAgent:
             self.pre_trained_model,
             self.vilbert_config,
             num_labels=len(self.model_actions) - 2, # number of predicted actions 6
-            default_gpu=self.bert_gpu
+            default_gpu=False
             )
+        self.model.to(self.bert_gpu_device)
+        print("ViLBERT loaded on GPU {}".format(self.model.device))
 
         caffe.set_device(self.caffe_gpu)
         caffe.set_mode_gpu()
@@ -125,7 +127,7 @@ class alignmentAgent:
 
     def act(self, observations, episode):
         # Observations come in Caffe GPU
-        im = observations["rgb"]
+        im = observations["rgb"].to(self.caffe_gpu_device)
         print(torch.cuda.current_device())
         im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         print("features")
