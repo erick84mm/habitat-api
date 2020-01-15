@@ -123,7 +123,8 @@ class alignmentAgent:
 
     def act(self, observations, episode):
         # Observations come in Caffe GPU
-        im = observations["rgb"]
+        im = observations["rgb"].to(self.caffe_gpu_device)
+        print(im.device)
         im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         print("features")
 
