@@ -30,7 +30,7 @@ class alignmentAgent(habitat.Agent):
         #self.pre_trained_model = config.BERT_PRE_TRAINED_MODEL
         #self.bert_gpu = config.BERT_GPU
         self.caffe_gpu = config.CAFFE_GPU
-        self.bert_gpu_device = torch.device(self.bert_gpu)
+        #self.bert_gpu_device = torch.device(self.bert_gpu)
         self.caffe_gpu_device = torch.device(self.caffe_gpu)
 
         #print("Loading ViLBERT model on gpu {}".format(self.bert_gpu))
