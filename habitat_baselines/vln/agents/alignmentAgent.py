@@ -82,44 +82,46 @@ class alignmentAgent(habitat.Agent):
         return blob
 
     def _get_image_features(self, im):
+
         print("_get_image_features")
-        im_orig = im - cfg.PIXEL_MEANS
+        with torch.device(self.caffe_gpu_device):
+            im_orig = im - cfg.PIXEL_MEANS
 
-        im_shape = im_orig.shape
-        im_size_min = np.min(im_shape[0:2])
-        im_size_max = np.max(im_shape[0:2])
+            im_shape = im_orig.shape
+            im_size_min = np.min(im_shape[0:2])
+            im_size_max = np.max(im_shape[0:2])
 
-        processed_ims = []
-        im_scale_factors = []
+            processed_ims = []
+            im_scale_factors = []
 
-        for target_size in cfg.TEST.SCALES:
-            im_scale = float(target_size) / float(im_size_min)
+            for target_size in cfg.TEST.SCALES:
+                im_scale = float(target_size) / float(im_size_min)
 
-            # Prevent the biggest axis from being more than MAX_SIZE
-            if np.round(im_scale * im_size_max) > cfg.TEST.MAX_SIZE:
-                im_scale = float(cfg.TEST.MAX_SIZE) / float(im_size_max)
-            img = cv2.resize(im_orig, None, None, fx=im_scale, fy=im_scale,
-                            interpolation=cv2.INTER_LINEAR)
-            im_scale_factors.append(im_scale)
-            processed_ims.append(img)
+                # Prevent the biggest axis from being more than MAX_SIZE
+                if np.round(im_scale * im_size_max) > cfg.TEST.MAX_SIZE:
+                    im_scale = float(cfg.TEST.MAX_SIZE) / float(im_size_max)
+                img = cv2.resize(im_orig, None, None, fx=im_scale, fy=im_scale,
+                                interpolation=cv2.INTER_LINEAR)
+                im_scale_factors.append(im_scale)
+                processed_ims.append(img)
 
-        blob = self.im_list_to_blob(processed_ims)
-        im_scales = np.array(im_scale_factors)
-        im_info = np.array([[
-            blob.shape[2],
-            blob.shape[3],
-            im_scales[0]
-        ]], dtype=np.float32)
+            blob = self.im_list_to_blob(processed_ims)
+            im_scales = np.array(im_scale_factors)
+            im_info = np.array([[
+                blob.shape[2],
+                blob.shape[3],
+                im_scales[0]
+            ]], dtype=np.float32)
 
-        forward_kwargs = {
-            "data": blob.astype(np.float32, copy=False),
-            "im_info": im_info.astype(np.float32, copy=False)
-        }
-        print("_get_image_features forward_kwargs creted")
-        print("The current device in im features is ", torch.cuda.current_device())
-        output = self.image_model.forward(**forward_kwargs)
-        boxes = self.image_model.blobs["rois"].data.copy()
-        return output, boxes
+            forward_kwargs = {
+                "data": blob.astype(np.float32, copy=False),
+                "im_info": im_info.astype(np.float32, copy=False)
+            }
+            print("_get_image_features forward_kwargs creted")
+            print("The current device in im features is ", torch.cuda.current_device())
+            output = self.image_model.forward(**forward_kwargs)
+            boxes = self.image_model.blobs["rois"].data.copy()
+            return output, boxes
 
     def reset(self):
         pass
