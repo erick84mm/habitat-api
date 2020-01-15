@@ -76,7 +76,7 @@ class alignmentAgent(habitat.Agent):
         print("ViLBERT loaded on GPU {}".format(self.bert_gpu))
 
         print("Loading Detectron2 predictor on GPU {}".format(self.detectron2_gpu))
-        detectron2_cfg = self.create_detectron2_cfg(self, config)
+        detectron2_cfg = self.create_detectron2_cfg(config)
         self.image_predictor = DefaultPredictor(detectron2_cfg)
         print("Detectron2 loaded")
 
