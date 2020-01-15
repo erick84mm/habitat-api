@@ -18,8 +18,6 @@ setup_logger()
 from detectron2 import model_zoo
 from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
-from detectron2.utils.visualizer import Visualizer
-from detectron2.data import MetadataCatalog
 from habitat_baselines.vln.models.vilbert import VILBertForVLTasks, BertConfig
 
 
@@ -99,7 +97,7 @@ class alignmentAgent(habitat.Agent):
         im = observations["rgb"].permute(2,0,1)
         im = im.to(self.detectron2_gpu_device)
         print(im.shape, type(im))
-        outputs = self.image_predictor(im)
+        outputs = self.image_predictor.model([im])[0]
         print(torch.cuda.current_device())
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         print("features")
