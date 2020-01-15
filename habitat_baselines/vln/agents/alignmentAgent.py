@@ -96,7 +96,9 @@ class alignmentAgent(habitat.Agent):
         # Observations come in Caffe GPU
         im = observations["rgb"].permute(2,0,1)
         im = im.to(self.detectron2_gpu_device)
-        print(im.shape, type(im))
+        (channels, height , width) = im.shape
+        print(im.shape, type(im), channels, height , width)
+        inputs = {"image": im, "height": height, "width": width}
         outputs = self.image_predictor.model([im])[0]
         print(torch.cuda.current_device())
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
