@@ -127,7 +127,7 @@ class alignmentAgent(habitat.Agent):
 
     def act(self, observations, episode):
         # Observations come in Caffe GPU
-        im = observations["rgb"].numpy()#.to('cpu')
+        im = observations["rgb"].to('cpu').numpy()#
         print(torch.cuda.current_device())
         im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         print("features")
