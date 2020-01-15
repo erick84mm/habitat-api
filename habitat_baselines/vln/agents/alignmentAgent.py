@@ -30,9 +30,10 @@ class alignmentAgent:
         self.pre_trained_model = config.BERT_PRE_TRAINED_MODEL
         self.bert_gpu = config.BERT_GPU
         self.caffe_gpu = config.CAFFE_GPU
-        self.bert_gpu_device = torch.device('cuda:' + str(self.bert_gpu))
-        self.caffe_gpu_device = torch.device('cuda:' + str(self.caffe_gpu))
-        print("Loading ViLBERT model")
+        self.bert_gpu_device = torch.device(self.bert_gpu)
+        self.caffe_gpu_device = torch.device(self.caffe_gpu)
+
+        print("Loading ViLBERT model on gpu {}".format(self.bert_gpu))
         self.model = VILBertForVLTasks.from_pretrained(
             self.pre_trained_model,
             self.vilbert_config,
@@ -45,7 +46,8 @@ class alignmentAgent:
         self.base_path = config.CAFFE_BASE_PATH
 
         cfg_from_file(self.base_path + self.caffe_cfg_file)
-        print("Loading Caffe model")
+
+        print("Loading Caffe model on gpu {}".format(self.caffe_gpu))
         self.caffe_default_img_shape = config.CAFFE_DEFAULT_IMG_SHAPE
         self.caffe_default_info_shape = config.CAFFE_DEFAULT_INFO_SHAPE
         self.image_model = caffe.Net(
@@ -78,6 +80,7 @@ class alignmentAgent:
         return blob
 
     def _get_image_features(self, im):
+        print("_get_image_features")
         im_orig = im - cfg.PIXEL_MEANS
 
         im_shape = im_orig.shape
@@ -110,6 +113,7 @@ class alignmentAgent:
             "data": blob.astype(np.float32, copy=False),
             "im_info": im_info.astype(np.float32, copy=False)
         }
+        print("_get_image_features forward_kwargs creted")
         output = self.image_model.forward(**forward_kwargs)
         boxes = self.image_model.blobs["rois"].data.copy()
         return output, boxes
@@ -119,9 +123,9 @@ class alignmentAgent:
 
     def act(self, observations, episode):
         # Observations come in Caffe GPU
-        im = observations["rgb"].to(self.caffe_gpu_device)
+        im = observations["rgb"]
         im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
-
+        print("features")
 
         action = "TURN_LEFT"
 
