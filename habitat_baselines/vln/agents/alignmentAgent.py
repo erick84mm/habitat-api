@@ -94,10 +94,9 @@ class alignmentAgent(habitat.Agent):
 
     def act(self, observations, episode):
         # Observations come in Caffe GPU
-        image = observations["rgb"]
-        image = torch.as_tensor(image.astype("float32").transpose(2, 0, 1))
-        image = image.to(self.detectron2_gpu_device)
-        (channels, height , width) = image.shape
+        im = observations["rgb"].permute(2,0,1)
+        im = im.to(self.detectron2_gpu_device)
+        (channels, height , width) = im.shape
         print(im.shape, type(im), channels, height , width)
         inputs = {"image": im, "height": height, "width": width}
         outputs = self.image_predictor.model([inputs])[0]
