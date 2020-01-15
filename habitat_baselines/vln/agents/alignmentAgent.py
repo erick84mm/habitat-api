@@ -38,10 +38,9 @@ class alignmentAgent(habitat.Agent):
             self.pre_trained_model,
             self.vilbert_config,
             num_labels=len(self.model_actions) - 2, # number of predicted actions 6
-            default_gpu=False
             )
         self.model.to(self.bert_gpu_device)
-        print("ViLBERT loaded on GPU {}".format(self.model.device))
+        print("ViLBERT loaded on GPU {}".format(self.bert_gpu))
 
         caffe.set_device(self.caffe_gpu)
         caffe.set_mode_gpu()
@@ -50,7 +49,7 @@ class alignmentAgent(habitat.Agent):
         cfg_from_file(self.base_path + self.caffe_cfg_file)
 
         print("Loading Caffe model on gpu {}".format(self.caffe_gpu))
-        print(torch.cuda.current_device())
+        print("The current device is ", torch.cuda.current_device())
         self.caffe_default_img_shape = config.CAFFE_DEFAULT_IMG_SHAPE
         self.caffe_default_info_shape = config.CAFFE_DEFAULT_INFO_SHAPE
         self.image_model = caffe.Net(
@@ -117,7 +116,7 @@ class alignmentAgent(habitat.Agent):
             "im_info": im_info.astype(np.float32, copy=False)
         }
         print("_get_image_features forward_kwargs creted")
-        print(torch.cuda.current_device())
+        print("The current device in im features is ", torch.cuda.current_device())
         output = self.image_model.forward(**forward_kwargs)
         boxes = self.image_model.blobs["rois"].data.copy()
         return output, boxes
