@@ -84,6 +84,7 @@ class alignmentAgent(habitat.Agent):
     def _get_image_features(self, im):
 
         print("_get_image_features")
+        print(cv2.getBuildInformation())
         with torch.device(self.caffe_gpu_device):
             im_orig = im - cfg.PIXEL_MEANS
 
