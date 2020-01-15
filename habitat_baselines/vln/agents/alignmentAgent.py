@@ -15,7 +15,7 @@ from habitat_baselines.vln.models.vilbert import VILBertForVLTasks, BertConfig
 from fast_rcnn.config import cfg, cfg_from_file
 
 
-class alignmentAgent(habitat.Agent):
+class alignmentAgent:
 
     model_actions = ['TURN_LEFT', 'TURN_RIGHT', 'LOOK_UP', 'LOOK_DOWN', 'TELEPORT', 'STOP', '<start>', '<ignore>']
 
