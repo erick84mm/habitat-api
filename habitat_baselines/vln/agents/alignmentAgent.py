@@ -6,131 +6,98 @@
 
 
 import habitat
-import caffe
 import cv2
 import numpy as np
 import torch
+import detectron2
+from detectron2.utils.logger import setup_logger
+setup_logger()
 
+
+# import some common detectron2 utilities
+from detectron2 import model_zoo
+from detectron2.engine import DefaultPredictor
+from detectron2.config import get_cfg
+from detectron2.utils.visualizer import Visualizer
+from detectron2.data import MetadataCatalog
 from habitat_baselines.vln.models.vilbert import VILBertForVLTasks, BertConfig
-from fast_rcnn.config import cfg, cfg_from_file
-from fast_rcnn.test import im_detect,_get_blobs
 
 
 class alignmentAgent(habitat.Agent):
 
     model_actions = ['TURN_LEFT', 'TURN_RIGHT', 'LOOK_UP', 'LOOK_DOWN', 'TELEPORT', 'STOP', '<start>', '<ignore>']
 
-    weights = 'data/faster_rcnn_models/resnet101_faster_rcnn_final.caffemodel'
-    prototxt = 'models/vg/ResNet-101/faster_rcnn_end2end_final/test.prototxt'
-    caffe_cfg_file = 'experiments/cfgs/habitat_navigation.yml'
+    detectron2_checkpoints = {
+                    "CD_R_50_C4_1x": "COCO-Detection/faster_rcnn_R_50_C4_1x.yaml",
+                    "CD_R_50_DC5_1x": "COCO-Detection/faster_rcnn_R_50_DC5_1x.yaml",
+                    "CD_R_50_FPN_1x": "COCO-Detection/faster_rcnn_R_50_FPN_1x.yaml",
+                    "CD_R_50_C4_3x": "COCO-Detection/faster_rcnn_R_50_C4_3x.yaml",
+                    "CD_R_50_DC5_3x": "COCO-Detection/faster_rcnn_R_50_DC5_3x.yaml",
+                    "CD_R_50_FPN_3x": "COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml",
+                    "CD_R_101_C4_3x": "COCO-Detection/faster_rcnn_R_101_C4_3x.yaml",
+                    "CD_R_101_DC5_3x": "COCO-Detection/faster_rcnn_R_101_DC5_3x.yaml",
+                    "CD_R_101_FPN_3x": "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml",
+                    "CD_X_101_FPN_3x": "COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml",
+                    "CD_R_50_1x": "COCO-Detection/retinanet_R_50_FPN_1x.yaml",
+                    "CD_R_50_3x": "COCO-Detection/retinanet_R_50_FPN_3x.yaml",
+                    "CD_R_101_3x": "COCO-Detection/retinanet_R_101_FPN_3x.yaml",
+                    "CD_RPN_R_50_C4_1x": "COCO-Detection/rpn_R_50_C4_1x.yaml",
+                    "CD_RPN_R_50_FPN_1x": "COCO-Detection/rpn_R_50_FPN_1x.yaml",
+                    "CD_FAST_RCNN_R_50_FPN_1x": "COCO-Detection/fast_rcnn_R_50_FPN_1x.yaml",
+                    "IS_R_50_C4_1x": "COCO-InstanceSegmentation/mask_rcnn_R_50_C4_1x.yaml",
+                    "IS_R_50_DC5_1x": "COCO-InstanceSegmentation/mask_rcnn_R_50_DC5_1x.yaml",
+                    "IS_R_50_FPN_1x": "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_1x.yaml",
+                    "IS_R_50_C4_3x": "COCO-InstanceSegmentation/mask_rcnn_R_50_C4_3x.yaml",
+                    "IS_R_50_DC5_3x": "COCO-InstanceSegmentation/mask_rcnn_R_50_DC5_3x.yaml",
+                    "IS_R_50_FPN_3x": "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml",
+                    "IS_R_101_C4_3x": "COCO-InstanceSegmentation/mask_rcnn_R_101_C4_3x.yaml",
+                    "IS_R_101_DC5_3x": "COCO-InstanceSegmentation/mask_rcnn_R_101_DC5_3x.yaml",
+                    "IS_R_101_FPN_3x": "COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml",
+                    "IS_X_101_FPN_3x": "COCO-InstanceSegmentation/mask_rcnn_X_101_32x8d_FPN_3x.yaml",
+    }
 
     def __init__(self, config):
         #Load vilBert config
-        #print("Loading ViLBERT model configuration")
-        #self.vilbert_config = BertConfig.from_json_file(config.BERT_CONFIG)
-        #self.pre_trained_model = config.BERT_PRE_TRAINED_MODEL
-        #self.bert_gpu = config.BERT_GPU
-        self.caffe_gpu = config.CAFFE_GPU
-        #self.bert_gpu_device = torch.device(self.bert_gpu)
-        self.caffe_gpu_device = torch.device(self.caffe_gpu)
+        print("Loading ViLBERT model configuration")
+        self.vilbert_config = BertConfig.from_json_file(config.BERT_CONFIG)
+        self.pre_trained_model = config.BERT_PRE_TRAINED_MODEL
+        self.bert_gpu = config.BERT_GPU
+        self.detectron2_gpu = config.DETECTRON2_GPU
+        self.bert_gpu_device = torch.device(self.bert_gpu)
+        self.detectron2_gpu_device = torch.device(self.detectron2_gpu)
 
-        #print("Loading ViLBERT model on gpu {}".format(self.bert_gpu))
-        #self.model = VILBertForVLTasks.from_pretrained(
-        #    self.pre_trained_model,
-        #    self.vilbert_config,
-        #    num_labels=len(self.model_actions) - 2, # number of predicted actions 6
-        #    )
-        #self.model.to(self.bert_gpu_device)
-        #print("ViLBERT loaded on GPU {}".format(self.bert_gpu))
+        print("Loading ViLBERT model on gpu {}".format(self.bert_gpu))
+        self.model = VILBertForVLTasks.from_pretrained(
+            self.pre_trained_model,
+            self.vilbert_config,
+            num_labels=len(self.model_actions) - 2, # number of predicted actions 6
+            )
+        self.model.to(self.bert_gpu_device)
+        print("ViLBERT loaded on GPU {}".format(self.bert_gpu))
 
-        caffe.set_device(self.caffe_gpu)
-        caffe.set_mode_gpu()
-        self.base_path = config.CAFFE_BASE_PATH
+        print("Loading Detectron2 predictor on GPU {}".format(self.detectron2_gpu))
+        detectron2_cfg = self.create_detectron2_cfg(self, config)
+        self.image_predictor = DefaultPredictor(detectron2_cfg)
+        print("Detectron2 loaded")
 
-        cfg_from_file(self.base_path + self.caffe_cfg_file)
+    def create_detectron2_cfg(self, config):
+        cfg = get_cfg()
+        checkpoint = detectron2_checkpoints[config.DETECTRON2_MODEL]
+        cfg.merge_from_file(model_zoo.get_config_file(checkpoint))
+        cfg.MODEL.DEVICE = "cuda:"+self.detectron2_gpu
+        cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
+        # Find a model from detectron2's model zoo. Download model
+        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(checkpoint)
+        return cfg
 
-        print("Loading Caffe model on gpu {}".format(self.caffe_gpu))
-        print("The current device is ", torch.cuda.current_device())
-        self.caffe_default_img_shape = config.CAFFE_DEFAULT_IMG_SHAPE
-        self.caffe_default_info_shape = config.CAFFE_DEFAULT_INFO_SHAPE
-        self.image_model = caffe.Net(
-            self.base_path + self.prototxt,
-            caffe.TEST,
-            weights=self.base_path + self.weights
-        )
-
-        ## Modifying the network to be the network
-        self.image_model.blobs["data"].reshape(*(self.caffe_default_img_shape))
-        self.image_model.blobs["im_info"].reshape(*(self.caffe_default_info_shape))
-
-
-    def im_list_to_blob(self, ims):
-        """Convert a list of images into a network input.
-
-        Assumes images are already prepared (means subtracted, BGR order, ...).
-        """
-        max_shape = np.array([im.shape for im in ims]).max(axis=0)
-        num_images = len(ims)
-        blob = np.zeros((num_images, max_shape[0], max_shape[1], 3),
-                        dtype=np.float32)
-        for i in range(num_images):
-            im = ims[i]
-            blob[i, 0:im.shape[0], 0:im.shape[1], :] = im
-        # Move channels (axis 3) to axis 1
-        # Axis order will become: (batch elem, channel, height, width)
-        channel_swap = (0, 3, 1, 2)
-        blob = blob.transpose(channel_swap)
-        return blob
-
-    def _get_image_features(self, im):
-
-        print("_get_image_features")
-        im_orig = im - cfg.PIXEL_MEANS
-
-        im_shape = im_orig.shape
-        im_size_min = np.min(im_shape[0:2])
-        im_size_max = np.max(im_shape[0:2])
-
-        processed_ims = []
-        im_scale_factors = []
-
-        for target_size in cfg.TEST.SCALES:
-            im_scale = float(target_size) / float(im_size_min)
-
-            # Prevent the biggest axis from being more than MAX_SIZE
-            if np.round(im_scale * im_size_max) > cfg.TEST.MAX_SIZE:
-                im_scale = float(cfg.TEST.MAX_SIZE) / float(im_size_max)
-            img = cv2.resize(im_orig, None, None, fx=im_scale, fy=im_scale,
-                            interpolation=cv2.INTER_LINEAR)
-            im_scale_factors.append(im_scale)
-            processed_ims.append(img)
-
-        blob = self.im_list_to_blob(processed_ims)
-        im_scales = np.array(im_scale_factors)
-        im_info = np.array([[
-            blob.shape[2],
-            blob.shape[3],
-            im_scales[0]
-        ]], dtype=np.float32)
-
-        forward_kwargs = {
-            "data": blob.astype(np.float32, copy=False),
-            "im_info": im_info.astype(np.float32, copy=False)
-        }
-        print("_get_image_features forward_kwargs creted")
-        print("The current device in im features is ", torch.cuda.current_device())
-        with torch.device(self.caffe_gpu_device):
-            output = self.image_model.forward(**forward_kwargs)
-            boxes = self.image_model.blobs["rois"].data.copy()
-        return output, boxes
 
     def reset(self):
         pass
 
     def act(self, observations, episode):
         # Observations come in Caffe GPU
-        im = observations["rgb"].to('cpu').numpy()#
-        scores, boxes, attr_scores, rel_scores = im_detect(self.image_model, im)
+        im = observations["rgb"].to(self.detectron2_gpu_device)
+        outputs = self.image_predictor(im)
         print(torch.cuda.current_device())
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         print("features")
