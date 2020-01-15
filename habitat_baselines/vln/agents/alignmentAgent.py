@@ -13,6 +13,7 @@ import torch
 
 from habitat_baselines.vln.models.vilbert import VILBertForVLTasks, BertConfig
 from fast_rcnn.config import cfg, cfg_from_file
+from fast_rcnn.test import im_detect,_get_blobs
 
 
 class alignmentAgent(habitat.Agent):
@@ -129,8 +130,9 @@ class alignmentAgent(habitat.Agent):
     def act(self, observations, episode):
         # Observations come in Caffe GPU
         im = observations["rgb"].to('cpu').numpy()#
+        scores, boxes, attr_scores, rel_scores = im_detect(self.image_model, im)
         print(torch.cuda.current_device())
-        im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
+        #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         print("features")
 
         action = "TURN_LEFT"
