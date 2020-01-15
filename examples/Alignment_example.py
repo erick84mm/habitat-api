@@ -21,6 +21,7 @@ class VLNBenchmark(habitat.Benchmark):
         feedback="teacher"
     ) -> Dict[str, float]:
 
+        print("Training is running on device ", torch.cuda.current_device())
         count = 300
         while count:
             observations = self._env.reset()
