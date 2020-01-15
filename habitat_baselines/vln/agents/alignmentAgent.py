@@ -118,8 +118,9 @@ class alignmentAgent(habitat.Agent):
         }
         print("_get_image_features forward_kwargs creted")
         print("The current device in im features is ", torch.cuda.current_device())
-        output = self.image_model.forward(**forward_kwargs)
-        boxes = self.image_model.blobs["rois"].data.copy()
+        with torch.device(self.caffe_gpu_device):
+            output = self.image_model.forward(**forward_kwargs)
+            boxes = self.image_model.blobs["rois"].data.copy()
         return output, boxes
 
     def reset(self):
