@@ -18,6 +18,7 @@ from os import path
 from collections import Counter
 from habitat.tasks.utils import heading_to_rotation
 from habitat_sim.utils.common import quat_from_two_vectors, quat_rotate_vector
+from pytorch_pretrained_bert.tokenization import BertTokenizer
 
 
 SCENE_ID = "mp3d/{scan}/{scan}.glb"
@@ -214,6 +215,84 @@ def normalize_heading(heading):
         return 2 * np.pi - heading
     return -heading
 
+class R2RSerializer:
+    def __init__(config):
+        json_file_path = config.DATA_PATH[:-3]
+        self.connectivity = load_connectivity(config.CONNECTIVITY_PATH)
+        train_vocab, train_word2idx = build_vocab(json_file_path, splits=["train"])
+        trainval_vocab, trainval_word2idx = \
+            build_vocab(json_file_path, splits=["train", "val_seen", "val_unseen"])
+        if config.TOKENIZER == "BertTokenizer":
+            self.tokenizer = BertTokenizer.from_pretrained(
+                                 config.BERT_PRE_TRAINED_MODEL, do_lower_case=True
+                             )
+        else:
+            self.tokenizer = Tokenizer(trainval_vocab, config.MAX_TOKEN_LENGTH)
+
+    def _load_data(self):
+
+
+        return
+
+    def serialize_r2r(self, splits=["train"]) -> None:
+
+        return
+
+
+    def tokenize(text, max_length=16):
+        """Tokenizes the instructions.
+        This will add q_token in each entry of the dataset.
+        -1 represent nil, and should be treated as padding_index in embedding
+        """
+        for entry in self.entries:
+            tokens = self._tokenizer.tokenize(entry["question"])
+            tokens = ["[CLS]"] + tokens + ["[SEP]"]
+
+            tokens = [
+                self._tokenizer.vocab.get(w, self._tokenizer.vocab["[UNK]"])
+                for w in tokens
+            ]
+
+            tokens = tokens[:max_length]
+            segment_ids = [0] * len(tokens)
+            input_mask = [1] * len(tokens)
+
+            if len(tokens) < max_length:
+                # Note here we pad in front of the sentence
+                padding = [self._padding_index] * (max_length - len(tokens))
+                tokens = tokens + padding
+                input_mask += padding
+                segment_ids += padding
+
+            assert_eq(len(tokens), max_length)
+            entry["q_token"] = tokens
+            entry["q_input_mask"] = input_mask
+            entry["q_segment_ids"] = segment_ids
+
+def tokenize_bert(text, padding=True, max_length=128, padding_index=0):
+
+    berttokenizer = BertTokenizer.from_pretrained(
+                         "bert-base-uncased", do_lower_case=True
+                     )
+    tokens = berttokenizer.tokenize(instr)
+    tokens = ["[CLS]"] + tokens + ["[SEP]"]
+
+    tokens = [
+        berttokenizer.vocab.get(w, berttokenizer.vocab["[UNK]"])
+        for w in tokens
+    ]
+
+    tokens = tokens[:max_length]
+    segment_ids = [0] * len(tokens)
+
+    if len(tokens) < max_length:
+        # Note here we pad in front of the sentence
+        padding = [padding_index] * (max_length - len(tokens))
+        tokens = tokens + padding
+        input_mask += padding
+
+    return tokens, input_mask
+
 def serialize_r2r(config, splits=["train"], force=False) -> None:
     json_file_path = config.DATA_PATH[:-3]
     connectivity = load_connectivity(config.CONNECTIVITY_PATH)
@@ -222,6 +301,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
     trainval_vocab, trainval_word2idx = \
         build_vocab(json_file_path, splits=["train", "val_seen", "val_unseen"])
     tokenizer = Tokenizer(trainval_vocab, 100)
+
 
     for split in splits:
         habitat_episodes = []
@@ -239,6 +319,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                     viewpoint = episode["path"][0]
                     distance = 0
                     heading = normalize_heading(episode["heading"])
+                    tokens, mask = tokenize_bert(instr)
 
                     if "distance" in episode:
                         distance = episode["distance"]
@@ -252,8 +333,8 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                         'info': {"geodesic_distance": distance},
                         'goals': goals,
                         'instruction': instr,
-                        'instruction_encoding':
-                            tokenizer.encode_sentence(instr).tolist(),
+                        'instruction_encoding': tokens,
+                        'mask': mask,
                         'scan': scan
                     }
                     habitat_episodes.append(habitat_episode)

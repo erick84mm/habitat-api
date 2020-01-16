@@ -218,6 +218,11 @@ class alignmentAgent(habitat.Agent):
         # Observations come in Caffe GPU
         im = observations["rgb"]
         features = self._get_image_features([im])
+        image_mask = None
+        instr = episode.instruction.tokens
+        instr_mask = episode.instruction.mask
+        segment_ids = None
+        co_attention_mask = torch.zeros((self._max_region_num, self._max_seq_length))
 
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)

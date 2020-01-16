@@ -77,6 +77,7 @@ class InstructionData:
     """
     instruction: str
     tokens: Optional[List[int]] = None
+    mask: Optional[List[int]] = None
     tokens_length: int = 0
 
 
