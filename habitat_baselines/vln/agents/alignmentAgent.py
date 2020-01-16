@@ -271,7 +271,7 @@ class alignmentAgent(habitat.Agent):
             image_mask.append(0)
 
         mix_boxes_pad[:mix_num_boxes] = boxes[0][:mix_num_boxes]
-        mix_features_pad[:mix_num_boxes] = features[:mix_num_boxes]
+        mix_features_pad[:mix_num_boxes] = features[0][:mix_num_boxes]
 
         features = mix_features_pad.float()
         image_mask = torch.tensor(image_mask).long()
