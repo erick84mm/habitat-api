@@ -190,7 +190,7 @@ class alignmentAgent(habitat.Agent):
             # We need to get topk_per_image boxes so we gradually increase
             # the tolerance of the nms_thresh if we don't have enough boxes
             for nms_thresh in np.arange(0.3, 1.0, 0.1):
-                instances, ids = self.fast_rcnn_inference_single_image(
+                instances, ids = fast_rcnn_inference_single_image(
                     boxes,
                     probs,
                     image_size,
