@@ -229,6 +229,7 @@ class alignmentAgent(habitat.Agent):
                         [[0,0,1,1,1]],
                         device=self.detectron2_gpu_device
                        ).float()
+
             box = torch.zeros(
                     (len(raw_instances)+1, 5),
                     device=self.detectron2_gpu_device
@@ -240,7 +241,8 @@ class alignmentAgent(habitat.Agent):
             box[:,3] /= float(width)
             box[:,4] = (box[:,3] - box[:,1]) * (box[:,2] - box[:,0]) / \
                 (float(height) * float(width))
-            box = torch.cat((head_box, raw_instances.pred_boxes.tensor), 0)
+
+            box = torch.cat((head_box, box), 0)
             print(box.shape, box)
             boxes.append(box)
         # features, boxes, image_mask
