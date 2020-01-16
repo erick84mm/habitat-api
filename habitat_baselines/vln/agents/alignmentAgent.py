@@ -25,6 +25,7 @@ from detectron2.modeling.roi_heads.fast_rcnn import(
 from habitat_baselines.vln.models.vilbert import VILBertForVLTasks, BertConfig
 from torchvision.ops import nms
 from detectron2.structures import Boxes, Instances
+from detectron2.modeling.postprocessing import detector_postprocess
 
 
 # We need the indices of the features to keep
@@ -117,6 +118,8 @@ class alignmentAgent(habitat.Agent):
         detectron2_cfg = self.create_detectron2_cfg(config)
         self.detector = DefaultPredictor(detectron2_cfg)
         print("Detectron2 loaded")
+        self._max_region_num = 36,
+        self._max_seq_length = 128
 
     def create_detectron2_cfg(self, config):
         cfg = get_cfg()
@@ -184,7 +187,6 @@ class alignmentAgent(habitat.Agent):
         boxes_list = rcnn_outputs.predict_boxes()
         image_shapes = [x.image_size for x in proposals]
 
-
         for probs, boxes, image_size in zip(probs_list, boxes_list, image_shapes):
 
             # We need to get topk_per_image boxes so we gradually increase
@@ -211,19 +213,43 @@ class alignmentAgent(habitat.Agent):
         for ids, features in zip(ids_list, features_list):
             roi_features_list.append(features[ids].detach())
 
-        return roi_features_list
+        # Post processing for bounding boxes (rescale to raw_image)
+        raw_instances_list = []
+        for instances, input_per_image, image_size in zip(
+                instances_list, inputs, images.image_sizes
+            ):
+            height = input_per_image.get("height", image_size[0])
+            width = input_per_image.get("width", image_size[1])
+            raw_instances = detector_postprocess(instances, height, width)
+            raw_instances_list.append(raw_instances)
+        print(raw_instances_list[0])
+        # features, boxes, image_mask
+        return roi_features_list, raw_instances_list, None
 
     def act(self, observations, episode):
 
         # Observations come in Caffe GPU
         im = observations["rgb"]
-        features = self._get_image_features([im])
-        image_mask = None
-        instr = episode.instruction.tokens
-        instr_mask = episode.instruction.mask
-        segment_ids = None
-        co_attention_mask = torch.zeros((self._max_region_num, self._max_seq_length))
+        features, boxes, image_mask = self._get_image_features([im])
+        instruction = torch.tensor(episode.instruction.tokens)
+        input_mask = torch.tensor(episode.instruction.mask)
+        segment_ids = torch.tensor([1 - i for i in input_mask])
+        co_attention_mask = torch.zeros((
+                                self._max_region_num,
+                                self._max_seq_length
+                            ))
 
+        #vil_prediction, vil_logit, vil_binary_prediction, vision_prediction, \
+        #vision_logit, linguisic_prediction, linguisic_logit = \
+        #self.model(
+        #    instruction,
+        #    features,
+        #    spatials,
+        #    segment_ids,
+        #    input_mask,
+        #    image_mask,
+        #    co_attention_mask
+        #)
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         print("features ", len(features), len(features[0]), features[0].shape)
