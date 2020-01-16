@@ -18,7 +18,7 @@ from os import path
 from collections import Counter
 from habitat.tasks.utils import heading_to_rotation
 from habitat_sim.utils.common import quat_from_two_vectors, quat_rotate_vector
-from transformers.tokenization import BertTokenizer
+from transformers import BertTokenizer
 
 
 SCENE_ID = "mp3d/{scan}/{scan}.glb"
