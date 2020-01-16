@@ -18,8 +18,14 @@ setup_logger()
 from detectron2 import model_zoo
 from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
-from detectron2.modeling.roi_heads.fast_rcnn import FastRCNNOutputLayers, FastRCNNOutputs
+from detectron2.modeling.roi_heads.fast_rcnn import(
+    FastRCNNOutputLayers,
+    FastRCNNOutputs,
+    fast_rcnn_inference_single_image
+)
 from habitat_baselines.vln.models.vilbert import VILBertForVLTasks, BertConfig
+from torchvision.ops import nms
+from detectron2.structures import Boxes, Instances
 
 
 class alignmentAgent(habitat.Agent):
@@ -57,6 +63,7 @@ class alignmentAgent(habitat.Agent):
                     "BUA_R_101_C4_MAX":"VG-Detection/faster_rcnn_R_101_C4_caffemaxpool.yaml"
     }
 
+
     def __init__(self, config):
         #Load vilBert config
         print("Loading ViLBERT model configuration")
@@ -91,9 +98,38 @@ class alignmentAgent(habitat.Agent):
         cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(checkpoint)
         return cfg
 
-
     def reset(self):
         pass
+
+    def fast_rcnn_inference_single_image(
+        boxes, scores, image_shape, score_thresh, nms_thresh, topk_per_image
+    ):
+        scores = scores[:, :-1]
+        num_bbox_reg_classes = boxes.shape[1] // 4
+        # Convert to Boxes to use the `clip` function ...
+        boxes = Boxes(boxes.reshape(-1, 4))
+        boxes.clip(image_shape)
+        boxes = boxes.tensor.view(-1, num_bbox_reg_classes, 4)  # R x C x 4
+
+        # Select max scores
+        max_scores, max_classes = scores.max(1)       # R x C --> R
+        num_objs = boxes.size(0)
+        boxes = boxes.view(-1, 4)
+        idxs = torch.arange(num_objs).cuda() * num_bbox_reg_classes + max_classes
+        max_boxes = boxes[idxs]     # Select max boxes according to the max scores.
+
+        # Apply NMS
+        keep = nms(max_boxes, max_scores, nms_thresh)
+        if topk_per_image >= 0:
+            keep = keep[:topk_per_image]
+        boxes, scores = max_boxes[keep], max_scores[keep]
+
+        result = Instances(image_shape)
+        result.pred_boxes = Boxes(boxes)
+        result.scores = scores
+        result.pred_classes = max_classes[keep]
+
+        return result, keep
 
     def _get_image_features(self, imgs, score_thresh=0.2, topk_per_image=36):
         # imgs tensor(batch, H, W, C)
