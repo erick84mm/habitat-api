@@ -18,6 +18,7 @@ setup_logger()
 from detectron2 import model_zoo
 from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
+from detectron2.modeling.roi_heads.fast_rcnn import FastRCNNOutputLayers, FastRCNNOutputs
 from habitat_baselines.vln.models.vilbert import VILBertForVLTasks, BertConfig
 
 
@@ -52,6 +53,8 @@ class alignmentAgent(habitat.Agent):
                     "IS_R_101_DC5_3x": "COCO-InstanceSegmentation/mask_rcnn_R_101_DC5_3x.yaml",
                     "IS_R_101_FPN_3x": "COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml",
                     "IS_X_101_FPN_3x": "COCO-InstanceSegmentation/mask_rcnn_X_101_32x8d_FPN_3x.yaml",
+                    "BUA_R_101_C4":"VG-Detection/faster_rcnn_R_101_C4_caffe.yaml",
+                    "BUA_R_101_C4_MAX":"VG-Detection/faster_rcnn_R_101_C4_caffemaxpool.yaml"
     }
 
     def __init__(self, config):
@@ -75,7 +78,7 @@ class alignmentAgent(habitat.Agent):
 
         print("Loading Detectron2 predictor on GPU {}".format(self.detectron2_gpu))
         detectron2_cfg = self.create_detectron2_cfg(config)
-        self.image_predictor = DefaultPredictor(detectron2_cfg)
+        self.detector = DefaultPredictor(detectron2_cfg)
         print("Detectron2 loaded")
 
     def create_detectron2_cfg(self, config):
@@ -92,17 +95,95 @@ class alignmentAgent(habitat.Agent):
     def reset(self):
         pass
 
-    def act(self, observations, episode):
+    def _get_image_features(self, imgs, score_thresh=0.2, topk_per_image=36):
+        # imgs tensor(batch, H, W, C)
+        inputs = []
+        for img in raw_imgs:
+            raw_img = img.permute(2,0,1)
+            raw_img = raw_imgs.to(self.detectron2_gpu_device)
+            (_, height, width) = raw_img.shape
+            inputs.append({"image": raw_img, "height": height, "width": width})
+
+        # Normalize the image by substracting mean
+        # Moves the image to device (already in device)
+        images = self.detector.model.preprocess_image(inputs)
+
+        # Features from the backbone
+        features = self.detector.model.backbone(images.tensor)
+
+        # Get RPN proposals
+        # proposal_generator inputs are the images, features, gt_instances
+        # since is detect we don't need the gt instances
+        proposals, _ = self.detector.model.proposal_generator
+                        (
+                            img_input,
+                            features,
+                            None
+                        )
+
+        # The C4 model uses Res5ROIHeads where pooled feature can be extracted
+        proposal_boxes = [x.proposal_boxes for x in proposals]
+        features = [features[f] for f in self.detector.model.roi_heads.in_features]
+        box_features = self.detector.model.roi_heads._shared_roi_transform(
+            features, proposal_boxes
+        )
+        # Pooled features to use in the agent
+        feature_pooled = box_features.mean(dim=[2, 3])
+
+        # Predict classes and boxes for each proposal.
+        pred_class_logits, pred_proposal_deltas = \
+            self.detector.model.roi_heads.box_predictor(feature_pooled)
+
+        rcnn_outputs = FastRCNNOutputs(
+            self.detector.model.roi_heads.box2box_transform,
+            pred_class_logits,
+            pred_proposal_deltas,
+            proposals,
+            self.detector.model.roi_heads.smooth_l1_beta,
+        )
+
+        # Filter proposals using Non-Maximum Suppression (NMS)
+        instances_list, ids_list = [], []
+        probs_list = rcnn_outputs.predict_probs()
+        boxes_list = rcnn_outputs.predict_boxes()
+        image_shapes = [x.image_size for x in proposals]
+
+
+        for probs, boxes, image_size in zip(probs_list, boxes_list, image_shapes):
+
+            # We need to get topk_per_image boxes so we gradually increase
+            # the tolerance of the nms_thresh if we don't have enough boxes
+            for nms_thresh in np.arange(0.3, 1.0, 0.1):
+                instances, ids = fast_rcnn_inference_single_image(
+                    boxes,
+                    probs,
+                    image_size,
+                    score_thresh=score_thresh,
+                    nms_thresh=nms_thresh,
+                    topk_per_image=topk_per_image
+                )
+                #
+                if len(ids) >= topk_per_image:
+                    break
+            instances_list.append(instances)
+            ids_list.append(ids)
+
+        # Post processing for features
+        features_list = feature_pooled.split(rcnn_outputs.num_preds_per_image) # (sum_proposals, 2048) --> [(p1, 2048), (p2, 2048), ..., (pn, 2048)]
+        roi_features_list = []
+        for ids, features in zip(ids_list, features_list):
+            roi_features_list.append(features[ids].detach())
+
+        return roi_features_list
+
+    def act(self, rollout):
+
         # Observations come in Caffe GPU
-        im = observations["rgb"].permute(2,0,1)
-        im = im.to(self.detectron2_gpu_device)
-        (channels, height , width) = im.shape
-        print(im.shape, type(im), channels, height , width)
-        inputs = {"image": im, "height": height, "width": width}
-        outputs = self.image_predictor.model([inputs])[0]
-        print(torch.cuda.current_device())
+        im = observations["rgb"]
+        features = self._get_image_features(self, [im])
+
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
-        print("features")
+        print("features ", features.shape)
 
         action = "TURN_LEFT"
 
