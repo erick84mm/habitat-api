@@ -230,6 +230,7 @@ class alignmentAgent(habitat.Agent):
                     (len(raw_instances)+1, 5),
                     device=self.detectron2_gpu_device
                  )
+            print(box.device, raw_instances.pred_boxes.tensor.device)
             box[1:,:4] = raw_instances.pred_boxes.tensor
             box[:,0] /= float(width)
             box[:,1] /= float(width)
