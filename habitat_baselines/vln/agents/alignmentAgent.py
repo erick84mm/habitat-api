@@ -228,7 +228,7 @@ class alignmentAgent(habitat.Agent):
             head_box = torch.tensor(
                         [[0,0,1,1,1]],
                         device=self.detectron2_gpu_device
-                       )
+                       ).float()
             box = torch.zeros(
                     (len(raw_instances)+1, 5),
                     device=self.detectron2_gpu_device
