@@ -246,6 +246,9 @@ class alignmentAgent(habitat.Agent):
         # features, boxes, image_mask
         return roi_features_list, boxes, num_boxes
 
+    def train(self):
+        self.model.train()
+
     def act(self, observations, episode):
 
         # Observations come in Caffe GPU
@@ -262,7 +265,7 @@ class alignmentAgent(habitat.Agent):
                                 self._max_seq_length
                             )).to(self.bert_gpu_device)
 
-        mix_num_boxes = min(int(num_boxes[0]), max_regions) + 1
+        mix_num_boxes = min(int(num_boxes[0]), max_regions)
         mix_boxes_pad = torch.zeros((max_regions, 5))
         mix_features_pad = torch.zeros((max_regions, 2048))
 
@@ -286,13 +289,13 @@ class alignmentAgent(habitat.Agent):
         vil_prediction, vil_logit, vil_binary_prediction, vision_prediction, \
         vision_logit, linguisic_prediction, linguisic_logit = \
         self.model(
-            instruction,
-            features,
-            spatials,
-            segment_ids,
-            input_mask,
-            image_mask,
-            co_attention_mask
+            instruction.unsqueeze(0),
+            features.unsqueeze(0),
+            spatials.unsqueeze(0),
+            segment_ids.unsqueeze(0),
+            input_mask.unsqueeze(0),
+            image_mask.unsqueeze(0),
+            co_attention_mask.unsqueeze(0)
         )
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)

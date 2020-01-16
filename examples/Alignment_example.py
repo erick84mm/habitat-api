@@ -23,6 +23,7 @@ class VLNBenchmark(habitat.Benchmark):
 
         print("Training is running on device ", torch.cuda.current_device())
         count = 300
+        agent.train()
         while count:
             observations = self._env.reset()
             action = agent.act(
