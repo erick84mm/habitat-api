@@ -269,11 +269,8 @@ class R2RSerializer:
             entry["q_input_mask"] = input_mask
             entry["q_segment_ids"] = segment_ids
 
-def tokenize_bert(text, padding=True, max_length=128, padding_index=0):
+def tokenize_bert(text, berttokenizer, padding=True, max_length=128, padding_index=0):
     print("tokenize")
-    berttokenizer = BertTokenizer.from_pretrained(
-                         "bert-base-uncased", do_lower_case=True
-                     )
     print("initializing")
     tokens = berttokenizer.tokenize(text)
     tokens = ["[CLS]"] + tokens + ["[SEP]"]
@@ -307,7 +304,11 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
     tokenizer = Tokenizer(trainval_vocab, 100)
     print("vocabulary loaded")
 
-
+    berttokenizer = BertTokenizer.from_pretrained(
+                         "bert-base-uncased",
+                         do_lower_case=True,
+                         do_basic_tokenize=True
+                     )
     for split in splits:
         print("running split %s" % split)
         habitat_episodes = []
@@ -326,7 +327,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                     viewpoint = episode["path"][0]
                     distance = 0
                     heading = normalize_heading(episode["heading"])
-                    tokens, mask = tokenize_bert(instr)
+                    tokens, mask = tokenize_bert(instr, berttokenizer)
 
                     if "distance" in episode:
                         distance = episode["distance"]
