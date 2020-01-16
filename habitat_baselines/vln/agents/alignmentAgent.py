@@ -219,8 +219,9 @@ class alignmentAgent(habitat.Agent):
         im = observations["rgb"]
         features = self._get_image_features([im])
 
+
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
-        print("features ", len(features))
+        print("features ", len(features), len(features[0]), features[0].shape)
 
         action = "TURN_LEFT"
 
