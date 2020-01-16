@@ -232,7 +232,7 @@ class alignmentAgent(habitat.Agent):
         # Observations come in Caffe GPU
         im = observations["rgb"]
         features, instances, num_boxes = self._get_image_features([im])
-        boxes = instances.pred_boxes
+        boxes = instances[0].pred_boxes
         print(len(instances), instances[0], num_boxes)
         instruction = torch.tensor(episode.instruction.tokens)
         input_mask = torch.tensor(episode.instruction.mask)
@@ -249,7 +249,7 @@ class alignmentAgent(habitat.Agent):
         image_mask = [1] * (int(mix_num_boxes))
         while len(image_mask) < self._max_region_num:
             image_mask.append(0)
-            
+
         mix_boxes_pad[:mix_num_boxes] = boxes[:mix_num_boxes]
         mix_features_pad[:mix_num_boxes] = features[:mix_num_boxes]
 
