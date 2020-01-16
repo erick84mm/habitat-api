@@ -274,7 +274,7 @@ def tokenize_bert(text, padding=True, max_length=128, padding_index=0):
     berttokenizer = BertTokenizer.from_pretrained(
                          "bert-base-uncased", do_lower_case=True
                      )
-    tokens = berttokenizer.tokenize(instr)
+    tokens = berttokenizer.tokenize(text)
     tokens = ["[CLS]"] + tokens + ["[SEP]"]
 
     tokens = [
