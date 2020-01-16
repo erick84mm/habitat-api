@@ -270,10 +270,11 @@ class R2RSerializer:
             entry["q_segment_ids"] = segment_ids
 
 def tokenize_bert(text, padding=True, max_length=128, padding_index=0):
-
+    print("tokenize")
     berttokenizer = BertTokenizer.from_pretrained(
                          "bert-base-uncased", do_lower_case=True
                      )
+    print("initializing")
     tokens = berttokenizer.tokenize(text)
     tokens = ["[CLS]"] + tokens + ["[SEP]"]
 
