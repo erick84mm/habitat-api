@@ -222,7 +222,7 @@ class alignmentAgent(habitat.Agent):
             height = input_per_image.get("height", image_size[0])
             width = input_per_image.get("width", image_size[1])
             raw_instances = detector_postprocess(instances, height, width)
-            raw_instances.set("_image_size", (height, width))
+            raw_instances.set("dimensions", (height, width))
             raw_instances_list.append(raw_instances)
 
         # features, boxes, image_mask
@@ -234,7 +234,7 @@ class alignmentAgent(habitat.Agent):
         im = observations["rgb"]
         features, instances, num_boxes = self._get_image_features([im])
         boxes = instances[0].pred_boxes.tensor
-        (height, width) = instances[0].image_size
+        (height, width) = instances[0].get("dimensions")
         instruction = torch.tensor(episode.instruction.tokens)
         input_mask = torch.tensor(episode.instruction.mask)
         segment_ids = torch.tensor([1 - i for i in input_mask])
