@@ -101,7 +101,9 @@ class R2RDatasetV1(Dataset):
                     rotation=r2r_episode["start_rotation"] )
                 )
             instruction_encoding = r2r_episode["instruction_encoding"]
+            mask = r2r_episode["mask"]
             del r2r_episode["instruction_encoding"]
+            del r2r_episode["mask"]
             episode = VLNEpisode(**r2r_episode)
 
             if scenes_dir is not None:
@@ -113,7 +115,8 @@ class R2RDatasetV1(Dataset):
             episode.instruction = InstructionData(
                 instruction=r2r_episode["instruction"],
                 tokens=instruction_encoding,
-                tokens_length=len(instruction_encoding)
+                tokens_length=sum(mask),
+                mask=mask
             )
 
             scan = episode.scan
