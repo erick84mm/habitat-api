@@ -225,12 +225,14 @@ class alignmentAgent(habitat.Agent):
             height = input_per_image.get("height", image_size[0])
             width = input_per_image.get("width", image_size[1])
             raw_instances = detector_postprocess(instances, height, width)
-            head_box = torch.tensor([[0,0,1,1,1]])
+            head_box = torch.tensor(
+                        [[0,0,1,1,1]],
+                        device=self.detectron2_gpu_device
+                       )
             box = torch.zeros(
                     (len(raw_instances)+1, 5),
                     device=self.detectron2_gpu_device
                  )
-            print(box.device, raw_instances.pred_boxes.tensor.device)
             box[1:,:4] = raw_instances.pred_boxes.tensor
             box[:,0] /= float(width)
             box[:,1] /= float(width)
