@@ -274,7 +274,7 @@ def tokenize_bert(text, berttokenizer, padding=True, max_length=128, padding_ind
     print("initializing")
     tokens = berttokenizer.tokenize(text)
     tokens = ["[CLS]"] + tokens + ["[SEP]"]
-
+    print(tokens)
     tokens = [
         berttokenizer.vocab.get(w, berttokenizer.vocab["[UNK]"])
         for w in tokens
