@@ -226,7 +226,7 @@ class alignmentAgent(habitat.Agent):
                        len(raw_instances)
             print(head_box)
             raw_instances.pred_boxes.tensor = \
-                    torch.cat((head_box, raw_instances.pred_boxes..tensor), 0)
+                    torch.cat((head_box, raw_instances.pred_boxes.tensor), 0)
             print(raw_instances)
             raw_instances_list.append(raw_instances)
 
