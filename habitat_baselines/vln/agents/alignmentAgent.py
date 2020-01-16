@@ -175,7 +175,7 @@ class alignmentAgent(habitat.Agent):
 
         return roi_features_list
 
-    def act(self, rollout):
+    def act(self, observations, episode):
 
         # Observations come in Caffe GPU
         im = observations["rgb"]
