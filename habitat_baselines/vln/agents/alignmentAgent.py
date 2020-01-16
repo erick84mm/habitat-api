@@ -135,7 +135,7 @@ class alignmentAgent(habitat.Agent):
         pass
 
 
-    def _get_image_features(self, imgs, score_thresh=0.2, topk_per_image=36):
+    def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, topk_per_image=36):
         # imgs tensor(batch, H, W, C)
         inputs = []
         for img in imgs:
@@ -186,7 +186,7 @@ class alignmentAgent(habitat.Agent):
         probs_list = rcnn_outputs.predict_probs()
         boxes_list = rcnn_outputs.predict_boxes()
         image_shapes = [x.image_size for x in proposals]
-
+        num_boxes = []
         for probs, boxes, image_size in zip(probs_list, boxes_list, image_shapes):
 
             # We need to get topk_per_image boxes so we gradually increase
@@ -202,8 +202,9 @@ class alignmentAgent(habitat.Agent):
                     device=self.detectron2_gpu_device
                 )
                 #
-                if len(ids) >= topk_per_image:
+                if len(ids) >= min_num_image:
                     break
+            num_boxes.append(len(ids))
             instances_list.append(instances)
             ids_list.append(ids)
 
@@ -222,15 +223,17 @@ class alignmentAgent(habitat.Agent):
             width = input_per_image.get("width", image_size[1])
             raw_instances = detector_postprocess(instances, height, width)
             raw_instances_list.append(raw_instances)
-        print(raw_instances_list[0])
+
         # features, boxes, image_mask
-        return roi_features_list, raw_instances_list, None
+        return roi_features_list, raw_instances_list, num_boxes
 
     def act(self, observations, episode):
 
         # Observations come in Caffe GPU
         im = observations["rgb"]
-        features, boxes, image_mask = self._get_image_features([im])
+        features, instances, num_boxes = self._get_image_features([im])
+        boxes = instances.pred_boxes
+        print(len(instances), instances[0], num_boxes)
         instruction = torch.tensor(episode.instruction.tokens)
         input_mask = torch.tensor(episode.instruction.mask)
         segment_ids = torch.tensor([1 - i for i in input_mask])
@@ -238,6 +241,21 @@ class alignmentAgent(habitat.Agent):
                                 self._max_region_num,
                                 self._max_seq_length
                             ))
+
+        mix_num_boxes = min(int(num_boxes[0]), self._max_region_num)
+        mix_boxes_pad = np.zeros((self._max_region_num, 5))
+        mix_features_pad = np.zeros((self._max_region_num, 2048))
+
+        image_mask = [1] * (int(mix_num_boxes))
+        while len(image_mask) < self._max_region_num:
+            image_mask.append(0)
+            
+        mix_boxes_pad[:mix_num_boxes] = boxes[:mix_num_boxes]
+        mix_features_pad[:mix_num_boxes] = features[:mix_num_boxes]
+
+        features = torch.tensor(mix_features_pad).float()
+        image_mask = torch.tensor(image_mask).long()
+        spatials = torch.tensor(mix_boxes_pad).float()
 
         #vil_prediction, vil_logit, vil_binary_prediction, vision_prediction, \
         #vision_logit, linguisic_prediction, linguisic_logit = \
