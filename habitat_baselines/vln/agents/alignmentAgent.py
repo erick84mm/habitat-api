@@ -29,7 +29,7 @@ from detectron2.structures import Boxes, Instances
 
 # We need the indices of the features to keep
 def fast_rcnn_inference_single_image(
-        boxes, scores, image_shape, score_thresh, nms_thresh, topk_per_image
+        boxes, scores, image_shape, score_thresh, nms_thresh, topk_per_image, device
     ):
         scores = scores[:, :-1]
         num_bbox_reg_classes = boxes.shape[1] // 4
@@ -42,7 +42,7 @@ def fast_rcnn_inference_single_image(
         max_scores, max_classes = scores.max(1)       # R x C --> R
         num_objs = boxes.size(0)
         boxes = boxes.view(-1, 4)
-        idxs = torch.arange(num_objs).cuda() * num_bbox_reg_classes + max_classes
+        idxs = torch.arange(num_objs).cuda(device) * num_bbox_reg_classes + max_classes
         max_boxes = boxes[idxs]     # Select max boxes according to the max scores.
 
         # Apply NMS
@@ -196,7 +196,8 @@ class alignmentAgent(habitat.Agent):
                     image_size,
                     score_thresh=score_thresh,
                     nms_thresh=nms_thresh,
-                    topk_per_image=topk_per_image
+                    topk_per_image=topk_per_image,
+                    device=self.detectron2_gpu_device
                 )
                 #
                 if len(ids) >= topk_per_image:
