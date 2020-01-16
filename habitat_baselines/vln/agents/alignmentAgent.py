@@ -118,7 +118,7 @@ class alignmentAgent(habitat.Agent):
         detectron2_cfg = self.create_detectron2_cfg(config)
         self.detector = DefaultPredictor(detectron2_cfg)
         print("Detectron2 loaded")
-        self._max_region_num = 36,
+        self._max_region_num = 36
         self._max_seq_length = 128
 
     def create_detectron2_cfg(self, config):
