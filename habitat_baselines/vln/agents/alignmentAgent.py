@@ -115,7 +115,7 @@ class alignmentAgent(habitat.Agent):
         # proposal_generator inputs are the images, features, gt_instances
         # since is detect we don't need the gt instances
         proposals, _ = self.detector.model.proposal_generator(
-                            img_input,
+                            images,
                             features,
                             None
                         )
