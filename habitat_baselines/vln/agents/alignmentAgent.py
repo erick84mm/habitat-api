@@ -98,7 +98,7 @@ class alignmentAgent(habitat.Agent):
     def _get_image_features(self, imgs, score_thresh=0.2, topk_per_image=36):
         # imgs tensor(batch, H, W, C)
         inputs = []
-        for img in raw_imgs:
+        for img in imgs:
             raw_img = img.permute(2,0,1)
             raw_img = raw_imgs.to(self.detectron2_gpu_device)
             (_, height, width) = raw_img.shape
