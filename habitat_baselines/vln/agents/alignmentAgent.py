@@ -224,6 +224,7 @@ class alignmentAgent(habitat.Agent):
             raw_instances = detector_postprocess(instances, height, width)
             head_box = torch.sum(raw_instances.pred_boxes.tensor, axis=0) / \
                        len(raw_instances)
+            head_box = head_box.unsqueeze(0)
             print(head_box)
             raw_instances.pred_boxes.tensor = \
                     torch.cat((head_box, raw_instances.pred_boxes.tensor), 0)
