@@ -284,6 +284,7 @@ def tokenize_bert(text, padding=True, max_length=128, padding_index=0):
 
     tokens = tokens[:max_length]
     segment_ids = [0] * len(tokens)
+    input_mask = [1] * len(tokens)
 
     if len(tokens) < max_length:
         # Note here we pad in front of the sentence
