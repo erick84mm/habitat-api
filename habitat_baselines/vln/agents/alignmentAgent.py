@@ -254,13 +254,13 @@ class alignmentAgent(habitat.Agent):
         max_regions = self._max_region_num + 1
 
         # The following have to be done outside in the rollouts
-        instruction = torch.tensor(episode.instruction.tokens)
-        input_mask = torch.tensor(episode.instruction.mask)
-        segment_ids = torch.tensor([1 - i for i in input_mask])
+        instruction = torch.tensor(episode.instruction.tokens).to(self.bert_gpu_device)
+        input_mask = torch.tensor(episode.instruction.mask).to(self.bert_gpu_device)
+        segment_ids = torch.tensor([1 - i for i in input_mask]).to(self.bert_gpu_device)
         co_attention_mask = torch.zeros((
                                 max_regions,
                                 self._max_seq_length
-                            ))
+                            )).to(self.bert_gpu_device)
 
         mix_num_boxes = min(int(num_boxes[0]), max_regions) + 1
         mix_boxes_pad = torch.zeros((max_regions, 5))
@@ -273,28 +273,37 @@ class alignmentAgent(habitat.Agent):
         mix_boxes_pad[:mix_num_boxes] = boxes[0][:mix_num_boxes]
         mix_features_pad[:mix_num_boxes] = features[0][:mix_num_boxes]
 
-        features = mix_features_pad.float()
-        image_mask = torch.tensor(image_mask).long()
-        spatials = mix_boxes_pad.float()
+        features = mix_features_pad.float().to(self.bert_gpu_device)
+        image_mask = torch.tensor(image_mask).long().to(self.bert_gpu_device)
+        spatials = mix_boxes_pad.float().to(self.bert_gpu_device)
 
         print("features", features.shape, features)
         print("image_mask", image_mask.shape, image_mask)
         print("spatials", spatials.shape, spatials)
-        #vil_prediction, vil_logit, vil_binary_prediction, vision_prediction, \
-        #vision_logit, linguisic_prediction, linguisic_logit = \
-        #self.model(
-        #    instruction,
-        #    features,
-        #    spatials,
-        #    segment_ids,
-        #    input_mask,
-        #    image_mask,
-        #    co_attention_mask
-        #)
+        vil_prediction, vil_logit, vil_binary_prediction, vision_prediction, \
+        vision_logit, linguisic_prediction, linguisic_logit = \
+        self.model(
+            instruction,
+            features,
+            spatials,
+            segment_ids,
+            input_mask,
+            image_mask,
+            co_attention_mask
+        )
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         print("features ", len(features), len(features[0]), features[0].shape)
-
+        print(
+            "BERT",
+            vil_prediction,
+            vil_logit,
+            vil_binary_prediction,
+            vision_prediction,
+            vision_logit,
+            linguisic_prediction,
+            linguisic_logit
+        )
         action = "TURN_LEFT"
 
         action_args = {}
