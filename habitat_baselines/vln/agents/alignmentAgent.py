@@ -135,7 +135,7 @@ class alignmentAgent(habitat.Agent):
         pass
 
 
-    def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, topk_per_image=36):
+    def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
         # imgs tensor(batch, H, W, C)
         inputs = []
         for img in imgs:
@@ -198,7 +198,7 @@ class alignmentAgent(habitat.Agent):
                     image_size,
                     score_thresh=score_thresh,
                     nms_thresh=nms_thresh,
-                    topk_per_image=topk_per_image,
+                    topk_per_image=max_regions,
                     device=self.detectron2_gpu_device
                 )
                 #
@@ -212,69 +212,64 @@ class alignmentAgent(habitat.Agent):
         features_list = feature_pooled.split(rcnn_outputs.num_preds_per_image) # (sum_proposals, 2048) --> [(p1, 2048), (p2, 2048), ..., (pn, 2048)]
         roi_features_list = []
         for ids, features in zip(ids_list, features_list):
-            roi_features_list.append(features[ids].detach())
+            head_box = torch.sum(features[ids], axis=0) / \
+                       len(features[ids])
+            head_box = head_box.unsqueeze(0)
+            roi_features_list.append(torch.cat((head_box, features[ids]), 0))
 
         # Post processing for bounding boxes (rescale to raw_image)
-        raw_instances_list = []
+        boxes = []
         for instances, input_per_image, image_size in zip(
                 instances_list, inputs, images.image_sizes
             ):
             height = input_per_image.get("height", image_size[0])
             width = input_per_image.get("width", image_size[1])
             raw_instances = detector_postprocess(instances, height, width)
-            head_box = torch.sum(raw_instances.pred_boxes.tensor, axis=0) / \
-                       len(raw_instances)
-            head_box = head_box.unsqueeze(0)
-            print(head_box)
-            raw_instances.pred_boxes.tensor = \
-                    torch.cat((head_box, raw_instances.pred_boxes.tensor), 0)
-            print(raw_instances)
-            raw_instances_list.append(raw_instances)
-
-
-
+            head_box = torch.tensor([[0,0,1,1,1]])
+            box = np.zeros((len(raw_instances)+1, 5))
+            box[1:,:4] = raw_instances.pred_boxes.tensor
+            box[:,0] /= float(width)
+            box[:,1] /= float(width)
+            box[:,2] /= float(width)
+            box[:,3] /= float(width)
+            box[:,4] = (box[:,3] - box[:,1]) * (box[:,2] - box[:,0]) / \
+                (float(height) * float(width))
+            box = torch.cat((head_box, raw_instances.pred_boxes.tensor), 0)
+            print(box.shape, box)
+            boxes.append(box)
         # features, boxes, image_mask
-        return roi_features_list, raw_instances_list, num_boxes
+        return roi_features_list, boxes, num_boxes
 
     def act(self, observations, episode):
 
         # Observations come in Caffe GPU
         im = observations["rgb"]
-        features, instances, num_boxes = self._get_image_features([im])
-        boxes = instances[0].pred_boxes.tensor
+        features, boxes, num_boxes = self._get_image_features([im])
+        max_regions = self._max_region_num + 1
+
+        # The following have to be done outside in the rollouts
         instruction = torch.tensor(episode.instruction.tokens)
         input_mask = torch.tensor(episode.instruction.mask)
         segment_ids = torch.tensor([1 - i for i in input_mask])
         co_attention_mask = torch.zeros((
-                                self._max_region_num + 1,
+                                max_regions,
                                 self._max_seq_length
                             ))
 
-        mix_num_boxes = min(int(num_boxes[0]), self._max_region_num) + 1
-        mix_boxes_pad = np.zeros((self._max_region_num+1, 5))
-        mix_features_pad = np.zeros((self._max_region_num+1, 2048))
+        mix_num_boxes = min(int(num_boxes[0]), max_regions) + 1
+        mix_boxes_pad = torch.zeros((max_regions, 5))
+        mix_features_pad = torch.zeros((max_regions, 2048))
 
         image_mask = [1] * (int(mix_num_boxes))
-        while len(image_mask) < self._max_region_num:
+        while len(image_mask) < max_regions:
             image_mask.append(0)
 
-        mix_boxes_pad[0] = [0,0,1,1,1]
-        mix_boxes_pad[1:mix_num_boxes,:4] = boxes[:mix_num_boxes]
-        mix_boxes_pad[:,4] = (mix_boxes_pad[:,3] - mix_boxes_pad[:,1]) * \
-            (mix_boxes_pad[:,2] - mix_boxes_pad[:,0]) / \
-            (float(height) * float(width))
+        mix_boxes_pad[:mix_num_boxes] = boxes[0][:mix_num_boxes]
+        mix_features_pad[:mix_num_boxes] = features[:mix_num_boxes]
 
-        mix_boxes_pad[:,0] = mix_boxes_pad[:,0] / float(width)
-        mix_boxes_pad[:,1] = mix_boxes_pad[:,1] / float(height)
-        mix_boxes_pad[:,2] = mix_boxes_pad[:,2] / float(width)
-        mix_boxes_pad[:,3] = mix_boxes_pad[:,3] / float(height)
-
-        mix_features_pad[0] = torch.sum(features, axis=0) / features.shape[0]
-        mix_features_pad[1:mix_num_boxes] = features[:mix_num_boxes]
-
-        features = torch.tensor(mix_features_pad).float()
+        features = mix_features_pad.float()
         image_mask = torch.tensor(image_mask).long()
-        spatials = torch.tensor(mix_boxes_pad).float()
+        spatials = mix_boxes_pad.float()
 
         print("features", features.shape, features)
         print("image_mask", image_mask.shape, image_mask)
