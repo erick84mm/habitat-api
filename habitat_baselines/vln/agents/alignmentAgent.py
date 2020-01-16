@@ -100,7 +100,7 @@ class alignmentAgent(habitat.Agent):
         inputs = []
         for img in imgs:
             raw_img = img.permute(2,0,1)
-            raw_img = raw_imgs.to(self.detectron2_gpu_device)
+            raw_img = raw_img.to(self.detectron2_gpu_device)
             (_, height, width) = raw_img.shape
             inputs.append({"image": raw_img, "height": height, "width": width})
 
