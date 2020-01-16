@@ -295,6 +295,7 @@ def tokenize_bert(text, padding=True, max_length=128, padding_index=0):
     return tokens, input_mask
 
 def serialize_r2r(config, splits=["train"], force=False) -> None:
+    print("Starting serialization")
     json_file_path = config.DATA_PATH[:-3]
     connectivity = load_connectivity(config.CONNECTIVITY_PATH)
     # Building both vocabularies Train and TrainVAL
