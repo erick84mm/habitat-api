@@ -280,6 +280,9 @@ class alignmentAgent(habitat.Agent):
         print("features", features.shape, features)
         print("image_mask", image_mask.shape, image_mask)
         print("spatials", spatials.shape, spatials)
+        print("instruction", instruction.shape, instruction)
+        print("input mask", input_mask.shape, input_mask)
+        print("segments Ids", segment_ids.shape, segment_ids)
         vil_prediction, vil_logit, vil_binary_prediction, vision_prediction, \
         vision_logit, linguisic_prediction, linguisic_logit = \
         self.model(
