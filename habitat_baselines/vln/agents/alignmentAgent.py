@@ -179,7 +179,7 @@ class alignmentAgent(habitat.Agent):
 
         # Observations come in Caffe GPU
         im = observations["rgb"]
-        features = self._get_image_features(self, [im])
+        features = self._get_image_features([im])
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         print("features ", features.shape)
