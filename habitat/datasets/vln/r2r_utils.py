@@ -299,19 +299,23 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
     print("Starting serialization")
     json_file_path = config.DATA_PATH[:-3]
     connectivity = load_connectivity(config.CONNECTIVITY_PATH)
+    print("connectivity loaded")
     # Building both vocabularies Train and TrainVAL
     train_vocab, train_word2idx = build_vocab(json_file_path, splits=["train"])
     trainval_vocab, trainval_word2idx = \
         build_vocab(json_file_path, splits=["train", "val_seen", "val_unseen"])
     tokenizer = Tokenizer(trainval_vocab, 100)
+    print("vocabulary loaded")
 
 
     for split in splits:
+        print("running split %s" % split)
         habitat_episodes = []
         scenes = []
         if force or not path.exists(config.DATA_PATH.format(split=split)):
             data = load_dataset(split,
                                 json_file_path.format(split=split))
+            print("Dataset loaded")
             for episode in data:
                 for i, instr in enumerate(episode["instructions"]):
                     scan = episode["scan"]
