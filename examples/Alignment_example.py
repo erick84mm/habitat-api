@@ -7,6 +7,8 @@ from habitat.core.env import Env
 from collections import defaultdict
 from habitat_baselines.vln.config.default import get_config
 from habitat_baselines.vln.agents.alignmentAgent import alignmentAgent
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter()
 
 
 class VLNBenchmark(habitat.Benchmark):
@@ -36,7 +38,8 @@ class VLNBenchmark(habitat.Benchmark):
                 print("{} episodes have been processed".format(count_episodes))
             agent.reset()
             observations = self._env.reset()
-
+            episode_loss = []
+            episode_batch_score = []
             while not self._env.episode_over:
                 final_goal = self._env._current_episode.goals[-1].image_id
                 episode = self._env._current_episode
@@ -58,6 +61,8 @@ class VLNBenchmark(habitat.Benchmark):
                     self._env._current_episode,
                     goal_viewpoint
                 )
+                episode_loss.append(loss)
+                episode_batch_score.append(batch_score)
                 self.losses.append(loss)
                 self.batch_scores.append(batch_score)
 
@@ -73,6 +78,8 @@ class VLNBenchmark(habitat.Benchmark):
             agent.train_step(count_episodes)
 
             count_episodes += 1
+
+            writer.add_scalar('episode_Loss/train', sum(episode_loss) / len(episode_loss), count_episodes)
             metrics = self._env.get_metrics()
             for m, v in metrics.items():
                 if m != "distance_to_goal":
