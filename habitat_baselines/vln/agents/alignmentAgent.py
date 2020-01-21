@@ -12,6 +12,7 @@ import torch
 from torch import nn
 import detectron2
 from detectron2.utils.logger import setup_logger
+from habitat.tasks.vln.vln import ViewpointData
 setup_logger()
 
 
