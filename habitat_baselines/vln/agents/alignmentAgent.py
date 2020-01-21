@@ -128,8 +128,25 @@ class alignmentAgent(habitat.Agent):
         self.criterion = nn.BCEWithLogitsLoss(reduction='mean')
         self.loss = 0
         self.learning_rate = 1e-4
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
+        self.vision_scratch = False
+        optimizer_grouped_parameters = []
+        lr = 1e-4
+        no_decay = ["bias", "LayerNorm.bias", "LayerNorm.weight"]
 
+        for key, value in dict(self.model.named_parameters()).items():
+            if value.requires_grad:
+                if 'vil_prediction' in key:
+                    lr = 1e-4
+                if any(nd in key for nd in no_decay):
+                    optimizer_grouped_parameters += [
+                        {"params": [value], "lr": lr, "weight_decay": 0.01}
+                    ]
+                if not any(nd in key for nd in no_decay):
+                    optimizer_grouped_parameters += [
+                        {"params": [value], "lr": lr, "weight_decay": 0.0}
+                    ]
+
+        self.optimizer = torch.optim.Adam(optimizer_grouped_parameters, lr=self.learning_rate)
     def create_detectron2_cfg(self, config):
         cfg = get_cfg()
         checkpoint = self.detectron2_checkpoints[config.DETECTRON2_MODEL]
