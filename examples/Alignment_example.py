@@ -25,7 +25,7 @@ class VLNBenchmark(habitat.Benchmark):
         agent.train()
         count_episodes = 0
         agg_metrics = {}
-        
+
         while count_episodes < num_episodes:
             if count_episodes and count_episodes % 1000 == 0:
                 agent.save("checkpoints/encoder_train_{}.check".format(count_episodes),
@@ -50,7 +50,7 @@ class VLNBenchmark(habitat.Benchmark):
                     #print("Shortest Path is not good!!!")
                     goal_viewpoint = final_goal
 
-                action = agent.act(
+                action, loss, batch_score = agent.act(
                     observations,
                     self._env._current_episode,
                     goal_viewpoint
