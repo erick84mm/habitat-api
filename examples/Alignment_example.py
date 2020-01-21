@@ -122,8 +122,8 @@ def main():
     task_config = experiment_config.TASK_CONFIG
     agent = alignmentAgent(experiment_config)
     benchmark = VLNBenchmark()
-    train_metrics = benchmark.train(agent, num_episodes=100)
-    
+    train_metrics = benchmark.train(agent, num_episodes=args.num_episodes)
+
     for k, v in train_metrics.items():
         print("{0}: {1}".format(k, v))
 
