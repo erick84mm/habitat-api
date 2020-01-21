@@ -255,7 +255,7 @@ class alignmentAgent(habitat.Agent):
             box[:,3] /= float(width)
             box[:,4] = (box[:,3] - box[:,1]) * (box[:,2] - box[:,0]) / \
                 (float(height) * float(width))
-            print(box.shape, box)
+            
             boxes.append(box)
         # features, boxes, image_mask
         return roi_features_list, boxes, num_boxes
