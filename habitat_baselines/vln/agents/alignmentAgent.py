@@ -302,13 +302,13 @@ class alignmentAgent(habitat.Agent):
         print("features ", len(features), len(features[0]), features[0].shape)
         print(
             "BERT",
-            vil_prediction,
-            vil_logit,
-            vil_binary_prediction,
-            vision_prediction,
-            vision_logit,
-            linguisic_prediction,
-            linguisic_logit
+            vil_prediction.shape, vil_prediction, # action
+            vil_logit.shape, vil_logit, # logit of the action (certainty??)
+            vil_binary_prediction.shape, vil_binary_prediction, #
+            vision_prediction.shape, vision_prediction,
+            vision_logit.shape, vision_logit,
+            linguisic_prediction.shape, linguisic_prediction,
+            linguisic_logit.shape, linguisic_logit
         )
         action = "TURN_LEFT"
 
