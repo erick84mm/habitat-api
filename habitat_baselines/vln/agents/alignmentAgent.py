@@ -9,6 +9,7 @@ import habitat
 import cv2
 import numpy as np
 import torch
+from torch import nn
 import detectron2
 from detectron2.utils.logger import setup_logger
 setup_logger()
