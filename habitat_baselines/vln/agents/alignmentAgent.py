@@ -144,7 +144,8 @@ class alignmentAgent(habitat.Agent):
         #self.loss = 0
         pass
 
-    def train_step(self, step):
+    def train_step(self, steps):
+        self.loss = self.loss / steps
         self.loss.backward()
         self.optimizer.step()
         self.model.zero_grad()

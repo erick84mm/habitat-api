@@ -42,6 +42,7 @@ class VLNBenchmark(habitat.Benchmark):
             observations = self._env.reset()
             episode_loss = []
             episode_batch_score = []
+            steps = 0
             #action_sequence = []
             while not self._env.episode_over:
                 final_goal = self._env._current_episode.goals[-1].image_id
@@ -76,9 +77,10 @@ class VLNBenchmark(habitat.Benchmark):
                 )
 
                 observations = self._env.step(action) # Step 1
+                steps += 1
 
             self._env._current_episode.reset()
-            agent.train_step(count_episodes)
+            agent.train_step(steps)
 
             count_episodes += 1
 
