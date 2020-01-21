@@ -18,6 +18,8 @@ class VLNBenchmark(habitat.Benchmark):
         self._env = Env(config=config_env.TASK_CONFIG)
         self.losses = []
         self.batch_scores = []
+        self.episode_losses = []
+        self.episode_batch_scores = []
 
     def train(
         self,
@@ -79,7 +81,10 @@ class VLNBenchmark(habitat.Benchmark):
 
             count_episodes += 1
 
-            writer.add_scalar('episode_Loss/train', sum(episode_loss) / len(episode_loss), count_episodes)
+            self.episode_losses.append(sum(episode_loss) / len(episode_loss))
+            self.episode_batch_scores.append(sum(episode_batch_score) / len(episode_batch_score))
+            writer.add_scalar('episode_Loss/train', self.episode_losses[-1], count_episodes)
+            writer.add_scalar('episode_batch_scores/train', self.episode_batch_scores[-1], count_episodes)
             metrics = self._env.get_metrics()
             for m, v in metrics.items():
                 if m != "distance_to_goal":
