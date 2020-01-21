@@ -4,6 +4,7 @@ import habitat
 
 from typing import Dict, Optional
 from habitat.core.env import Env
+from collections import defaultdict
 from habitat_baselines.vln.config.default import get_config
 from habitat_baselines.vln.agents.alignmentAgent import alignmentAgent
 
@@ -24,7 +25,7 @@ class VLNBenchmark(habitat.Benchmark):
         print("Training is running on device ", torch.cuda.current_device())
         agent.train()
         count_episodes = 0
-        agg_metrics = {}
+        agg_metrics = defaultdict(float)
 
         while count_episodes < num_episodes:
             if count_episodes and count_episodes % 1000 == 0:
