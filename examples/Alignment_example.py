@@ -14,6 +14,8 @@ class VLNBenchmark(habitat.Benchmark):
     def __init__(self, config_paths: Optional[str] = None) -> None:
         config_env = get_config()
         self._env = Env(config=config_env.TASK_CONFIG)
+        self.losses = []
+        self.batch_scores = []
 
     def train(
         self,
@@ -56,6 +58,8 @@ class VLNBenchmark(habitat.Benchmark):
                     self._env._current_episode,
                     goal_viewpoint
                 )
+                self.losses.append(loss)
+                self.batch_scores.append(batch_score)
 
                 action["action_args"].update(
                     {
@@ -77,7 +81,9 @@ class VLNBenchmark(habitat.Benchmark):
         agent.reset()
         print(count_episodes)
         avg_metrics = {k: v / count_episodes for k, v in agg_metrics.items()}
-        avg_metrics["losses"] = sum(agent.losses) / len(agent.losses)
+        avg_metrics["losses"] = sum(self.losses) / len(self.losses)
+        avg_metrics["batch_score"] = sum(self.batch_scores) / len(self.batch_scores)
+
         return avg_metrics
 
 

@@ -255,7 +255,7 @@ class alignmentAgent(habitat.Agent):
             box[:,3] /= float(width)
             box[:,4] = (box[:,3] - box[:,1]) * (box[:,2] - box[:,0]) / \
                 (float(height) * float(width))
-            
+
             boxes.append(box)
         # features, boxes, image_mask
         return roi_features_list, boxes, num_boxes
@@ -364,12 +364,6 @@ class alignmentAgent(habitat.Agent):
         image_mask = torch.tensor(image_mask).long().to(self.bert_gpu_device)
         spatials = mix_boxes_pad.float().to(self.bert_gpu_device)
 
-        #print("features", features.shape, features)
-        #print("image_mask", image_mask.shape, image_mask)
-        #print("spatials", spatials.shape, spatials)
-        #print("instruction", instruction.shape, instruction)
-        #print("input mask", input_mask.shape, input_mask)
-        #print("segments Ids", segment_ids.shape, segment_ids)
         vil_prediction, vil_logit, vil_binary_prediction, vision_prediction, \
         vision_logit, linguisic_prediction, linguisic_logit = \
         self.model(
