@@ -42,6 +42,7 @@ class VLNBenchmark(habitat.Benchmark):
             observations = self._env.reset()
             episode_loss = []
             episode_batch_score = []
+            print("clean")
             steps = 0
             #action_sequence = []
             while not self._env.episode_over:
@@ -86,8 +87,8 @@ class VLNBenchmark(habitat.Benchmark):
 
             self.episode_losses.append(sum(episode_loss) / len(episode_loss))
             self.episode_batch_scores.append(sum(episode_batch_score) / len(episode_batch_score))
-            print("Episode loss", sum(episode_loss) / len(episode_loss))
-            print("Episode Batch Score", sum(episode_batch_score) / len(episode_batch_score))
+            print("Episode loss", self.episode_losses[-1])
+            print("Episode Batch Score", self.episode_batch_scores[-1])
             writer.add_scalar('episode_Loss/train', self.episode_losses[-1], count_episodes)
             writer.add_scalar('episode_batch_scores/train', self.episode_batch_scores[-1], count_episodes)
             metrics = self._env.get_metrics()
