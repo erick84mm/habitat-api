@@ -317,7 +317,7 @@ class alignmentAgent(habitat.Agent):
 
     def _get_target_onehot(self, observations, goals):
         target_action, args = self._teacher_actions(observations, goals)
-        idx = model_actions.index(target_action)
+        idx = self.model_actions.index(target_action)
         one_hot = torch.zeros((1,6), device=self.bert_gpu_device)
         one_hot[idx] = 1
         return one_hot, target_action, args
