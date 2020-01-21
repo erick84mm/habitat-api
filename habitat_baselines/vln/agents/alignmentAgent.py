@@ -141,8 +141,8 @@ class alignmentAgent(habitat.Agent):
         return cfg
 
     def reset(self):
-        #self.loss = 0
-        pass
+        self.loss = 0
+
 
     def train_step(self, steps):
         self.loss = self.loss / steps
