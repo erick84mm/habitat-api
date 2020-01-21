@@ -120,6 +120,10 @@ class alignmentAgent(habitat.Agent):
         print("Detectron2 loaded")
         self._max_region_num = 36
         self._max_seq_length = 128
+        self.criterion = nn.BCEWithLogitsLoss(reduction='mean')
+        self.loss = 0
+        self.learning_rate = 1e-4
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
 
     def create_detectron2_cfg(self, config):
         cfg = get_cfg()
@@ -132,8 +136,13 @@ class alignmentAgent(habitat.Agent):
         return cfg
 
     def reset(self):
+        #self.loss = 0
         pass
 
+    def train_step(self, step):
+        self.loss.backward()
+        self.optimizer.step()
+        self.model.zero_grad()
 
     def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
         # imgs tensor(batch, H, W, C)
@@ -249,9 +258,79 @@ class alignmentAgent(habitat.Agent):
     def train(self):
         self.model.train()
 
-    def act(self, observations, episode):
+    def _teacher_actions(self, observations, goal):
+        action = ""
+        action_args = {}
+        navigable_locations = observations["adjacentViewpoints"]
+
+        if goal == navigable_locations[0][1]:  # image_id
+            action = "STOP"
+        else:
+            step_size = np.pi/6.0  # default step in R2R
+            goal_location = None
+            for location in navigable_locations:
+                if location[1] == goal:  # image_id
+                    goal_location = location
+                    break
+            # Check if the goal is visible
+            if goal_location:
+
+                rel_heading = goal_location[2]  # rel_heading
+                rel_elevation = goal_location[3]  #rel_elevation
+
+                if rel_heading > step_size:
+                    action = "TURN_RIGHT"
+                elif rel_heading < -step_size:
+                    action = "TURN_LEFT"
+                elif rel_elevation > step_size:
+                    action = "LOOK_UP"
+                elif rel_elevation < -step_size:
+                    action = "LOOK_DOWN"
+                else:
+                    if goal_location[0] == 1:  # restricted
+                        print("WARNING: The target was not in the" +
+                              " Field of view, but the step action " +
+                              "is going to be performed")
+                    action = "TELEPORT"  # Move forward
+                    image_id = goal
+                    posB = goal_location[4:7]  # start_position
+                    rotA = navigable_locations[0][14:18]  # camera_rotation
+                    viewpoint = ViewpointData(
+                        image_id=image_id,
+                        view_point=AgentState(position=posB, rotation=rotA)
+                    )
+                    action_args.update({"target": viewpoint})
+            else:
+                # Episode Failure
+                action = 'STOP'
+                print("Target position %s not visible, " % goal +
+                      "This is an error in the system")
+                '''
+                for ob in observations["images"]:
+                    image = ob
+                    image =  image[:,:, [2,1,0]]
+                    cv2.imshow("RGB", image)
+                    cv2.waitKey(0)
+                '''
+        return action, action_args
+
+    def _get_target_onehot(self, observations, goals):
+        target_action, args = self._teacher_actions(observations, goals)
+        idx = model_actions.index(target_action)
+        one_hot = torch.zeros((1,6), device=self.bert_gpu_device)
+        one_hot[idx] = 1
+        return one_hot, target_action, args
+
+
+
+    def act(self, observations, episode, goals):
 
         # Observations come in Caffe GPU
+        batch_size = 1
+        target, target_action, action_args = self._get_target_onehot(
+                                                            observations,
+                                                            goals
+                                            )
         im = observations["rgb"]
         features, boxes, num_boxes = self._get_image_features([im])
         max_regions = self._max_region_num + 1
@@ -280,12 +359,12 @@ class alignmentAgent(habitat.Agent):
         image_mask = torch.tensor(image_mask).long().to(self.bert_gpu_device)
         spatials = mix_boxes_pad.float().to(self.bert_gpu_device)
 
-        print("features", features.shape, features)
-        print("image_mask", image_mask.shape, image_mask)
-        print("spatials", spatials.shape, spatials)
-        print("instruction", instruction.shape, instruction)
-        print("input mask", input_mask.shape, input_mask)
-        print("segments Ids", segment_ids.shape, segment_ids)
+        #print("features", features.shape, features)
+        #print("image_mask", image_mask.shape, image_mask)
+        #print("spatials", spatials.shape, spatials)
+        #print("instruction", instruction.shape, instruction)
+        #print("input mask", input_mask.shape, input_mask)
+        #print("segments Ids", segment_ids.shape, segment_ids)
         vil_prediction, vil_logit, vil_binary_prediction, vision_prediction, \
         vision_logit, linguisic_prediction, linguisic_logit = \
         self.model(
@@ -298,21 +377,19 @@ class alignmentAgent(habitat.Agent):
             co_attention_mask.unsqueeze(0)
         )
 
+        self.loss = self.criterion(vil_prediction, target)
+        self.loss = loss.mean() * target.size(1)
+        batch_score = self.compute_score_with_logits(vil_prediction, target).sum() / float(batch_size)
+
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
-        print("features ", len(features), len(features[0]), features[0].shape)
-        print(
-            "BERT",
-            vil_prediction.shape, vil_prediction, # action
-            vil_logit.shape, vil_logit, # logit of the action (certainty??)
-            vil_binary_prediction.shape, vil_binary_prediction, #
-            vision_prediction.shape, vision_prediction,
-            vision_logit.shape, vision_logit,
-            linguisic_prediction.shape, linguisic_prediction,
-            linguisic_logit.shape, linguisic_logit
-        )
-        action = "TURN_LEFT"
 
-        action_args = {}
+        print("The loss is ", self.loss)
+        print("Batch score", batch_score)
+        return {"action": target_action, "action_args": action_args}, self.loss, batch_score
 
-
-        return {"action": action, "action_args": action_args}
+    def compute_score_with_logits(self, logits, labels):
+        logits = torch.max(logits, 1)[1].data  # argmax
+        one_hots = torch.zeros(*labels.size(), device=self.bert_gpu_device)
+        one_hots.scatter_(1, logits.view(-1, 1), 1)
+        scores = one_hots * labels
+        return scores

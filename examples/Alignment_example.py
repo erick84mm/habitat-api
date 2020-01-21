@@ -22,33 +22,62 @@ class VLNBenchmark(habitat.Benchmark):
     ) -> Dict[str, float]:
 
         print("Training is running on device ", torch.cuda.current_device())
-        count = 300
         agent.train()
-        while count:
+        count_episodes = 0
+        agg_metrics = {}
+        
+        while count_episodes < num_episodes:
+            if count_episodes and count_episodes % 1000 == 0:
+                agent.save("checkpoints/encoder_train_{}.check".format(count_episodes),
+                "checkpoints/decoder_train_{}.check".format(count_episodes))
+                print("{} episodes have been processed".format(count_episodes))
+            agent.reset()
             observations = self._env.reset()
-            action = agent.act(
-                observations,
-                self._env._current_episode
-            )
-            action["action_args"].update(
-                {
-                "episode": self._env._current_episode
-                }
-            )
-            observations = self._env.step(action) # Step 1
 
-            action = agent.act(
-                observations,
-                self._env._current_episode
-            )
-            action["action_args"].update(
-                {
-                "episode": self._env._current_episode
-                }
-            )
-            observations = self._env.step(action) # Step 2
-            count -= 1
-        return
+            while not self._env.episode_over:
+                final_goal = self._env._current_episode.goals[-1].image_id
+                episode = self._env._current_episode
+                shortest_path = self._env._task.get_shortest_path_to_target(
+                    episode.scan,
+                    episode.curr_viewpoint.image_id,
+                    final_goal
+                )
+
+                #print("shortest_path", shortest_path)
+                if len(shortest_path) > 1:
+                    goal_viewpoint = shortest_path[1]
+                else:
+                    #print("Shortest Path is not good!!!")
+                    goal_viewpoint = final_goal
+
+                action = agent.act(
+                    observations,
+                    self._env._current_episode,
+                    goal_viewpoint
+                )
+
+                action["action_args"].update(
+                    {
+                    "episode": self._env._current_episode
+                    }
+                )
+
+                observations = self._env.step(action) # Step 1
+
+            self._env._current_episode.reset()
+            agent.train_step(count_episodes)
+
+            count_episodes += 1
+            metrics = self._env.get_metrics()
+            for m, v in metrics.items():
+                if m != "distance_to_goal":
+                    agg_metrics[m] += v
+
+        agent.reset()
+        print(count_episodes)
+        avg_metrics = {k: v / count_episodes for k, v in agg_metrics.items()}
+        avg_metrics["losses"] = sum(agent.losses) / len(agent.losses)
+        return avg_metrics
 
 
 
@@ -86,7 +115,7 @@ def main():
     task_config = experiment_config.TASK_CONFIG
     agent = alignmentAgent(experiment_config)
     benchmark = VLNBenchmark()
-    benchmark.train(agent)
+    benchmark.train(agent, num_episodes=100)
 
 
 
