@@ -384,7 +384,7 @@ class alignmentAgent(habitat.Agent):
 
         print("The loss is ", self.loss)
         print("Batch score", batch_score)
-        return {"action": target_action, "action_args": action_args}, self.loss, batch_score
+        return {"action": target_action, "action_args": action_args}, self.loss.item(), batch_score.item()
 
     def compute_score_with_logits(self, logits, labels):
         logits = torch.max(logits, 1)[1].data  # argmax
