@@ -379,7 +379,7 @@ class alignmentAgent(habitat.Agent):
         )
 
         self.loss = self.criterion(vil_prediction, target)
-        self.loss = loss.mean() * target.size(1)
+        self.loss = self.loss.mean() * target.size(1)
         batch_score = self.compute_score_with_logits(vil_prediction, target).sum() / float(batch_size)
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
