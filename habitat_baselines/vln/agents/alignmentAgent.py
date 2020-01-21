@@ -381,10 +381,6 @@ class alignmentAgent(habitat.Agent):
         batch_score = self.compute_score_with_logits(vil_prediction, target).sum() / float(batch_size)
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
-
-        print("The loss is ", self.loss)
-        print("Batch score", batch_score)
-        print("Action is ", target_action)
         return {"action": target_action, "action_args": action_args}, self.loss.item(), batch_score.item()
 
     def compute_score_with_logits(self, logits, labels):
