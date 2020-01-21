@@ -13,13 +13,14 @@ writer = SummaryWriter()
 
 class VLNBenchmark(habitat.Benchmark):
 
-    def __init__(self, config_paths: Optional[str] = None) -> None:
+    def __init__(self, name, config_paths: Optional[str] = None) -> None:
         config_env = get_config()
         self._env = Env(config=config_env.TASK_CONFIG)
         self.losses = []
         self.batch_scores = []
         self.episode_losses = []
         self.episode_batch_scores = []
+        self._name = name
 
     def train(
         self,
@@ -34,9 +35,12 @@ class VLNBenchmark(habitat.Benchmark):
         agg_metrics = defaultdict(float)
 
         while count_episodes < num_episodes:
-            if count_episodes and count_episodes % 1000 == 0:
-                agent.save("checkpoints/encoder_train_{}.check".format(count_episodes),
-                "checkpoints/decoder_train_{}.check".format(count_episodes))
+            if count_episodes and count_episodes % 10 == 0:
+                agent.save("checkpoints/{}_train_{}.check".format(
+                                                        self._name,
+                                                        count_episodes
+                                                    )
+                )
                 print("{} episodes have been processed".format(count_episodes))
             agent.reset()
             observations = self._env.reset()
@@ -116,7 +120,7 @@ def main():
         "--num-episodes", type=int, default=100
     )
     parser.add_argument(
-        "--agent_type", type=int, default=0
+        "--agent-type", type=int, default=0
     )
     parser.add_argument(
         "--discrete", action='store_true'
@@ -131,7 +135,11 @@ def main():
         "--feedback", type=int, default=0
     )
     parser.add_argument(
-        "--checkpoint_num", type=int, default=0
+        "--checkpoint-num", type=int, default=0
+    )
+
+    parser.add_argument(
+        "--experiment-name", type=str, default="exp"
     )
     args = parser.parse_args()
 
@@ -139,7 +147,7 @@ def main():
     experiment_config = get_config()
     task_config = experiment_config.TASK_CONFIG
     agent = alignmentAgent(experiment_config)
-    benchmark = VLNBenchmark()
+    benchmark = VLNBenchmark(args.experiment_name)
     train_metrics = benchmark.train(agent, num_episodes=args.num_episodes)
 
     for k, v in train_metrics.items():

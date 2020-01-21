@@ -164,6 +164,7 @@ class alignmentAgent(habitat.Agent):
     def train_step(self, steps):
         self.loss = self.loss / steps
         self.loss.backward()
+        self.loss = None
         self.optimizer.step()
         self.model.zero_grad()
 
@@ -407,3 +408,12 @@ class alignmentAgent(habitat.Agent):
         one_hots.scatter_(1, logits.view(-1, 1), 1)
         scores = one_hots * labels
         return scores
+
+
+    def save(self, path):
+        ''' Snapshot models '''
+        torch.save(self.model.state_dict(), path)
+
+    def load(self, encoder_path, decoder_path):
+        ''' Loads parameters (but not training state) '''
+        self.model.load_state_dict(torch.load(path))
