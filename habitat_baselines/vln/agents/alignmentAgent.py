@@ -395,8 +395,9 @@ class alignmentAgent(habitat.Agent):
             co_attention_mask.unsqueeze(0)
         )
 
-        self.loss += self.criterion(vil_prediction, target)
-        self.loss = self.loss.mean() * target.size(1)
+        loss += self.criterion(vil_prediction, target)
+        loss = self.loss.mean() * target.size(1)
+        self.loss += loss
         batch_score = self.compute_score_with_logits(vil_prediction, target).sum() / float(batch_size)
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
