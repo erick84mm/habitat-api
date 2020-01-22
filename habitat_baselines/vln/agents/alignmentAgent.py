@@ -407,6 +407,8 @@ class alignmentAgent(habitat.Agent):
         logits = torch.max(logits, 1)[1].data  # argmax
         one_hots = torch.zeros(*labels.size(), device=self.bert_gpu_device)
         one_hots.scatter_(1, logits.view(-1, 1), 1)
+        print(self.model_actions)
+        print("Action", one_hots)
         scores = one_hots * labels
         return scores
 
