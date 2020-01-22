@@ -77,7 +77,7 @@ def save_gzip(filename, content):
 
 
 def load_dataset(split, data_path):
-    assert split in ['train', 'val_seen', 'val_unseen', 'test']
+    #assert split in ['train', 'val_seen', 'val_unseen', 'test']
     return read_json(data_path.format(split=split))
 
 
