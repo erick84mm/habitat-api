@@ -166,7 +166,7 @@ class alignmentAgent(habitat.Agent):
 
 
     def train_step(self, steps):
-        self.loss = self.loss / self.max_steps
+        #self.loss = self.loss / self.max_steps
         self.loss.backward()
         self.loss = None
 
