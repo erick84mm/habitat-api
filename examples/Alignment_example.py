@@ -83,9 +83,9 @@ class VLNBenchmark(habitat.Benchmark):
 
                 observations = self._env.step(action) # Step 1
                 steps += 1
+                agent.train_step(steps)
 
             self._env._current_episode.reset()
-            agent.train_step(steps)
 
             count_episodes += 1
 

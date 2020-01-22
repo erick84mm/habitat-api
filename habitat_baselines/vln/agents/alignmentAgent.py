@@ -129,6 +129,7 @@ class alignmentAgent(habitat.Agent):
         self.loss = 0
         self.learning_rate = 1e-4
         self.vision_scratch = False
+        self.max_steps = 30
         optimizer_grouped_parameters = []
         lr = 1e-4
         no_decay = ["bias", "LayerNorm.bias", "LayerNorm.weight"]
@@ -158,15 +159,15 @@ class alignmentAgent(habitat.Agent):
         return cfg
 
     def reset(self):
-        self.loss = 0
-
-
-    def train_step(self, steps):
-        self.loss = self.loss / steps
-        self.loss.backward()
         self.loss = None
         self.optimizer.step()
         self.model.zero_grad()
+
+
+    def train_step(self, steps):
+        self.loss = self.loss / self.max_steps
+        self.loss.backward()
+        self.loss = None
 
     def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
         # imgs tensor(batch, H, W, C)
@@ -395,9 +396,8 @@ class alignmentAgent(habitat.Agent):
             co_attention_mask.unsqueeze(0)
         )
 
-        loss = self.criterion(vil_prediction, target)
-        loss = loss.mean() * target.size(1)
-        self.loss += loss
+        self.loss = self.criterion(vil_prediction, target)
+        self.loss = self.loss.mean() * target.size(1)
         batch_score = self.compute_score_with_logits(vil_prediction, target).sum() / float(batch_size)
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
