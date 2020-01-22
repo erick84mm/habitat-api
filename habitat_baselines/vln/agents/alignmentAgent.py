@@ -148,6 +148,14 @@ class alignmentAgent(habitat.Agent):
                     ]
 
         self.optimizer = torch.optim.Adam(optimizer_grouped_parameters, lr=self.learning_rate)
+
+        self.lr_scheduler = ReduceLROnPlateau(self.optimizer, \
+                        mode='max',
+                        factor=0.2,
+                        patience=10,
+                        cooldown=4,
+                        threshold=0.001)
+
     def create_detectron2_cfg(self, config):
         cfg = get_cfg()
         checkpoint = self.detectron2_checkpoints[config.DETECTRON2_MODEL]
