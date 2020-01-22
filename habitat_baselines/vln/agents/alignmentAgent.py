@@ -438,8 +438,8 @@ class alignmentAgent(habitat.Agent):
 
 
         reduced_probs = torch.zeros((1, 3))
-        reduced_probs[,0] = torch.sum(vil_prediction[,:3])
-        reduced_probs[,1:] = vil_prediction[,4:]
+        reduced_probs[:,0] = torch.sum(vil_prediction[:,:3])
+        reduced_probs[:,1:] = vil_prediction[:,4:]
 
 
         self.loss = self.criterion(vil_prediction, category_target)
