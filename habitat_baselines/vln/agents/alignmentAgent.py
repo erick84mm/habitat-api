@@ -193,7 +193,7 @@ class alignmentAgent(habitat.Agent):
 
     def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
         # imgs tensor(batch, H, W, C)
-        
+
         inputs = []
         for img in imgs:
             raw_img = img.permute(2,0,1)
@@ -438,7 +438,7 @@ class alignmentAgent(habitat.Agent):
         reduced_probs[:,1:] = vil_prediction[:,4:]
 
 
-        self.loss = self.criterion(vil_prediction, category_target)
+        self.loss = self.criterion(reduce_probs, category_target)
         self.loss = self.loss.mean() * target.size(1)
         batch_score = self.compute_score_with_logits(vil_prediction, target).sum() / float(batch_size)
 
