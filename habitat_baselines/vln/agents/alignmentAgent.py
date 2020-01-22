@@ -101,7 +101,7 @@ class alignmentAgent(habitat.Agent):
     }
 
 
-    def __init__(self, config):
+    def __init__(self, config, num_train_optimization_steps=30000):
         #Load vilBert config
         print("Loading ViLBERT model configuration")
         self.vilbert_config = BertConfig.from_json_file(config.BERT_CONFIG)
@@ -148,7 +148,13 @@ class alignmentAgent(habitat.Agent):
                         {"params": [value], "lr": lr, "weight_decay": 0.0}
                     ]
 
-        self.optimizer = torch.optim.Adam(optimizer_grouped_parameters, lr=self.learning_rate)
+        self.optimizer = torch.optim.Adam(
+                            optimizer_grouped_parameters,
+                            lr=self.learning_rate,
+                            warmup=0.1,
+                            t_total=num_train_optimization_steps,
+                            schedule='warmup_constant',
+                        )
 
         self.lr_scheduler = ReduceLROnPlateau(self.optimizer, \
                         mode='max',
