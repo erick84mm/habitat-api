@@ -368,12 +368,19 @@ class alignmentAgent(habitat.Agent):
         idx = self.model_actions.index(target_action)
         one_hot = torch.zeros((1,6), device=self.bert_gpu_device)
         category_one_hot = torch.zeros((1,3), device=self.bert_gpu_device)
+        stop_one_hot = torch.zeros((1,2), device=self.bert_gpu_device)
         one_hot[0][idx] = 1
         if idx < 4:
             category_one_hot[0][0] = 1
         else:
             category_one_hot[0][idx-3] = 1
-        return category_one_hot, one_hot, target_action, args
+        if idx == 5:
+            stop_one_hot[0][1] = 1
+        else:
+            stop_one_hot[0][0] = 1
+
+
+        return category_one_hot, one_hot, stop_one_hot, target_action, args
 
 
 
@@ -381,10 +388,11 @@ class alignmentAgent(habitat.Agent):
 
         # Observations come in Caffe GPU
         batch_size = 1
-        category_target, target, target_action, action_args = self._get_target_onehot(
-                                                            observations,
-                                                            goals
-                                            )
+        category_target, target, stop_target, target_action, \
+        action_args = self._get_target_onehot(
+                                            observations,
+                                            goals
+                    )
         im = observations["rgb"]
         features, boxes, num_boxes = self._get_image_features([im])
         max_regions = self._max_region_num + 1
@@ -443,10 +451,17 @@ class alignmentAgent(habitat.Agent):
         #reduced_probs[:,1:] += vil_prediction[:,4:]
         reduced_probs = torch.cat((torch.sum(vil_prediction[:,:4], dim=-1, keepdims=True),
                                     vil_prediction[:,4:]), dim=1)
+        stop_probs = torch.cat((torch.sum(vil_prediction[:,:-1], dim=-1, keepdims=True),
+                                    vil_prediction[:,-1:]), dim=1)
 
 
-        self.loss = self.criterion(reduced_probs, category_target) + self.criterion(vil_prediction, target)
-        #self.finegrained_loss = self.criterion(vil_prediction, target)
+
+
+
+        self.loss = 0.2 * self.criterion(reduced_probs, category_target) + \
+            0.3 * self.criterion(vil_prediction, target) + \
+            0.5 * self.criterion(stop_probs, stop_target)
+
         self.loss = self.loss.mean() * target.size(1)
         batch_score = self.compute_score_with_logits(vil_prediction, target).sum() / float(batch_size)
 
