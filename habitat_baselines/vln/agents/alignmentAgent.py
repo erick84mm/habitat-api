@@ -395,7 +395,7 @@ class alignmentAgent(habitat.Agent):
         co_attention_mask = torch.zeros((
                                 max_regions,
                                 self._max_seq_length
-                            ), dtype='f').to(self.bert_gpu_device)
+                            ), dtype=torch.float).to(self.bert_gpu_device)
 
         mix_num_boxes = min(int(num_boxes[0]), max_regions)
         mix_boxes_pad = torch.zeros((max_regions, 5))
