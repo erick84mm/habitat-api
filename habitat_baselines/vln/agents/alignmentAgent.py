@@ -146,7 +146,8 @@ class alignmentAgent(habitat.Agent):
         self.learning_rate = 1e-4
         self.vision_scratch = False
         self.max_steps = 30
-        self.grad_accumulation = 10
+        self.grad_accumulation = 100
+        self.action_history = []
         optimizer_grouped_parameters = []
         lr = 1e-4
         no_decay = ["bias", "LayerNorm.bias", "LayerNorm.weight"]
@@ -191,6 +192,7 @@ class alignmentAgent(habitat.Agent):
 
     def reset(self, steps):
         self.loss = None
+        self.action_history = []
         pass
 
 
@@ -452,22 +454,10 @@ class alignmentAgent(habitat.Agent):
         image_mask = None
         co_attention_mask = None
 
-
-        #reduced_probs = torch.zeros((1, 3),
-        #                        device=self.bert_gpu_device,
-        #                        dtype=torch.float,
-        #                        requires_grad=True
-        #                        )
-        #reduced_probs[:,0] += torch.sum(vil_prediction[:,:4], dim=1)
-        #reduced_probs[:,1:] += vil_prediction[:,4:]
         reduced_probs = torch.cat((torch.sum(vil_prediction[:,:4], dim=-1, keepdims=True),
                                     vil_prediction[:,4:]), dim=1)
         stop_probs = torch.cat((torch.sum(vil_prediction[:,:-1], dim=-1, keepdims=True),
                                     vil_prediction[:,-1:]), dim=1)
-
-
-
-
 
         self.loss = 0.25 * self.criterion(reduced_probs, category_target) + \
             0.35 * self.criterion(vil_prediction, target) + \
