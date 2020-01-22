@@ -101,7 +101,7 @@ class alignmentAgent(habitat.Agent):
     }
 
 
-    def __init__(self, config, num_train_optimization_steps=30000):
+    def __init__(self, config, num_train_optimization_steps=3100):
         #Load vilBert config
         print("Loading ViLBERT model configuration")
         self.vilbert_config = BertConfig.from_json_file(config.BERT_CONFIG)
@@ -131,6 +131,7 @@ class alignmentAgent(habitat.Agent):
         self.learning_rate = 1e-4
         self.vision_scratch = False
         self.max_steps = 30
+        self.grad_accumulation = 10
         optimizer_grouped_parameters = []
         lr = 1e-4
         no_decay = ["bias", "LayerNorm.bias", "LayerNorm.weight"]
@@ -179,11 +180,11 @@ class alignmentAgent(habitat.Agent):
 
 
     def train_step(self, steps):
-        self.loss = self.loss / self.max_steps
+        self.loss = self.loss / self.grad_accumulation
         self.loss.backward()
         self.loss = None
 
-        if steps and steps % self.max_steps == 0:
+        if steps and steps % self.grad_accumulation == 0:
             self.optimizer.step()
             self.model.zero_grad()
 
