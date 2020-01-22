@@ -32,6 +32,7 @@ from habitat_baselines.vln.models.vilbert import VILBertForVLTasks, BertConfig
 from torchvision.ops import nms
 from detectron2.structures import Boxes, Instances
 from detectron2.modeling.postprocessing import detector_postprocess
+from habitat_baselines.vln.models.optimization import Adam
 
 
 # We need the indices of the features to keep
@@ -149,12 +150,12 @@ class alignmentAgent(habitat.Agent):
                         {"params": [value], "lr": lr, "weight_decay": 0.0}
                     ]
 
-        self.optimizer = torch.optim.Adam(
+        self.optimizer = Adam(
                             optimizer_grouped_parameters,
                             lr=self.learning_rate,
                             warmup=0.1,
                             t_total=num_train_optimization_steps,
-                            schedule='warmup_constant',
+                            schedule='warmup_constant'
                         )
 
         self.lr_scheduler = ReduceLROnPlateau(self.optimizer, \
