@@ -395,7 +395,7 @@ class alignmentAgent(habitat.Agent):
         co_attention_mask = torch.zeros((
                                 max_regions,
                                 self._max_seq_length
-                            )).to(self.bert_gpu_device)
+                            ), dtype='f').to(self.bert_gpu_device)
 
         mix_num_boxes = min(int(num_boxes[0]), max_regions)
         mix_boxes_pad = torch.zeros((max_regions, 5))
@@ -433,8 +433,8 @@ class alignmentAgent(habitat.Agent):
         co_attention_mask = None
 
 
-        reduced_probs = torch.zeros((1, 3), device=self.bert_gpu_device)
-        reduced_probs[:,0] = torch.sum(vil_prediction[:,:3])
+        reduced_probs = torch.zeros((1, 3), device=self.bert_gpu_device, dtype='f')
+        reduced_probs[:,0] = torch.sum(vil_prediction[:,:4], dim=1, dtype='f')
         reduced_probs[:,1:] = vil_prediction[:,4:]
 
 
