@@ -125,7 +125,7 @@ class alignmentAgent(habitat.Agent):
         print("Loading Detectron2 predictor on GPU {}".format(self.detectron2_gpu))
         detectron2_cfg = self.create_detectron2_cfg(config)
         self.detector = DefaultPredictor(detectron2_cfg)
-        self.detector.eval()
+        #self.detector.eval()
         print("Detectron2 loaded")
         self._max_region_num = 36
         self._max_seq_length = 128
@@ -193,7 +193,7 @@ class alignmentAgent(habitat.Agent):
 
     def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
         # imgs tensor(batch, H, W, C)
-
+        
         inputs = []
         for img in imgs:
             raw_img = img.permute(2,0,1)
