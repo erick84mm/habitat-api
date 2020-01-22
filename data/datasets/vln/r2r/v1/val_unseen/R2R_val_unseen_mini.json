@@ -1,0 +1,1550 @@
+[
+  {
+    "distance": 5.5,
+    "scan": "Pm6F8kyY3z2",
+    "path_id": 575,
+    "path": [
+      "e775ea81e83c45719de5a1577f8f7e39",
+      "9b2b12257e9a4c5d9f99f141769e9301",
+      "7e094a308dec4987a5185a0426f4ec3c",
+      "ff2dd63ad83245c3b4831b4f8a6911ac",
+      "2596868500734b1496d479e6936cceb3"
+    ],
+    "heading": 6.028,
+    "instructions": [
+      "Go forward so that you line up with the pool. Towards the middle of the pool turn right to be between two chairs. Continue forward until you reach the stairs. ",
+      "With the pool on your left walk straight and go through the tan and green patio chairs towards the stairs out of the patio stopping before you hit the mosaic at the bottom of the stairs. ",
+      "Walk straight past the first two lounge chairs, then turn right. Wait by the steps. "
+    ],
+    "clean_instructions": [
+      "Go forward so that you line up with the pool. Towards the middle of the pool turn right to be between two chairs. Continue forward until you reach the stairs.",
+      "With the pool on your left walk straight and go through the tan and green patio chairs towards the stairs out of the patio stopping before you hit the mosaic at the bottom of the stairs.",
+      "Walk straight past the first two lounge chairs, then turn right. Wait by the steps."
+    ],
+    "constituency_trees": [
+      "(S (VP (VB Go) (ADVP (RB forward)) (SBAR (IN so) (IN that) (S (NP (PRP you)) (VP (VP (VBP line) (PRT (RP up)) (PP (IN with) (NP (DT the) (NN pool)))) (. .) (PP (IN Towards) (NP (NP (DT the) (NN middle)) (PP (IN of) (NP (DT the) (NN pool))))) (VP (VB turn) (ADVP (RB right)) (TO to) (VP (VP (VB be) (PP (IN between) (NP (CD two) (NNS chairs)))) (. .) (S (VP (VB Continue) (ADVP (RB forward)) (SBAR (IN until) (S (NP (PRP you)) (VP (VBP reach) (NP (DT the) (NNS stairs))))))))))))) (. .))",
+      "(S (IN With) (NP (DT the) (NN pool)) (PP (IN on) (NP (PRP$ your) (JJ left))) (VP (NN walk) (ADVP (RB straight))) (CC and) (VP (VB go) (PP (IN through) (NP (DT the) (NN tan) (CC and) (JJ green) (NN patio) (NNS chairs))) (IN towards) (NP (DT the) (NNS stairs)) (PP (IN out) (PP (IN of) (NP (DT the) (NN patio)))) (VP (VBG stopping) (SBAR (IN before) (S (NP (PRP you)) (VP (VBP hit) (NP (NP (DT the) (NN mosaic)) (PP (IN at) (NP (NP (DT the) (NN bottom)) (PP (IN of) (NP (DT the) (NNS stairs))))))))))) (. .))",
+      "(S (VP (VP (VB Walk) (ADVP (RB straight)) (PP (IN past) (NP (DT the) (JJ first) (CD two) (NN lounge) (NNS chairs)))) (, ,) (ADVP (RB then)) (VP (VP (VB turn) (ADVP (RB right))) (. .) (S (VP (VB Wait) (PP (IN by) (NP (DT the) (NNS steps))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 11.7,
+    "scan": "YmJkqBEsHnH",
+    "path_id": 1157,
+    "path": [
+      "20fd759be0b64fc9aa96d290f0a704ec",
+      "8e38fdd81c7949db9646968bafbbdcfc",
+      "006933a75f764c5485cf284bea0ded0b",
+      "d841f7b710f9470796d55561f8f524db",
+      "01c80b5f8fbd4c969ee0bc03f1ec7a6c",
+      "82ea5baa30f945fe98f6cad3064af847",
+      "d471e89e00be49f49a7ecace814d60bf"
+    ],
+    "heading": 4.942,
+    "instructions": [
+      "Walk past pews. Wait at floral arrangement. ",
+      "Turn around and walk to the beginning of the aisle. Stand ahead of the pews in the canter. ",
+      "Go into the church and walk straight down the aisle. Stop once you pass the first set of pews. "
+    ],
+    "clean_instructions": [
+      "Walk past pews. Wait at floral arrangement.",
+      "Turn around and walk to the beginning of the aisle. Stand ahead of the pews in the altar.",
+      "Go into the church and walk straight down the aisle. Stop once you pass the first set of pews."
+    ],
+    "constituency_trees": [
+      "(S (VP (VP (VB Walk) (JJ past) (NP (NNS pews))) (. .) (S (VP (VB Wait) (PP (IN at) (NP (JJ floral) (NN arrangement)))))) (. .))",
+      "(S (VP (VP (VB Turn) (PRT (RP around))) (CC and) (VP (VP (VB walk) (PP (IN to) (NP (NP (DT the) (NN beginning)) (PP (IN of) (NP (DT the) (NN aisle)))))) (. .) (S (VP (VB Stand) (ADVP (RB ahead) (IN of) (NP (NP (DT the) (NNS pews)) (PP (IN in) (NP (DT the) (NN altar))))))))) (. .))",
+      "(S (VP (VP (VB Go) (PP (IN into) (NP (DT the) (NN church)))) (CC and) (VP (VP (VB walk) (RB straight) (IN down) (NP (DT the) (NN aisle))) (. .) (S (VP (VB Stop) (SBAR (IN once) (S (NP (PRP you)) (VP (VBP pass) (NP (NP (DT the) (JJ first) (NN set)) (PP (IN of) (NP (NNS pews))))))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<left>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<left>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<left>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 5.87,
+    "scan": "Pm6F8kyY3z2",
+    "path_id": 7132,
+    "path": [
+      "3fd2f1d849de4e9f8c07863c845db6b5",
+      "a8cb8984630b456a96923ef0d7c3aeb3",
+      "fdf0fc24f7c549ccbb78e972c8024fa9",
+      "138252ad9fab4ae1a86997fc363e6ac7",
+      "87e7b6f2006541a9abe57fba18294a0c"
+    ],
+    "heading": 2.639,
+    "instructions": [
+      "Go to the dresser and turn right. Go through the open door at the end of the hall on the left. Enter the room. ",
+      "After you leave the sitting room turn right and walk straight to the last door on the left. Now walk through the door and wait just inside the bedroom. ",
+      "Go straight and turn right and go through door on the right and stop in the next room by the bed. "
+    ],
+    "clean_instructions": [
+      "Go to the dresser and turn right. Go through the open door at the end of the hall on the left. Enter the room.",
+      "After you leave the sitting room turn right and walk straight to the last door on the left. Now walk through the door and wait just inside the bedroom.",
+      "Go straight and turn right and go through door on the right and stop in the next room by the bed."
+    ],
+    "constituency_trees": [
+      "(S (VP (VP (VB Go) (PP (IN to) (NP (DT the) (NN dresser)))) (CC and) (VP (VB turn) (ADVP (RB right))) (. .) (S (VP (S (VP (VB Go) (PP (PP (IN through) (NP (DT the) (JJ open) (NN door)) (PP (IN at) (NP (NP (DT the) (NN end)) (PP (IN of) (NP (DT the) (NN hall)))))) (PP (IN on) (NP (DT the) (NN left)))))) (. .) (VP (VB Enter) (NP (DT the) (NN room)))))) (. .))",
+      "(S (IN After) (NP (PRP you)) (VP (VP (VBP leave) (NP (DT the) (NN sitting) (NN room))) (VP (VB turn) (ADVP (RB right)))) (CC and) (VP (VP (VB walk) (ADVP (RB straight)) (IN to) (NP (NP (DT the) (JJ last) (NN door)) (PP (IN on) (NP (DT the) (NN left))))) (. .) (VP (RB Now) (VP (VP (VB walk) (PP (IN through) (NP (DT the) (NN door)))) (CC and) (VP (VB wait) (PP (ADVP (RB just)) (IN inside) (NP (DT the) (NN bedroom))))))) (. .))",
+      "(S (VP (VP (VP (VB Go) (ADVP (RB straight))) (CC and) (VP (VB turn) (ADVP (RB right)))) (CC and) (VP (VP (VB go) (IN through) (NP (NN door)) (PP (IN on) (NP (DT the) (NN right)))) (CC and) (VP (VB stop) (PP (IN in) (NP (NP (DT the) (JJ next) (NN room)) (PP (IN by) (NP (DT the) (NN bed)))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 7.7,
+    "scan": "GdvgFV5R1Z5",
+    "path_id": 1118,
+    "path": [
+      "ef638e508e054c4aabd49b38d1b88fc7",
+      "8dba9ff900b14f9b84ead660f5f7f701",
+      "0b02e18654324edd8d74c078b66bfb20",
+      "aebb1de49d21485e8bef7633dfb58761",
+      "565cc21cd28b4ee6bb5ba83c5270c032"
+    ],
+    "heading": 1.488,
+    "instructions": [
+      "Exit the bathroom through the doorway and turn left. Walk on the carpet toward the bed. Turn left on the hardwood flooring and wait by the kitchen sink. ",
+      "exit bathroom and turn left, pass wall and turn left again, stop at sink. ",
+      "Turn right and exit the bathroom. Turn left and walk towards the bed. Turn left again and wait by the kitchen sink. "
+    ],
+    "clean_instructions": [
+      "Exit the bathroom through the doorway and turn left. Walk on the carpet toward the bed. Turn left on the hardwood flooring and wait by the kitchen sink.",
+      "Exit bathroom and turn left, pass wall and turn left again, stop at sink.",
+      "Turn right and exit the bathroom. Turn left and walk towards the bed. Turn left again and wait by the kitchen sink."
+    ],
+    "constituency_trees": [
+      "(S (VP (NN Exit) (NP (DT the) (NN bathroom)) (PP (IN through) (NP (DT the) (NN doorway)))) (CC and) (VP (VP (NN turn) (VP (VBN left))) (. .) (VP (VP (VB Walk) (PP (IN on) (NP (DT the) (NN carpet))) (PP (IN toward) (NP (DT the) (NN bed)))) (. .) (S (VP (VP (VB Turn) (VP (VBD left) (PP (IN on) (NP (DT the) (NN hardwood) (NN flooring))))) (CC and) (VP (VB wait) (PP (IN by) (NP (DT the) (NN kitchen) (NN sink)))))))) (. .))",
+      "(S (NP (NN Exit) (NN bathroom)) (CC and) (VP (VP (VP (VBP turn) (ADVP (RB left))) (, ,) (VP (VB pass) (NP (NN wall))) (CC and) (VP (NN turn) (VP (VP (VBN left)) (ADVP (RB again))))) (, ,) (S (VP (VB stop) (PP (IN at) (NP (NN sink)))))) (. .))",
+      "(S (VP (VB Turn) (NP (NN right))) (CC and) (VP (VB exit) (NP (DT the) (NN bathroom))) (. .) (S (VP (VP (VB Turn) (VP (VBD left))) (CC and) (VP (VP (VB walk) (PP (IN towards) (NP (DT the) (NN bed)))) (. .) (S (VP (VP (VB Turn) (VP (VBD left) (ADVP (RB again)))) (CC and) (VP (VB wait) (PP (IN by) (NP (DT the) (NN kitchen) (NN sink))))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 6.48,
+    "scan": "Pm6F8kyY3z2",
+    "path_id": 1849,
+    "path": [
+      "c32282e053ad450e9187d9d95361b124",
+      "f6872e6001054c67a12371a542c7defe",
+      "fdf0fc24f7c549ccbb78e972c8024fa9",
+      "a8cb8984630b456a96923ef0d7c3aeb3",
+      "3fd2f1d849de4e9f8c07863c845db6b5"
+    ],
+    "heading": 1.511,
+    "instructions": [
+      "Go to the end of the counter, turn left, beside the double chest of drawers turn left, go straight, stop beside the large snail on the floor. ",
+      "Take a right and then take a left. Take another left and wait in the huge shower. ",
+      "Walk forward and take a left. take the next left and enter the tile with the mosaic. Stop in front of the snail on the ground. "
+    ],
+    "clean_instructions": [
+      "Go to the end of the counter, turn left, beside the double chest of drawers turn left, go straight, stop beside the large snail on the floor.",
+      "Take a right and then take a left. Take another left and wait in the huge shower.",
+      "Walk forward and take a left. Take the next left and enter the tile with the mosaic. Stop in front of the snail on the ground."
+    ],
+    "constituency_trees": [
+      "(S (VP (VB Go) (PP (IN to) (NP (NP (DT the) (NN end)) (PP (IN of) (NP (DT the) (NN counter)))))) (, ,) (S (VP (NN turn) (NP (VBN left)))) (, ,) (SBAR (PP (IN beside) (NP (NP (DT the) (JJ double) (NN chest)) (PP (IN of) (NP (NNS drawers))))) (VP (VBP turn) (ADJP (VBN left)))) (, ,) (VP (VP (VB go) (ADVP (RB straight))) (, ,) (S (VP (VB stop) (PP (IN beside) (NP (NP (DT the) (JJ large) (NN snail)) (PP (IN on) (NP (DT the) (NN floor)))))))) (. .))",
+      "(S (VP (VP (VB Take) (NP (DT a) (NN right))) (CC and) (ADVP (RB then)) (VP (VP (VB take) (NP (DT a) (NN left))) (. .) (VP (VP (VB Take) (NP (DT another) (NN left))) (CC and) (VP (VB wait) (PP (IN in) (NP (DT the) (JJ huge) (NN shower))))))) (. .))",
+      "(S (VP (VP (VB Walk) (ADVP (RB forward))) (CC and) (VP (VP (VP (VB take) (NP (DT a) (NN left))) (. .) (VP (VB Take) (NP (DT the) (JJ next) (NN left)))) (CC and) (VP (VP (VB enter) (NP (DT the) (NN tile)) (PP (IN with) (NP (DT the) (JJ mosaic)))) (. .) (S (VP (VB Stop) (PP (IN in) (NP (NN front)) (PP (IN of) (NP (DT the) (NN snail)))) (PP (IN on) (NP (DT the) (NN ground)))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 6.11,
+    "scan": "GdvgFV5R1Z5",
+    "path_id": 4309,
+    "path": [
+      "0d8c5fbfd73f44e28d6da370520611e4",
+      "565cc21cd28b4ee6bb5ba83c5270c032",
+      "aebb1de49d21485e8bef7633dfb58761",
+      "86d342c576ff46a9828d2ba377cc8cd5"
+    ],
+    "heading": 1.494,
+    "instructions": [
+      "Walk past the refrigerator and stop on the rug by the beanbag chair. ",
+      "Walk forward past the kitchen, then turn right and wait near the window. ",
+      "Walk through the kitchen and take a right after the refrigerator. Stop on the rug under the mirror. "
+    ],
+    "clean_instructions": [
+      "Walk past the refrigerator and stop on the rug by the bean bag chair.",
+      "Walk forward past the kitchen, then turn right and wait near the window.",
+      "Walk through the kitchen and take a right after the refrigerator. Stop on the rug under the mirror."
+    ],
+    "constituency_trees": [
+      "(S (VP (VP (VB Walk) (PP (IN past) (NP (DT the) (NN refrigerator)))) (CC and) (VP (VB stop) (PP (IN on) (NP (DT the) (NN rug))) (PP (IN by) (NP (DT the) (NN bean) (NN bag) (NN chair))))) (. .))",
+      "(S (VP (VP (VB Walk) (ADVP (RB forward)) (PP (IN past) (NP (DT the) (NN kitchen)))) (, ,) (ADVP (RB then)) (VP (VP (VB turn) (ADVP (RB right))) (CC and) (VP (VB wait) (PP (IN near) (NP (DT the) (NN window)))))) (. .))",
+      "(S (VP (VP (VB Walk) (PP (IN through) (NP (DT the) (NN kitchen)))) (CC and) (VP (VP (VB take) (DT a) (NN right) (IN after) (NP (DT the) (NN refrigerator))) (. .) (S (VP (VB Stop) (PP (IN on) (NP (DT the) (NN rug))) (PP (IN under) (NP (DT the) (NN mirror))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 5.36,
+    "scan": "YmJkqBEsHnH",
+    "path_id": 884,
+    "path": [
+      "d841f7b710f9470796d55561f8f524db",
+      "01c80b5f8fbd4c969ee0bc03f1ec7a6c",
+      "82ea5baa30f945fe98f6cad3064af847",
+      "d471e89e00be49f49a7ecace814d60bf"
+    ],
+    "heading": 4.986,
+    "instructions": [
+      "Go down the asleep of the chruch towards the front.  Stop and wait after passing all of the pews. ",
+      "Turn of  around and walk straight down the aisle until you reach the first set of pews. Stand ahead of them in the center. ",
+      "Walk past pews and wait in front of potted flowers. "
+    ],
+    "clean_instructions": [
+      "Go down the aisle of the church towards the front. Stop and wait after passing all of the pews.",
+      "Turn of around and walk straight down the aisle until you reach the first set of pews. Stand ahead of them in the center.",
+      "Walk past pews and wait in front of potted flowers."
+    ],
+    "constituency_trees": [
+      "(S (VP (VB Go) (PP (IN down) (NP (NP (DT the) (NN aisle)) (PP (IN of) (NP (DT the) (NN church))))) (PP (IN towards) (NP (DT the) (NN front))) (. .) (S (VP (VB Stop) (CC and) (VB wait) (PP (IN after) (S (VP (VBG passing) (NP (NP (DT all)) (PP (IN of) (NP (DT the) (NNS pews)))))))))) (. .))",
+      "(S (VP (VB Turn) (PP (IN of) (ADVP (RB around)))) (CC and) (VP (VB walk) (PP (RB straight) (PP (IN down) (NP (DT the) (NN aisle)))) (SBAR (SBAR (IN until) (S (NP (PRP you)) (VP (VBP reach) (NP (NP (DT the) (JJ first) (NN set)) (PP (IN of) (NP (NNS pews))))))) (. .) (S (VP (VB Stand) (PP (RB ahead) (PP (IN of) (NP (PRP them)))) (PP (IN in) (NP (DT the) (NN center))))))) (. .))",
+      "(S (VP (VP (VB Walk) (PP (JJ past) (NP (NNS pews)))) (CC and) (VP (VB wait) (PP (IN in) (NP (NP (NN front)) (PP (IN of) (NP (JJ potted) (NNS flowers))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<right>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 8.31,
+    "scan": "Pm6F8kyY3z2",
+    "path_id": 1939,
+    "path": [
+      "87e7b6f2006541a9abe57fba18294a0c",
+      "8078fc4f547a4a9cb1a6bb036cc18dc9",
+      "cb070d66db084a79b553310df69ed31d",
+      "b8f49ffb1486488bbb72693578c17865",
+      "094836afff5e4fbfbb6659a96ec665b8",
+      "981311e64aec4d3f8e403f349363e065"
+    ],
+    "heading": 3.812,
+    "instructions": [
+      "Walk to the chairs by the pool and wait behind them. ",
+      "Walk out of the bedroom and onto the patio. Stop at the bottom of the stairs leading into the patio. ",
+      "Walk to the other side of the room and stop behind the chairs. "
+    ],
+    "clean_instructions": [
+      "Walk to the chairs by the pool and wait behind them.",
+      "Walk out of the bedroom and onto the patio. Stop at the bottom of the stairs leading into the patio.",
+      "Walk to the other side of the room and stop behind the chairs."
+    ],
+    "constituency_trees": [
+      "(S (VP (VP (VB Walk) (PP (IN to) (NP (DT the) (NNS chairs))) (PP (IN by) (NP (DT the) (NN pool)))) (CC and) (VP (VB wait) (PP (IN behind) (NP (PRP them))))) (. .))",
+      "(S (VP (VB Walk) (PP (IN out) (PP (IN of) (NP (DT the) (NN bedroom)))) (CC and) (PP (IN onto) (NP (DT the) (NN patio))) (. .) (S (VP (VB Stop) (PP (IN at) (NP (NP (DT the) (NN bottom)) (PP (PP (IN of) (NP (DT the) (NNS stairs))) (VP (VBG leading) (PP (IN into) (NP (DT the) (NN patio)))))))))) (. .))",
+      "(S (VP (VP (VB Walk) (PP (IN to) (NP (NP (DT the) (JJ other) (NN side)) (PP (IN of) (NP (DT the) (NN room)))))) (CC and) (VP (VB stop) (PP (IN behind) (NP (DT the) (NNS chairs))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 5.32,
+    "scan": "gZ6f7yhEvPG",
+    "path_id": 1304,
+    "path": [
+      "80929af5cf234ae38ac3a2a4e60e4342",
+      "ba27da20782d4e1a825f0a133ad84da9",
+      "47d8a8282c1c4a7fb3eeeacc45e9d959",
+      "46cecea0b30e4786b673f5e951bf82d4"
+    ],
+    "heading": 6.101,
+    "instructions": [
+      "Walk forward to the padded benches. Turn right and walk between them. Wait near the first pillow on the left, close to the altar. ",
+      "Take a right down the lane through the two sets of pews, walk towards the left corner of the church and stop at the one step. ",
+      "Walk around the pews and towards the front of the room with the paintings of religious figures and a stage area. "
+    ],
+    "clean_instructions": [
+      "Walk forward to the padded benches. Turn right and walk between them. Wait near the first pillow on the left, close to the altar.",
+      "Take a right down the lane through the two sets of pews, walk towards the left corner of the church and stop at the one step.",
+      "Walk around the pews and towards the front of the room with the paintings of religious figures and a stage area."
+    ],
+    "constituency_trees": [
+      "(S (VP (VP (VB Walk) (ADVP (RB forward)) (PP (IN to) (NP (DT the) (VBN padded) (NNS benches)))) (. .) (VP (VP (VB Turn) (PRT (UH right))) (CC and) (VP (VP (VB walk) (PP (IN between) (NP (PRP them)))) (. .) (S (VP (VB Wait) (PP (IN near) (NP (NP (DT the) (JJ first) (NN pillow)) (PP (IN on) (NP (NP (DT the) (JJ left)) (, ,) (ADJP (JJ close) (PP (IN to) (NP (DT the) (NN altar))))))))))))) (. .))",
+      "(S (VP (VP (VB Take) (NP (NP (DT a) (NN right)) (PP (IN down) (NP (DT the) (NN lane))) (PP (IN through) (NP (NP (DT the) (CD two) (NNS sets)) (PP (IN of) (NP (NNS pews))))))) (, ,) (VP (VP (VB walk) (PP (IN towards) (NP (NP (DT the) (JJ left) (NN corner)) (PP (IN of) (NP (DT the) (NN church)))))) (CC and) (VP (VB stop) (PP (IN at) (NP (DT the) (CD one) (NN step)))))) (. .))",
+      "(S (VP (VB Walk) (PP (IN around) (NP (DT the) (NNS pews))) (CC and) (PP (IN towards) (NP (NP (DT the) (NN front)) (PP (IN of) (NP (DT the) (NN room))))) (PP (IN with) (NP (NP (DT the) (NNS paintings)) (PP (IN of) (NP (NP (JJ religious) (NNS figures)) (CC and) (NP (DT a) (NN stage) (NN area))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 5.35,
+    "scan": "gZ6f7yhEvPG",
+    "path_id": 318,
+    "path": [
+      "29b20fa80dcd4771974303c1ccd8953f",
+      "ba27da20782d4e1a825f0a133ad84da9",
+      "47d8a8282c1c4a7fb3eeeacc45e9d959",
+      "0ee20663dfa34b438d48750ddcd7366c"
+    ],
+    "heading": 5.01,
+    "instructions": [
+      "Walk towards the benches and up the aisle down the middle. At the end of the aisle take a right and stop in front of the cabinet. ",
+      "Walk up the aisle and wait to the left of the altar. ",
+      "go towards the middle of the aisle. Take a left and go to the front of the room at the end of the aisle. Take a left and stop in front of the small piece of furniture and painting. "
+    ],
+    "clean_instructions": [
+      "Walk towards the benches and up the aisle down the middle. At the end of the aisle take a right and stop in front of the cabinet.",
+      "Walk up the aisle and wait to the left of the altar.",
+      "Go towards the middle of the aisle. Take a left and go to the front of the room at the end of the aisle. Take a left and stop in front of the small piece of furniture and painting."
+    ],
+    "constituency_trees": [
+      "(S (VP (VB Walk) (PP (IN towards) (NP (DT the) (NNS benches))) (CC and) (PP (IN up) (NP (DT the) (NN aisle))) (PP (IN down) (NP (DT the) (NN middle))) (. .) (PP (IN At) (NP (NP (DT the) (NN end)) (PP (IN of) (NP (DT the) (NN aisle))))) (VP (VP (VBP take) (NP (DT a) (NN right))) (CC and) (VP (VB stop) (PP (IN in) (NP (NP (NN front)) (PP (IN of) (NP (DT the) (NN cabinet)))))))) (. .))",
+      "(S (VP (VP (VB Walk) (PP (IN up) (NP (DT the) (NN aisle)))) (CC and) (VP (VB wait) (PP (IN to) (NP (NP (DT the) (NN left)) (PP (IN of) (NP (DT the) (NN altar))))))) (. .))",
+      "(S (VP (VB Go) (PP (IN towards) (NP (NP (DT the) (NN middle)) (PP (IN of) (NP (DT the) (NN aisle))))) (. .) (S (VP (S (VP (VP (VB Take) (NP (DT a) (NN left))) (CC and) (VP (VB go) (IN to) (NP (DT the) (NN front)) (PP (IN of) (NP (DT the) (NN room))) (PP (IN at) (NP (NP (DT the) (NN end)) (PP (IN of) (NP (DT the) (NN aisle)))))))) (. .) (S (VP (VP (VB Take) (NP (DT a) (NN left))) (CC and) (VP (VB stop) (PP (IN in) (NP (NP (NN front)) (PP (IN of) (NP (NP (DT the) (JJ small) (NN piece)) (PP (IN of) (NP (NN furniture) (CC and) (NN painting))))))))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<left>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<left>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<left>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 7.8,
+    "scan": "Pm6F8kyY3z2",
+    "path_id": 5948,
+    "path": [
+      "094836afff5e4fbfbb6659a96ec665b8",
+      "b8f49ffb1486488bbb72693578c17865",
+      "cb070d66db084a79b553310df69ed31d",
+      "8078fc4f547a4a9cb1a6bb036cc18dc9",
+      "87e7b6f2006541a9abe57fba18294a0c",
+      "138252ad9fab4ae1a86997fc363e6ac7",
+      "0c5658ec8f51460fbf29d6aedcfb4bca"
+    ],
+    "heading": 6.017,
+    "instructions": [
+      "Walk to the left of the bed into the bathroom. Stop in the doorway. ",
+      "Walk into the bathroom to the left of the bed. Stop just inside. ",
+      "Head indoors, stop in the bathroom and wait near the vanity. "
+    ],
+    "clean_instructions": [
+      "Walk to the left of the bed into the bathroom. Stop in the doorway.",
+      "Walk into the bathroom to the left of the bed. Stop just inside.",
+      "Head indoors, stop in the bathroom and wait near the vanity."
+    ],
+    "constituency_trees": [
+      "(S (VP (VB Walk) (PP (IN to) (NP (NP (DT the) (NN left)) (PP (IN of) (NP (DT the) (NN bed))))) (PP (PP (IN into) (NP (DT the) (NN bathroom))) (. .) (S (VP (VB Stop) (PP (IN in) (NP (DT the) (NN doorway))))))) (. .))",
+      "(S (VP (VP (VB Walk) (PP (IN into) (NP (DT the) (NN bathroom))) (PP (IN to) (NP (NP (DT the) (NN left)) (PP (IN of) (NP (DT the) (NN bed)))))) (. .) (S (VP (VB Stop) (ADVP (RB just) (RB inside))))) (. .))",
+      "(S (NP (NNP Head) (NNS indoors)) (, ,) (VP (VP (VB stop) (PP (IN in) (NP (DT the) (NN bathroom)))) (CC and) (VP (VB wait) (PP (IN near) (NP (DT the) (NN vanity))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 8.58,
+    "scan": "GdvgFV5R1Z5",
+    "path_id": 44,
+    "path": [
+      "0d8c5fbfd73f44e28d6da370520611e4",
+      "565cc21cd28b4ee6bb5ba83c5270c032",
+      "aebb1de49d21485e8bef7633dfb58761",
+      "0b02e18654324edd8d74c078b66bfb20",
+      "97ed68de989e44fdaf2d9b949898fab6"
+    ],
+    "heading": 1.494,
+    "instructions": [
+      "Walk across the kitchen and turn right past the refrigerator. Go forward, enter  the door on your right, and walk into the restroom. ",
+      "Walk past the refrigerator and turn right.  Walk around the corner and turn right, facing the bathroom.  Walk to the entrance to the bathroom and stop. ",
+      "Walk to the mirror on the side of the wall, near the door. Enter the bathroom. "
+    ],
+    "clean_instructions": [
+      "Walk across the kitchen and turn right past the refrigerator. Go forward, enter the door on your right, and walk into the restroom.",
+      "Walk past the refrigerator and turn right. Walk around the corner and turn right, facing the bathroom. Walk to the entrance to the bathroom and stop.",
+      "Walk to the mirror on the side of the wall, near the door. Enter the bathroom."
+    ],
+    "constituency_trees": [
+      "(S (VP (VP (VB Walk) (PP (IN across) (NP (DT the) (NN kitchen)))) (CC and) (VP (VP (VB turn) (ADVP (RB right)) (IN past) (NP (DT the) (NN refrigerator))) (. .) (S (VP (VP (VB Go) (ADVP (RB forward))) (, ,) (VP (VB enter) (NP (DT the) (NN door)) (PP (IN on) (NP (PRP$ your) (NN right)))) (, ,) (CC and) (VP (VB walk) (PP (IN into) (NP (DT the) (NN restroom)))))))) (. .))",
+      "(S (VP (VP (VB Walk) (PP (IN past) (NP (DT the) (NN refrigerator)))) (CC and) (VP (VP (VB turn) (ADVP (RB right))) (. .) (S (VP (VP (VB Walk) (PP (IN around) (NP (DT the) (NN corner)))) (CC and) (VP (VP (VB turn) (ADVP (RB right))) (, ,) (S (VP (S (VP (VBG facing) (NP (DT the) (NN bathroom)))) (. .) (S (VP (VP (VB Walk) (PP (PP (IN to) (NP (DT the) (NN entrance))) (PP (IN to) (NP (DT the) (NN bathroom))))) (CC and) (VP (VB stop))))))))))) (. .))",
+      "(S (VP (VB Walk) (IN to) (NP (DT the) (NN mirror)) (PP (IN on) (NP (NP (DT the) (NN side)) (PP (IN of) (NP (DT the) (NN wall))))) (, ,) (PP (PP (IN near) (NP (DT the) (NN door))) (. .) (VP (VB Enter) (NP (DT the) (NN bathroom))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 6.44,
+    "scan": "Pm6F8kyY3z2",
+    "path_id": 1937,
+    "path": [
+      "97db9c9bd9824a3ca623db620331ea66",
+      "3fd2f1d849de4e9f8c07863c845db6b5",
+      "a8cb8984630b456a96923ef0d7c3aeb3",
+      "fdf0fc24f7c549ccbb78e972c8024fa9",
+      "138252ad9fab4ae1a86997fc363e6ac7"
+    ],
+    "heading": 2.765,
+    "instructions": [
+      "Turn slightly right and enter the doorway. Turn right and exit the room via the farthest doorway to you left. Stay there. ",
+      "Go up the steps to the chest of drawers. Turn right and go to the doorway to the left of the sink. ",
+      "Turn to face the doorway to the right.\r\nWalk straight.\r\nGo up one step and pass throught the doorway.\r\nTurn to the right.\r\nWalk to the door.\r\nStop in the doorway. "
+    ],
+    "clean_instructions": [
+      "Turn slightly right and enter the doorway. Turn right and exit the room via the farthest doorway to you left. Stay there.",
+      "Go up the steps to the chest of drawers. Turn right and go to the doorway to the left of the sink.",
+      "Turn to face the doorway to the right. Walk straight. Go up one step and pass through the doorway. Turn to the right. Walk to the door. Stop in the doorway."
+    ],
+    "constituency_trees": [
+      "(S (VP (VP (VP (VB Turn) (ADVP (RB slightly) (RB right))) (CC and) (VP (VB enter) (NP (DT the) (NN doorway))) (. .) (VP (VB Turn) (NP (NN right))) (CC and) (VP (VB exit) (NP (DT the) (NN room)) (IN via) (NP (NP (DT the) (JJS farthest) (NN doorway)) (SBAR (IN to) (NP (PRP you)) (VP (VBD left)))))) (. .) (VP (VB Stay) (ADVP (RB there)))) (. .))",
+      "(S (VP (VP (VB Go) (PRT (RP up)) (NP (DT the) (NNS steps)) (PP (IN to) (NP (NP (DT the) (NN chest)) (PP (IN of) (NP (NNS drawers)))))) (. .) (S (VP (VP (VB Turn) (ADVP (RB right))) (CC and) (VP (VB go) (IN to) (NP (NP (DT the) (NN doorway)) (PP (IN to) (NP (NP (DT the) (NN left)) (PP (IN of) (NP (DT the) (NN sink)))))))))) (. .))",
+      "(S (VP (VB Turn) (S (VP (TO to) (VP (VP (VB face) (NP (DT the) (NN doorway)) (PP (IN to) (NP (DT the) (NN right)))) (. .) (S (VP (VB Walk) (ADVP (RB straight)) (. .) (S (VP (VP (VB Go) (PRT (RP up)) (NP (CD one) (NN step))) (CC and) (VP (VP (VB pass) (PP (IN through) (NP (DT the) (NN doorway)))) (. .) (VP (VB Turn) (PP (PP (IN to) (NP (DT the) (NN right))) (. .) (S (VP (VB Walk) (PP (PP (IN to) (NP (DT the) (NN door))) (. .) (S (VP (VB Stop) (PP (IN in) (NP (DT the) (NN doorway))))))))))))))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 5.22,
+    "scan": "GdvgFV5R1Z5",
+    "path_id": 2705,
+    "path": [
+      "5fd70cff4992429a99a84fd3c117ccb5",
+      "86d342c576ff46a9828d2ba377cc8cd5",
+      "0b02e18654324edd8d74c078b66bfb20",
+      "97ed68de989e44fdaf2d9b949898fab6"
+    ],
+    "heading": 4.658,
+    "instructions": [
+      "Turn slightly left and go into the bathroom. Wait by the weird looking toilet. ",
+      "Go and stop in the bathroom doorway. ",
+      "Leave the bedroom through the right, enter the bathroom, and wait. "
+    ],
+    "clean_instructions": [
+      "Turn slightly left and go into the bathroom. Wait by the weird looking toilet.",
+      "Go and stop in the bathroom doorway.",
+      "Leave the bedroom through the right, enter the bathroom, and wait."
+    ],
+    "constituency_trees": [
+      "(S (VP (VP (VB Turn) (VP (ADVP (RB slightly)) (VBD left))) (CC and) (VP (VP (VB go) (PP (IN into) (NP (DT the) (NN bathroom)))) (. .) (S (VP (VB Wait) (PP (IN by) (NP (DT the) (JJ weird) (JJ looking) (NN toilet))))))) (. .))",
+      "(S (VP (VB Go) (CC and) (VP (VB stop) (PP (IN in) (NP (DT the) (NN bathroom) (NN doorway))))) (. .))",
+      "(S (VP (VB Leave) (NP (DT the) (NN bedroom)) (PP (IN through) (NP (DT the) (NN right))) (, ,) (VP (VB enter) (NP (DT the) (NN bathroom))) (, ,) (CC and) (VP (VB wait))) (. .))"
+    ],
+    "actions": [
+      [
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 7.59,
+    "scan": "GdvgFV5R1Z5",
+    "path_id": 6398,
+    "path": [
+      "1db1c0a09ecf40d188197efc05ced3bb",
+      "97ed68de989e44fdaf2d9b949898fab6",
+      "0b02e18654324edd8d74c078b66bfb20",
+      "86d342c576ff46a9828d2ba377cc8cd5",
+      "6178647ca8d14dc09370f6c1b7ed2fd6"
+    ],
+    "heading": 2.029,
+    "instructions": [
+      "Go out of the bathroom go over to the dining room table and wait in front of the fireplace. ",
+      "Walk straight down the hallway and turn left.  Walk to the left of the blue bed and stop between the bed and the table and chairs, in front of the llama painting. ",
+      "Walk out of the room and left around the corner. walk to the left side of the bed and stop. "
+    ],
+    "clean_instructions": [
+      "Go out of the bathroom go over to the dining room table and wait in front of the fireplace.",
+      "Walk straight down the hallway and turn left. Walk to the left of the blue bed and stop between the bed and the table and chairs, in front of the llama painting.",
+      "Walk out of the room and left around the corner. Walk to the left side of the bed and stop."
+    ],
+    "constituency_trees": [
+      "(S (VP (VB Go) (PP (IN out) (PP (IN of) (NP (DT the) (NN bathroom)))) (S (VP (VP (VB go) (PRT (RP over)) (PP (IN to) (NP (DT the) (NN dining) (NN room) (NN table)))) (CC and) (VP (VB wait) (PP (IN in) (NP (NP (NN front)) (PP (IN of) (NP (DT the) (NN fireplace))))))))) (. .))",
+      "(S (VP (VP (VB Walk) (ADVP (RB straight)) (IN down) (NP (DT the) (NN hallway))) (CC and) (VP (VP (VB turn) (S (VP (VBN left)))) (. .) (VP (VB Walk) (PP (IN to) (NP (NP (DT the) (NN left)) (PP (IN of) (NP (DT the) (JJ blue) (NN bed))))))) (CC and) (VP (VB stop) (PP (IN between) (NP (NP (NP (DT the) (NN bed)) (CC and) (NP (DT the) (NN table) (CC and) (NNS chairs))) (, ,) (PP (IN in) (NP (NP (NN front)) (PP (IN of) (NP (DT the) (NN llama) (NN painting))))))))) (. .))",
+      "(S (VP (VP (VB Walk) (PP (IN out) (PP (IN of) (NP (DT the) (NN room))))) (CC and) (VP (VP (VBD left) (PP (IN around) (NP (DT the) (NN corner)))) (. .) (VP (VP (VB Walk) (PP (IN to) (NP (NP (DT the) (JJ left) (NN side)) (PP (IN of) (NP (DT the) (NN bed)))))) (CC and) (VP (VB stop))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<up>",
+        "<forward>",
+        "<left>",
+        "<down>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<up>",
+        "<forward>",
+        "<left>",
+        "<down>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<up>",
+        "<forward>",
+        "<left>",
+        "<down>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 7.28,
+    "scan": "Pm6F8kyY3z2",
+    "path_id": 2915,
+    "path": [
+      "e775ea81e83c45719de5a1577f8f7e39",
+      "9b2b12257e9a4c5d9f99f141769e9301",
+      "4739d48c61a04deab15db1eb2c906a96",
+      "c460d0f6ea8a4458a576efb07d043b39",
+      "e37d923ec8284523b5c9ebdb35800a3a"
+    ],
+    "heading": 6.028,
+    "instructions": [
+      "Walk next to the pool with the pool on your left hand side.  When you get to the bar with the sink in it, turn right and stop by the L-shaped table with the single wooden chair. ",
+      "Turn towards your left and walk along the edge of the pool. Once you reach the other side of the room turn right. Head towards the desk and then stop behind the desk facing the 3 steps. ",
+      "Cross the patio and wait at the far end of the steps. "
+    ],
+    "clean_instructions": [
+      "Walk next to the pool with the pool on your left-hand side. When you get to the bar with the sink in it, turn right and stop by the L-shaped table with the single wooden chair.",
+      "Turn towards your left and walk along the edge of the pool. Once you reach the other side of the room turn right. Head towards the desk and then stop behind the desk facing the 3 steps.",
+      "Cross the patio and wait at the far end of the steps."
+    ],
+    "constituency_trees": [
+      "(S (VB Walk) (ADVP (RB next) (PP (IN to) (NP (DT the) (NN pool)))) (IN with) (NP (DT the) (NN pool)) (PP (IN on) (NP (PRP$ your) (JJ left))) (HYPH -) (NP (NN hand) (NN side)) (. .) (SBAR (WHADVP (WRB When)) (S (NP (PRP you)) (VP (VBP get) (PP (IN to) (NP (DT the) (NN bar))) (PP (IN with) (NP (NP (DT the) (NN sink)) (PP (IN in) (NP (PRP it)))))))) (, ,) (VP (VB turn) (ADVP (RB right))) (CC and) (VP (VB stop) (PP (IN by) (NP (NP (DT the) (NN L)) (HYPH -) (NP (NP (VBN shaped) (NN table)) (PP (IN with) (NP (DT the) (JJ single) (JJ wooden) (NN chair))))))) (. .))",
+      "(S (VP (VB Turn) (PP (IN towards) (NP (PRP$ your) (NN left)))) (CC and) (VP (VP (VB walk) (PP (IN along) (NP (NP (DT the) (NN edge)) (PP (IN of) (NP (DT the) (NN pool)))))) (. .) (S (RB Once) (NP (NP (PRP you)) (VP (VBP reach) (NP (NP (DT the) (JJ other) (NN side)) (PP (IN of) (NP (DT the) (NN room)))))) (VP (VP (VBP turn) (ADVP (RB right))) (. .) (S (VP (VP (VB Head) (PP (IN towards) (NP (DT the) (NN desk)))) (CC and) (ADVP (RB then)) (VP (VB stop) (PP (IN behind) (NP (NP (DT the) (NN desk)) (VP (VBG facing) (NP (DT the) (CD 3) (NNS steps))))))))))) (. .))",
+      "(S (VP (VP (VB Cross) (NP (DT the) (NN patio))) (CC and) (VP (VB wait) (PP (IN at) (NP (NP (DT the) (JJ far) (NN end)) (PP (IN of) (NP (DT the) (NNS steps))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 5.48,
+    "scan": "Pm6F8kyY3z2",
+    "path_id": 7265,
+    "path": [
+      "4739d48c61a04deab15db1eb2c906a96",
+      "ff2dd63ad83245c3b4831b4f8a6911ac",
+      "2596868500734b1496d479e6936cceb3",
+      "981311e64aec4d3f8e403f349363e065",
+      "094836afff5e4fbfbb6659a96ec665b8"
+    ],
+    "heading": 4.907,
+    "instructions": [
+      "Go up the stairs into the bedroom. Stop on the top stair. ",
+      "Turn left. Go up the steps and wait there. ",
+      "Walk away from the pool and towards the stairs leading inside.  Walk up steps.  Wait at the top. "
+    ],
+    "clean_instructions": [
+      "Go up the stairs into the bedroom. Stop on the top stair.",
+      "Turn left. Go up the steps and wait there.",
+      "Walk away from the pool and towards the stairs leading inside. Walk up steps. Wait at the top."
+    ],
+    "constituency_trees": [
+      "(S (VP (VB Go) (PP (PRT (RP up)) (NP (DT the) (NNS stairs))) (PP (IN into) (NP (DT the) (NN bedroom))) (. .) (S (VP (VB Stop) (PP (IN on) (NP (DT the) (JJ top) (NN stair)))))) (. .))",
+      "(S (VP (VP (VB Turn) (VP (VBD left))) (. .) (VP (VP (VB Go) (PRT (RP up)) (NP (DT the) (NNS steps))) (CC and) (VP (VB wait) (ADVP (RB there))))) (. .))",
+      "(S (VP (VB Walk) (RB away) (PP (IN from) (NP (DT the) (NN pool))) (CC and) (PP (IN towards) (NP (NP (DT the) (NNS stairs)) (VP (VBG leading) (ADVP (RB inside))))) (. .) (VP (VB Walk) (PRT (RP up)) (NP (NNS steps)) (. .) (S (VP (VB Wait) (PP (IN at) (NP (DT the) (NN top))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<right>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 6.91,
+    "scan": "GdvgFV5R1Z5",
+    "path_id": 6633,
+    "path": [
+      "6178647ca8d14dc09370f6c1b7ed2fd6",
+      "86d342c576ff46a9828d2ba377cc8cd5",
+      "0b02e18654324edd8d74c078b66bfb20",
+      "97ed68de989e44fdaf2d9b949898fab6"
+    ],
+    "heading": 2.626,
+    "instructions": [
+      "Go past the refrigerator. Follow the left wall and wait in the doorway for the restroom. ",
+      "Turn to face the white refrigerator to the left of the kitchen sink.  Walk towards the fridge, and go to the blue carpet that is to the left of the fridge.  Once you reach the carpet follow the curved wall down the hallway until you reach the doorway to the bathroom.  Walk until you are standing in the doorway facing the toilet. ",
+      "Walk past the fridge and turn right. Walk toward the wall and turn right. Walk down the short hallway and stop in the doorway. "
+    ],
+    "clean_instructions": [
+      "Go past the refrigerator. Follow the left wall and wait in the doorway for the restroom.",
+      "Turn to face the white refrigerator to the left of the kitchen sink. Walk towards the fridge, and go to the blue carpet that is to the left of the fridge. Once you reach the carpet follow the curved wall down the hallway until you reach the doorway to the bathroom. Walk until you are standing in the doorway facing the toilet.",
+      "Walk past the fridge and turn right. Walk toward the wall and turn right. Walk down the short hallway and stop in the doorway."
+    ],
+    "constituency_trees": [
+      "(S (VP (VP (VB Go) (PP (IN past) (NP (DT the) (NN refrigerator)))) (. .) (S (VP (VP (VB Follow) (NP (DT the) (JJ left) (NN wall))) (CC and) (VP (VB wait) (PP (IN in) (NP (DT the) (NN doorway))) (PP (IN for) (NP (DT the) (NN restroom))))))) (. .))",
+      "(S (VP (VB Turn) (TO to) (VP (VP (VB face) (NP (NP (DT the) (JJ white) (NN refrigerator)) (PP (IN to) (NP (NP (DT the) (NN left)) (PP (IN of) (NP (DT the) (NN kitchen) (NN sink))))))) (. .) (S (VP (S (VP (VP (VB Walk) (PP (IN towards) (NP (DT the) (NN fridge)))) (, ,) (CC and) (VP (VB go) (PP (IN to) (NP (NP (DT the) (JJ blue) (NN carpet)) (SBAR (WHNP (WDT that)) (S (VP (VBZ is) (PP (IN to) (NP (NP (DT the) (NN left)) (PP (IN of) (NP (DT the) (NN fridge))))))))))))) (. .) (RB Once) (S (NP (PRP you)) (VP (VBP reach) (NP (DT the) (NN carpet)))) (VP (VP (VB follow) (NP (NP (DT the) (VBN curved) (NN wall)) (PP (IN down) (NP (DT the) (NN hallway)))) (SBAR (IN until) (S (NP (PRP you)) (VP (VBP reach) (NP (DT the) (NN doorway)) (PP (IN to) (NP (DT the) (NN bathroom))))))) (. .) (S (VP (VB Walk) (SBAR (IN until) (S (NP (PRP you)) (VP (VBP are) (VP (VBG standing) (PP (IN in) (NP (NP (DT the) (NN doorway)) (VP (VBG facing) (NP (DT the) (NN toilet)))))))))))))))) (. .))",
+      "(S (VP (VP (VB Walk) (PP (IN past) (NP (DT the) (NN fridge)))) (CC and) (VP (VB turn) (ADVP (RB right))) (. .) (S (VP (VP (VB Walk) (PP (IN toward) (NP (DT the) (NN wall)))) (CC and) (VP (VP (VB turn) (ADVP (RB right))) (. .) (S (VP (VP (VB Walk) (PP (IN down) (NP (DT the) (JJ short) (NN hallway)))) (CC and) (VP (VB stop) (PP (IN in) (NP (DT the) (NN doorway)))))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 6.11,
+    "scan": "Pm6F8kyY3z2",
+    "path_id": 4842,
+    "path": [
+      "97db9c9bd9824a3ca623db620331ea66",
+      "3fd2f1d849de4e9f8c07863c845db6b5",
+      "a8cb8984630b456a96923ef0d7c3aeb3",
+      "fdf0fc24f7c549ccbb78e972c8024fa9",
+      "0c5658ec8f51460fbf29d6aedcfb4bca"
+    ],
+    "heading": 2.765,
+    "instructions": [
+      "Leave tile room to hallway, turn right and stop at bathroom sink. ",
+      "Exit the Mosaic room through the archway. Turn right. Head toward the far door and sink area. Stop there. ",
+      "Exit the room and go right.  Wait by the open door. "
+    ],
+    "clean_instructions": [
+      "Leave tile room to hallway, turn right and stop at bathroom sink.",
+      "Exit the Mosaic room through the archway. Turn right. Head toward the far door and sink area. Stop there.",
+      "Exit the room and go right. Wait by the open door."
+    ],
+    "constituency_trees": [
+      "(S (VP (VB Leave) (NP (NN tile) (NN room)) (PP (TO to) (NP (VB hallway))) (, ,) (VP (VB turn) (ADVP (RB right))) (CC and) (VP (VB stop) (PP (IN at) (NP (NN bathroom) (NN sink))))) (. .))",
+      "(S (NN Exit) (DT the) (NNP Mosaic) (NN room) (PP (IN through) (NP (DT the) (NN archway))) (. .) (VP (VP (VB Turn) (ADVP (RB right))) (. .) (S (VP (VB Head) (PP (IN toward) (NP (NP (DT the) (JJ far) (NN door) (CC and) (VB sink) (NN area)) (. .) (S (VP (VB Stop) (ADVP (RB there))))))))) (. .))",
+      "(S (VP (NN Exit) (DT the) (NN room)) (CC and) (VP (VP (VB go) (ADVP (JJ right))) (. .) (S (VP (VB Wait) (PP (IN by) (NP (DT the) (JJ open) (NN door)))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 5.63,
+    "scan": "YmJkqBEsHnH",
+    "path_id": 4260,
+    "path": [
+      "006933a75f764c5485cf284bea0ded0b",
+      "d841f7b710f9470796d55561f8f524db",
+      "01c80b5f8fbd4c969ee0bc03f1ec7a6c",
+      "82ea5baa30f945fe98f6cad3064af847"
+    ],
+    "heading": 4.925,
+    "instructions": [
+      "Go down the aisle of the church through the Nave towards the altar.  Stop between the second row of pews to the front. Wait there. ",
+      "Walk to the front of the church aisle and stop when you get to the row of the second pews from the front. ",
+      "Walk down the aisle toward the front.  Wait at the second row of pews. "
+    ],
+    "clean_instructions": [
+      "Go down the aisle of the church through the Nave towards the altar. Stop between the second row of pews to the front. Wait there.",
+      "Walk to the front of the church aisle and stop when you get to the row of the second pews from the front.",
+      "Walk down the aisle toward the front. Wait at the second row of pews."
+    ],
+    "constituency_trees": [
+      "(S (VP (VB Go) (PP (IN down) (NP (NP (DT the) (NN aisle)) (PP (IN of) (NP (DT the) (NN church))))) (PP (IN through) (NP (DT the) (NNP Nave))) (PP (IN towards) (NP (DT the) (NN altar))) (. .) (S (VP (S (VP (VB Stop) (PP (IN between) (NP (NP (DT the) (JJ second) (NN row)) (PP (IN of) (NP (NNS pews)))) (PP (IN to) (NP (DT the) (NN front)))))) (. .) (S (VP (VB Wait) (ADVP (RB there))))))) (. .))",
+      "(S (VP (VB Walk) (PP (IN to) (NP (NP (DT the) (NN front)) (PP (IN of) (NP (DT the) (NN church) (NN aisle)))))) (CC and) (VP (VB stop) (SBAR (WHADVP (WRB when)) (S (NP (PRP you)) (VP (VBP get) (PP (IN to) (NP (NP (DT the) (NN row)) (PP (IN of) (NP (NP (DT the) (JJ second) (NNS pews)) (PP (IN from) (NP (DT the) (NN front))))))))))) (. .))",
+      "(S (VP (VP (VB Walk) (PP (IN down) (NP (DT the) (NN aisle))) (PP (IN toward) (NP (DT the) (NN front)))) (. .) (S (VP (VB Wait) (PP (IN at) (NP (NP (DT the) (JJ second) (NN row)) (PP (IN of) (NP (NNS pews)))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<right>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 6.03,
+    "scan": "Pm6F8kyY3z2",
+    "path_id": 4576,
+    "path": [
+      "87e7b6f2006541a9abe57fba18294a0c",
+      "8078fc4f547a4a9cb1a6bb036cc18dc9",
+      "cb070d66db084a79b553310df69ed31d",
+      "560d4bedd6714e57b4acfe27bbc4a01b",
+      "b0a4ed482e7b4f8eb499f3a999f65933"
+    ],
+    "heading": 3.812,
+    "instructions": [
+      "Turn to your left and go across the room to the other side of the bed. Stop at the foot of the bed with the table to your right. ",
+      "Exit the bathroom then turn left. Go past the bed and wait near the small round table with the chairs. ",
+      "walk away from bathroom straight past bed,turn left to walk past foot of bed stop at the wood barrier. "
+    ],
+    "clean_instructions": [
+      "Turn to your left and go across the room to the other side of the bed. Stop at the foot of the bed with the table to your right.",
+      "Exit the bathroom then turn left. Go past the bed and wait near the small round table with the chairs.",
+      "Walk away from bathroom straight past bed, turn left to walk past foot of bed stop at the wood barrier."
+    ],
+    "constituency_trees": [
+      "(S (VP (VP (VB Turn) (PP (IN to) (NP (PRP$ your) (NN left)))) (CC and) (VP (VP (VB go) (PP (IN across) (NP (DT the) (NN room))) (PP (IN to) (NP (NP (DT the) (JJ other) (NN side)) (PP (IN of) (NP (DT the) (NN bed)))))) (. .) (S (VP (VB Stop) (PP (IN at) (NP (NP (DT the) (NN foot)) (PP (IN of) (NP (DT the) (NN bed))))) (PP (IN with) (NP (NP (DT the) (NN table)) (PP (IN to) (NP (PRP$ your) (NN right))))))))) (. .))",
+      "(S (NP (NN Exit) (NP (DT the) (NN bathroom))) (ADVP (RB then)) (VP (VP (VB turn) (VP (VBN left))) (. .) (S (VP (VP (VB Go) (PP (IN past) (NP (DT the) (NN bed)))) (CC and) (VP (VB wait) (PP (IN near) (NP (NP (DT the) (JJ small) (NN round) (NN table)) (PP (IN with) (NP (DT the) (NNS chairs))))))))) (. .))",
+      "(S (VP (VP (VB Walk) (RB away) (PP (IN from) (NP (NN bathroom))) (PP (JJ straight) (JJ past) (NP (NN bed)))) (, ,) (S (VP (VB turn) (S (VP (VBN left) (S (VP (TO to) (VP (VB walk) (PP (PP (IN past) (NP (NP (NN foot)) (PP (IN of) (NP (NN bed))))) (NN stop)) (PP (IN at) (NP (DT the) (NN wood) (NN barrier))))))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<left>",
+        "<forward>",
+        "<forward>",
+        "<left>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 8.6,
+    "scan": "Pm6F8kyY3z2",
+    "path_id": 4096,
+    "path": [
+      "138252ad9fab4ae1a86997fc363e6ac7",
+      "87e7b6f2006541a9abe57fba18294a0c",
+      "8078fc4f547a4a9cb1a6bb036cc18dc9",
+      "cb070d66db084a79b553310df69ed31d",
+      "b8f49ffb1486488bbb72693578c17865",
+      "094836afff5e4fbfbb6659a96ec665b8",
+      "981311e64aec4d3f8e403f349363e065"
+    ],
+    "heading": 6.203,
+    "instructions": [
+      "Walk towards green lounge chairs and swimming pool.  Wait at bottom of steps. ",
+      "Walk past the bed and toward the deck.  Stop in the middle of the floor mosaic at the bottom of the stairs. ",
+      "From bathroom walk into bedroom and walk across bedroom down steps and stop at pool loungers. "
+    ],
+    "clean_instructions": [
+      "Walk towards green lounge chairs and swimming pool. Wait at bottom of steps.",
+      "Walk past the bed and toward the deck. Stop in the middle of the floor mosaic at the bottom of the stairs.",
+      "From bathroom walk into bedroom and walk across bedroom down steps and stop at pool loungers."
+    ],
+    "constituency_trees": [
+      "(S (VP (VB Walk) (PP (PP (IN towards) (NP (NP (JJ green) (NN lounge) (NNS chairs)) (CC and) (NP (VBG swimming) (NN pool)))) (. .) (S (VP (VB Wait) (PP (IN at) (NP (NP (NN bottom)) (PP (IN of) (NP (NNS steps))))))))) (. .))",
+      "(S (VP (VB Walk) (PP (IN past) (NP (DT the) (NN bed))) (CC and) (PP (IN toward) (NP (DT the) (NN deck))) (. .) (S (VP (VB Stop) (PP (IN in) (NP (NP (NP (DT the) (NN middle)) (PP (IN of) (NP (DT the) (NN floor) (JJ mosaic)))) (PP (IN at) (NP (NP (DT the) (NN bottom)) (PP (IN of) (NP (DT the) (NNS stairs)))))))))) (. .))",
+      "(S (PP (IN From) (NP (NN bathroom))) (VP (VP (VBP walk) (PP (IN into) (NP (NN bedroom)))) (CC and) (VP (VP (VB walk) (IN across) (NP (NN bedroom)) (RP down) (NNS steps)) (CC and) (VP (VB stop) (PP (IN at) (NP (NN pool) (NNS loungers)))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<right>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 5.14,
+    "scan": "Pm6F8kyY3z2",
+    "path_id": 719,
+    "path": [
+      "d81df9c0b8fb4b3e8a2cd12c2007461e",
+      "4ac8e1065b0b46db9e459d79a1078e04",
+      "b8f49ffb1486488bbb72693578c17865",
+      "cb070d66db084a79b553310df69ed31d",
+      "8078fc4f547a4a9cb1a6bb036cc18dc9",
+      "87e7b6f2006541a9abe57fba18294a0c"
+    ],
+    "heading": 3.481,
+    "instructions": [
+      "Walk to the bathroom door and wait just outside the doorway. ",
+      "Cross the bedroom and wait outside the bathroom door. ",
+      "Walk through the room alongside the bed towards the doorway passing the side table and bench seats. Walk out of the door and into the hallway. "
+    ],
+    "clean_instructions": [
+      "Walk to the bathroom door and wait just outside the doorway.",
+      "Cross the bedroom and wait outside the bathroom door.",
+      "Walk through the room alongside the bed towards the doorway passing the side table and bench seats. Walk out of the door and into the hallway."
+    ],
+    "constituency_trees": [
+      "(S (VP (VP (VB Walk) (PP (IN to) (NP (DT the) (NN bathroom) (NN door)))) (CC and) (VP (VB wait) (PP (ADVP (RB just)) (IN outside) (NP (DT the) (NN doorway))))) (. .))",
+      "(S (VP (VP (VB Cross) (NP (DT the) (NN bedroom))) (CC and) (VP (VB wait) (PP (IN outside) (NP (DT the) (NN bathroom) (NN door))))) (. .))",
+      "(S (VP (VB Walk) (PP (IN through) (NP (DT the) (NN room))) (PP (PP (IN alongside) (NP (DT the) (NN bed))) (PP (IN towards) (NP (DT the) (NN doorway)))) (VP (VBG passing) (NP (NP (DT the) (NX (NX (NN side) (NN table)) (CC and) (NX (NN bench) (NNS seats)))) (. .) (VP (VB Walk) (PP (IN out) (PP (IN of) (NP (DT the) (NN door)))) (CC and) (PP (IN into) (NP (DT the) (NN hallway))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<right>",
+        "<right>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<right>",
+        "<forward>",
+        "<forward>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  },
+  {
+    "distance": 5.03,
+    "scan": "GdvgFV5R1Z5",
+    "path_id": 6327,
+    "path": [
+      "1db1c0a09ecf40d188197efc05ced3bb",
+      "97ed68de989e44fdaf2d9b949898fab6",
+      "0b02e18654324edd8d74c078b66bfb20",
+      "aebb1de49d21485e8bef7633dfb58761"
+    ],
+    "heading": 2.029,
+    "instructions": [
+      "Leave the bathroom and move towards the bed. Stop in the center of the wood floor next to the refrigerator. ",
+      "Follow the hall to the living area and turn left. Wait near the refrigerator. ",
+      "Leave the bathroom and go straight. Turn left and stop at the foot of the bed next to the chair. "
+    ],
+    "clean_instructions": [
+      "Leave the bathroom and move towards the bed. Stop in the center of the wood floor next to the refrigerator.",
+      "Follow the hall to the living area and turn left. Wait near the refrigerator.",
+      "Leave the bathroom and go straight. Turn left and stop at the foot of the bed next to the chair."
+    ],
+    "constituency_trees": [
+      "(S (VP (VP (VB Leave) (NP (DT the) (NN bathroom))) (CC and) (VP (VP (VB move) (PP (IN towards) (NP (DT the) (NN bed)))) (. .) (S (VP (VB Stop) (PP (IN in) (NP (NP (DT the) (NN center)) (PP (IN of) (NP (DT the) (NN wood) (NN floor))) (ADVP (RB next) (PP (IN to) (NP (DT the) (NN refrigerator)))))))))) (. .))",
+      "(S (VP (VP (VB Follow) (NP (DT the) (NN hall)) (PP (IN to) (NP (DT the) (NN living) (NN area)))) (CC and) (VP (VP (NN turn) (VP (VBN left))) (. .) (S (VP (VB Wait) (PP (IN near) (NP (DT the) (NN refrigerator))))))) (. .))",
+      "(S (VP (VP (VB Leave) (NP (DT the) (NN bathroom))) (CC and) (VP (VP (VP (VB go) (ADVP (RB straight))) (. .) (VP (VB Turn) (NP (VBD left)))) (CC and) (VP (VB stop) (PP (IN at) (NP (NP (DT the) (NN foot)) (PP (IN of) (NP (DT the) (NN bed))) (ADVP (RB next) (PP (IN to) (NP (DT the) (NN chair))))))))) (. .))"
+    ],
+    "actions": [
+      [
+        "<up>",
+        "<forward>",
+        "<left>",
+        "<down>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<up>",
+        "<forward>",
+        "<left>",
+        "<down>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ],
+      [
+        "<up>",
+        "<forward>",
+        "<left>",
+        "<down>",
+        "<forward>",
+        "<left>",
+        "<left>",
+        "<forward>",
+        "<stop>"
+      ]
+    ]
+  }
+]
