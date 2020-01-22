@@ -22,6 +22,12 @@ class VLNBenchmark(habitat.Benchmark):
         self.episode_batch_scores = []
         self._name = name
 
+    def evaluate(
+        self,
+        agent
+    ):
+        return
+
     def train(
         self,
         agent,
@@ -33,6 +39,7 @@ class VLNBenchmark(habitat.Benchmark):
         agent.train()
         count_episodes = 0
         agg_metrics = defaultdict(float)
+        steps = 0
 
         while count_episodes < num_episodes:
             if count_episodes and count_episodes % 1000 == 0:
@@ -42,12 +49,10 @@ class VLNBenchmark(habitat.Benchmark):
                                                     )
                 )
                 print("{} episodes have been processed".format(count_episodes))
-            agent.reset()
+            agent.reset(steps)
             observations = self._env.reset()
             episode_loss = []
             episode_batch_score = []
-            print("clean")
-            steps = 0
             #action_sequence = []
             while not self._env.episode_over:
                 final_goal = self._env._current_episode.goals[-1].image_id

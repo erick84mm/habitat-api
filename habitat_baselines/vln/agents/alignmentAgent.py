@@ -158,10 +158,11 @@ class alignmentAgent(habitat.Agent):
         cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(checkpoint)
         return cfg
 
-    def reset(self):
-        self.loss = None
-        self.optimizer.step()
-        self.model.zero_grad()
+    def reset(self, steps):
+        if steps and steps % self.max_steps == 0:
+            self.loss = None
+            self.optimizer.step()
+            self.model.zero_grad()
 
 
     def train_step(self, steps):
@@ -395,6 +396,14 @@ class alignmentAgent(habitat.Agent):
             image_mask.unsqueeze(0),
             co_attention_mask.unsqueeze(0)
         )
+
+        instruction = None
+        features = None
+        spatials = None
+        segment_ids = None
+        input_mask = None
+        image_mask = None
+        co_attention_mask = None
 
         self.loss = self.criterion(vil_prediction, target)
         self.loss = self.loss.mean() * target.size(1)
