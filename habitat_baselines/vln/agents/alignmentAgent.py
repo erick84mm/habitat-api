@@ -69,6 +69,7 @@ def fast_rcnn_inference_single_image(
 class alignmentAgent(habitat.Agent):
 
     model_actions = ['TURN_LEFT', 'TURN_RIGHT', 'LOOK_UP', 'LOOK_DOWN', 'TELEPORT', 'STOP', '<start>', '<ignore>']
+    categorical_model_actions = ["TURN", "ELEVATION", "TELEPORT", "STOP"]
     reduce_model_actions = ["SEARCH", "TELEPORT", "STOP"]
 
     detectron2_checkpoints = {
@@ -433,12 +434,17 @@ class alignmentAgent(habitat.Agent):
         co_attention_mask = None
 
 
-        reduced_probs = torch.zeros((1, 3), device=self.bert_gpu_device, dtype=torch.float)
-        reduced_probs[:,0] = torch.sum(vil_prediction[:,:4], dim=1)
-        reduced_probs[:,1:] = vil_prediction[:,4:]
+        reduced_probs = torch.zeros((1, 3),
+                                device=self.bert_gpu_device,
+                                dtype=torch.float,
+                                requires_grad=True
+                                )
+        reduced_probs[:,0] += torch.sum(vil_prediction[:,:4], dim=1)
+        reduced_probs[:,1:] += vil_prediction[:,4:]
 
 
-        self.loss = self.criterion(reduced_probs, category_target)
+        self.loss = self.criterion(reduced_probs, category_target) + self.criterion(vil_prediction, target)
+        #self.finegrained_loss = self.criterion(vil_prediction, target)
         self.loss = self.loss.mean() * target.size(1)
         batch_score = self.compute_score_with_logits(vil_prediction, target).sum() / float(batch_size)
 
