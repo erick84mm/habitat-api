@@ -438,7 +438,7 @@ class alignmentAgent(habitat.Agent):
         reduced_probs[:,1:] = vil_prediction[:,4:]
 
 
-        self.loss = self.criterion(reduce_probs, category_target)
+        self.loss = self.criterion(reduced_probs, category_target)
         self.loss = self.loss.mean() * target.size(1)
         batch_score = self.compute_score_with_logits(vil_prediction, target).sum() / float(batch_size)
 
