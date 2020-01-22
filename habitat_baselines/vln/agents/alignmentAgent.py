@@ -69,6 +69,7 @@ def fast_rcnn_inference_single_image(
 class alignmentAgent(habitat.Agent):
 
     model_actions = ['TURN_LEFT', 'TURN_RIGHT', 'LOOK_UP', 'LOOK_DOWN', 'TELEPORT', 'STOP', '<start>', '<ignore>']
+    reduce_model_actions = ["SEARCH", "TELEPORT", "STOP"]
 
     detectron2_checkpoints = {
                     "CD_R_50_C4_1x": "COCO-Detection/faster_rcnn_R_50_C4_1x.yaml",
@@ -124,6 +125,11 @@ class alignmentAgent(habitat.Agent):
         print("Loading Detectron2 predictor on GPU {}".format(self.detectron2_gpu))
         detectron2_cfg = self.create_detectron2_cfg(config)
         self.detector = DefaultPredictor(detectron2_cfg)
+
+        for key, value in dict(self.detector.named_parameters()).items():
+            value.requires_grad = False
+
+        self.detector.eval()
         print("Detectron2 loaded")
         self._max_region_num = 36
         self._max_seq_length = 128
@@ -191,6 +197,7 @@ class alignmentAgent(habitat.Agent):
 
     def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
         # imgs tensor(batch, H, W, C)
+
         inputs = []
         for img in imgs:
             raw_img = img.permute(2,0,1)
@@ -363,8 +370,13 @@ class alignmentAgent(habitat.Agent):
         target_action, args = self._teacher_actions(observations, goals)
         idx = self.model_actions.index(target_action)
         one_hot = torch.zeros((1,6), device=self.bert_gpu_device)
+        category_one_hot = torch.zeros((1,3), device=self.bert_gpu_device)
         one_hot[0][idx] = 1
-        return one_hot, target_action, args
+        if idx < 4:
+            category_one_hot[0][0] = 1
+        else:
+            category_one_hot[0][idx-3] = 1
+        return category_one_hot, one_hot, target_action, args
 
 
 
@@ -372,7 +384,7 @@ class alignmentAgent(habitat.Agent):
 
         # Observations come in Caffe GPU
         batch_size = 1
-        target, target_action, action_args = self._get_target_onehot(
+        category_target, target, target_action, action_args = self._get_target_onehot(
                                                             observations,
                                                             goals
                                             )
@@ -424,20 +436,27 @@ class alignmentAgent(habitat.Agent):
         image_mask = None
         co_attention_mask = None
 
-        self.loss = self.criterion(vil_prediction, target)
+
+        reduced_probs = torch.zeros((1, 3))
+        reduced_probs[,0] = torch.sum(vil_prediction[,:3])
+        reduced_probs[,1:] = vil_prediction[,4:]
+
+
+        self.loss = self.criterion(vil_prediction, category_target)
         self.loss = self.loss.mean() * target.size(1)
         batch_score = self.compute_score_with_logits(vil_prediction, target).sum() / float(batch_size)
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
+        print("Target action ", target_action)
         return {"action": target_action, "action_args": action_args}, self.loss.item(), batch_score.item()
 
     def compute_score_with_logits(self, logits, labels):
         logits = torch.max(logits, 1)[1].data  # argmax
         one_hots = torch.zeros(*labels.size(), device=self.bert_gpu_device)
         one_hots.scatter_(1, logits.view(-1, 1), 1)
-        print(self.model_actions)
-        print("Action", one_hots)
         scores = one_hots * labels
+        idx = torch.argmax(one_hots, dim=1).item()
+        print("Predicted action", self.model_actions[idx])
         return scores
 
 
