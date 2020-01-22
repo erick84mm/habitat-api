@@ -66,6 +66,17 @@ def fast_rcnn_inference_single_image(
 
         return result, keep
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 class alignmentAgent(habitat.Agent):
 
     model_actions = ['TURN_LEFT', 'TURN_RIGHT', 'LOOK_UP', 'LOOK_DOWN', 'TELEPORT', 'STOP', '<start>', '<ignore>']
@@ -458,16 +469,39 @@ class alignmentAgent(habitat.Agent):
 
 
 
-        self.loss = 0.2 * self.criterion(reduced_probs, category_target) + \
-            0.3 * self.criterion(vil_prediction, target) + \
-            0.5 * self.criterion(stop_probs, stop_target)
+        self.loss = 0.25 * self.criterion(reduced_probs, category_target) + \
+            0.35 * self.criterion(vil_prediction, target) + \
+            0.4 * self.criterion(stop_probs, stop_target)
 
         self.loss = self.loss.mean() * target.size(1)
-        batch_score = self.compute_score_with_logits(vil_prediction, target).sum() / float(batch_size)
+        batch_score = self.compute_mistakes(stop_probs, reduced_probs, vil_prediction, target).sum() / float(batch_size)
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         print("Target action ", target_action)
         return {"action": target_action, "action_args": action_args}, self.loss.item(), batch_score.item()
+
+    def compute_mistakes(self, stop_probs, category_probs, logits, labels):
+        logits = torch.max(logits, 1)[1].data  # argmax
+        one_hots = torch.zeros(*labels.size(), device=self.bert_gpu_device)
+        one_hots.scatter_(1, logits.view(-1, 1), 1)
+        idx = torch.argmax(one_hots, dim=1).item()
+        gold_idx = torch.argmax(labels, dim=1).item()
+
+        color = bcolors.FAIL
+        if idx == gold_idx:
+            color = bcolors.OKGREEN
+
+        if idx < 4:
+            print(color + " Prediction: NON_STOP, SEARCH, " + self.model_actions[idx] + bcolors.ENDC)
+        elif idx == 4:
+            print(color + " NON_STOP, " + self.model_actions[idx] + bcolors.ENDC)
+        else:
+            print(color + self.model_actions[idx] + bcolors.ENDC)
+
+        category_one_hots = torch.zeros(*category_probs.size(), device=self.bert_gpu_device)
+        stop_one_hots = torch.zeros(*stop_probs.size(), device=self.bert_gpu_device)
+        scores = one_hots * labels
+        return scores
 
     def compute_score_with_logits(self, logits, labels):
         logits = torch.max(logits, 1)[1].data  # argmax
