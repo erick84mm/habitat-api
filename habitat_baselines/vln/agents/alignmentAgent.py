@@ -433,8 +433,8 @@ class alignmentAgent(habitat.Agent):
         co_attention_mask = None
 
 
-        reduced_probs = torch.zeros((1, 3), device=self.bert_gpu_device, dtype='f')
-        reduced_probs[:,0] = torch.sum(vil_prediction[:,:4], dim=1, dtype='f')
+        reduced_probs = torch.zeros((1, 3), device=self.bert_gpu_device, dtype=torch.float)
+        reduced_probs[:,0] = torch.sum(vil_prediction[:,:4], dim=1)
         reduced_probs[:,1:] = vil_prediction[:,4:]
 
 
