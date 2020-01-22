@@ -125,10 +125,6 @@ class alignmentAgent(habitat.Agent):
         print("Loading Detectron2 predictor on GPU {}".format(self.detectron2_gpu))
         detectron2_cfg = self.create_detectron2_cfg(config)
         self.detector = DefaultPredictor(detectron2_cfg)
-
-        for key, value in dict(self.detector.named_parameters()).items():
-            value.requires_grad = False
-
         self.detector.eval()
         print("Detectron2 loaded")
         self._max_region_num = 36
