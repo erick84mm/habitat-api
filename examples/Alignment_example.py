@@ -35,7 +35,7 @@ class VLNBenchmark(habitat.Benchmark):
         agg_metrics = defaultdict(float)
 
         while count_episodes < num_episodes:
-            if count_episodes and count_episodes % 10 == 0:
+            if count_episodes and count_episodes % 1000 == 0:
                 agent.save("checkpoints/{}_train_{}.check".format(
                                                         self._name,
                                                         count_episodes
