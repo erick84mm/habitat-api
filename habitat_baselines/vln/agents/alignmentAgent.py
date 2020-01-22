@@ -159,16 +159,18 @@ class alignmentAgent(habitat.Agent):
         return cfg
 
     def reset(self, steps):
-        if steps and steps % self.max_steps == 0:
-            self.loss = None
-            self.optimizer.step()
-            self.model.zero_grad()
+        self.loss = None
+        pass
 
 
     def train_step(self, steps):
         #self.loss = self.loss / self.max_steps
         self.loss.backward()
         self.loss = None
+
+        if steps and steps % self.max_steps == 0:
+            self.optimizer.step()
+            self.model.zero_grad()
 
     def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
         # imgs tensor(batch, H, W, C)
