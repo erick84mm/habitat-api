@@ -206,37 +206,44 @@ class alignmentAgent(habitat.Agent):
             b_avg = sum(self.loss_weight["b_loss"]) / num
             c_avg = sum(self.loss_weight["c_loss"]) / num
             if c_avg < 0.5:
-                self.loss_weight["a"] = 0.05
+                self.loss_weight["a"] = 0.00
                 self.loss_weight["b"] = 0.05
-                self.loss_weight["c"] = 0.90
+                self.loss_weight["c"] = 0.95
             elif 0.5 < c_avg < 0.6:
-                self.loss_weight["a"] = 0.05
+                self.loss_weight["a"] = 0.00
                 self.loss_weight["b"] = 0.10
-                self.loss_weight["c"] = 0.85
+                self.loss_weight["c"] = 0.90
             elif 0.6 < c_avg < 0.7:
+                self.loss_weight["a"] = 0.05
+                self.loss_weight["b"] = 0.1
+                self.loss_weight["c"] = 0.85
+            elif 0.7 < c_avg < 0.9:
                 self.loss_weight["a"] = 0.05
                 self.loss_weight["b"] = 0.15
                 self.loss_weight["c"] = 0.8
-            elif 0.7 < c_avg < 0.9:
+            elif 0.9 < c_avg < 0.95:
                 self.loss_weight["a"] = 0.05
-                self.loss_weight["b"] = 0.25
-                self.loss_weight["c"] = 0.70
+                self.loss_weight["b"] = 0.2
+                self.loss_weight["c"] = 0.75
             else:
-                self.loss_weight["c"] = 0.05
+                self.loss_weight["c"] = 0.00
                 if b_avg < 0.5:
                     self.loss_weight["a"] = 0.05
-                    self.loss_weight["b"] = 0.90
+                    self.loss_weight["b"] = 0.95
                 elif 0.5 < b_avg < 0.6:
                     self.loss_weight["a"] = 0.10
-                    self.loss_weight["b"] = 0.85
+                    self.loss_weight["b"] = 0.9
                 elif 0.6 < b_avg < 0.7:
                     self.loss_weight["a"] = 0.15
-                    self.loss_weight["b"] = 0.8
+                    self.loss_weight["b"] = 0.85
                 elif 0.7 < b_avg < 0.8:
                     self.loss_weight["a"] = 0.2
-                    self.loss_weight["b"] = 0.75
+                    self.loss_weight["b"] = 0.8
                 elif 0.8 < b_avg < 0.9:
                     self.loss_weight["a"] = 0.3
+                    self.loss_weight["b"] = 0.7
+                elif 0.9 < b_avg < 0.95:
+                    self.loss_weight["a"] = 0.35
                     self.loss_weight["b"] = 0.65
                 else:
                     self.loss_weight["a"] = 0.9
