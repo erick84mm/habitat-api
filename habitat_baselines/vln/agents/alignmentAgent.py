@@ -502,8 +502,8 @@ class alignmentAgent(habitat.Agent):
 
     def act_batch(self, observations):
         batch_size = len(observations)
-        instructions, masks, segment_ids, co_attention_masks, \
-            tensor_features, spatials, image_masks = \
+        instructions, input_masks, segment_ids, co_attention_masks, \
+            features, spatials, image_masks = \
             self.tensorize(observations)
         category_target, target, stop_target = \
             self._get_batch_target_onehot(
@@ -512,22 +512,22 @@ class alignmentAgent(habitat.Agent):
         vil_prediction, vil_logit, vil_binary_prediction, vision_prediction, \
         vision_logit, linguisic_prediction, linguisic_logit = \
         self.model(
-            instruction.unsqueeze(0),
-            features.unsqueeze(0),
-            spatials.unsqueeze(0),
-            segment_ids.unsqueeze(0),
-            input_mask.unsqueeze(0),
-            image_mask.unsqueeze(0),
-            co_attention_mask.unsqueeze(0)
+            instructions,
+            features,
+            spatials,
+            segment_ids,
+            input_masks,
+            image_masks,
+            co_attention_masks
         )
 
-        instruction = None
+        instructions = None
         features = None
         spatials = None
         segment_ids = None
-        input_mask = None
-        image_mask = None
-        co_attention_mask = None
+        input_masks = None
+        image_masks = None
+        co_attention_masks = None
 
         reduced_probs = torch.cat((torch.sum(vil_prediction[:,:4], dim=-1, keepdims=True),
                                     vil_prediction[:,4:]), dim=1)
