@@ -52,7 +52,10 @@ class VLNBenchmark(habitat.Benchmark):
                 print("{} episodes have been processed".format(count_episodes))
             agent.reset(steps)
             observations = self._env.reset()
-            observations = {"rgb": observations["rgb"]}
+            observations = {
+                            "rgb": observations["rgb"],
+                            "adjacentViewpoints": observations["adjacentViewpoints"]
+                            }
             episode_loss = []
             episode_batch_score = []
             #action_sequence = []
