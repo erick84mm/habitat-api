@@ -52,6 +52,7 @@ class VLNBenchmark(habitat.Benchmark):
                 print("{} episodes have been processed".format(count_episodes))
             agent.reset(steps)
             observations = self._env.reset()
+            observations = {"rgb": observations["rgb"]}
             episode_loss = []
             episode_batch_score = []
             #action_sequence = []
@@ -85,12 +86,14 @@ class VLNBenchmark(habitat.Benchmark):
                     }
                 )
                 # Adding tokens from episode
+
                 observations["tokens"] = self._env._current_episode.instruction.tokens
                 observations["mask"] = self._env._current_episode.instruction.mask
                 observations["segment"] =  [1 - i for i in self._env._current_episode.instruction.mask]
 
                 rollout_observations.append(observations)
                 observations = self._env.step(action) # Step 1
+                observations = {"rgb": observations["rgb"]}
                 steps += 1
                 if len(rollout_observations) == batch_size:
 
