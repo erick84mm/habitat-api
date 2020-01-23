@@ -93,7 +93,10 @@ class VLNBenchmark(habitat.Benchmark):
 
                 rollout_observations.append(observations)
                 observations = self._env.step(action) # Step 1
-                observations = {"rgb": observations["rgb"]}
+                observations = {
+                                "rgb": observations["rgb"],
+                                "adjacentViewpoints": observations["adjacentViewpoints"]
+                                }
                 steps += 1
                 if len(rollout_observations) == batch_size:
 
