@@ -237,7 +237,7 @@ class alignmentAgent(habitat.Agent):
                 else:
                     self.loss_weight["b"] = 0.1
                     self.loss_weight["a"] = 0.8
-            
+
             print("Weights adjusted to ",
                     self.loss_weight["a"],
                     a_avg,
@@ -611,7 +611,7 @@ class alignmentAgent(habitat.Agent):
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         #print("Target action ", target_action)
-        return  self.loss.item(), batch_score.item()
+        return  self.loss.item(), score.item()
 
 
     def act(self, observations, episode, goals):
