@@ -28,6 +28,109 @@ class VLNBenchmark(habitat.Benchmark):
     ):
         return
 
+    def train_batch(
+        self,
+        agent,
+        num_episodes: Optional[int] = None,
+        feedback="teacher",
+        checkpoint_iter = 1000,
+        batch_size = 32
+    ):
+        print("Training is running on device ", torch.cuda.current_device())
+        agent.train()
+        count_episodes = 0
+        agg_metrics = defaultdict(float)
+        steps = 0
+        rollout_observations = []
+        while count_episodes < num_episodes:
+            if count_episodes and count_episodes % checkpoint_iter == 0:
+                agent.save("checkpoints/{}_train_{}.check".format(
+                                                        self._name,
+                                                        count_episodes
+                                                    )
+                )
+                print("{} episodes have been processed".format(count_episodes))
+            agent.reset(steps)
+            observations = self._env.reset()
+            episode_loss = []
+            episode_batch_score = []
+            #action_sequence = []
+            while not self._env.episode_over:
+                final_goal = self._env._current_episode.goals[-1].image_id
+                episode = self._env._current_episode
+                shortest_path = self._env._task.get_shortest_path_to_target(
+                    episode.scan,
+                    episode.curr_viewpoint.image_id,
+                    final_goal
+                )
+
+                #print("shortest_path", shortest_path)
+                if len(shortest_path) > 1:
+                    goal_viewpoint = shortest_path[1]
+                else:
+                    #print("Shortest Path is not good!!!")
+                    goal_viewpoint = final_goal
+
+
+                # Adding observations to rollout
+                target_action, action_args = \
+                    agent._teacher_actions(observations, goal_viewpoint)
+                action_idx = agent.model_actions.index(target_action)
+                observations["golden_action"] = action_idx
+                action = {"action": target_action, "action_args": action_args}
+
+                action["action_args"].update(
+                    {
+                    "episode": self._env._current_episode
+                    }
+                )
+                # Adding tokens from episode
+                observations["tokens"] = self._env._current_episode.instruction.tokens
+                observations["mask"] = self._env._current_episode.instruction.mask
+
+                rollout_observations.append(observations)
+                observations = self._env.step(action) # Step 1
+                steps += 1
+                if len(rollout_observations) == batch_size:
+
+                    ## Act with batch
+                    action, loss, batch_score = agent.act_batch(
+                        observations
+                    )
+                    episode_loss.append(loss)
+                    episode_batch_score.append(batch_score)
+                    self.losses.append(loss)
+                    self.batch_scores.append(batch_score)
+
+                    agent.train_step(steps)
+                    rollout_observations = []
+
+            self._env._current_episode.reset()
+
+            count_episodes += 1
+
+            self.episode_losses.append(sum(episode_loss) / len(episode_loss))
+            self.episode_batch_scores.append(sum(episode_batch_score) / len(episode_batch_score))
+            print("Episode loss", self.episode_losses[-1])
+            print("Episode Batch Score", self.episode_batch_scores[-1])
+            writer.add_scalar('episode_Loss/train', self.episode_losses[-1], count_episodes)
+            writer.add_scalar('episode_batch_scores/train', self.episode_batch_scores[-1], count_episodes)
+            metrics = self._env.get_metrics()
+            for m, v in metrics.items():
+                if m != "distance_to_goal":
+                    agg_metrics[m] += v
+
+        agent.reset(steps)
+        print(count_episodes)
+        avg_metrics = {k: v / count_episodes for k, v in agg_metrics.items()}
+        avg_metrics["losses"] = sum(self.losses) / len(self.losses)
+        avg_metrics["batch_score"] = sum(self.batch_scores) / len(self.batch_scores)
+
+        return avg_metrics
+
+
+
+
     def train(
         self,
         agent,
@@ -153,7 +256,7 @@ def main():
     task_config = experiment_config.TASK_CONFIG
     agent = alignmentAgent(experiment_config)
     benchmark = VLNBenchmark(args.experiment_name)
-    train_metrics = benchmark.train(agent, num_episodes=args.num_episodes)
+    train_metrics = benchmark.train_batch(agent, num_episodes=args.num_episodes)
 
     for k, v in train_metrics.items():
         print("{0}: {1}".format(k, v))

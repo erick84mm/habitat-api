@@ -146,7 +146,7 @@ class alignmentAgent(habitat.Agent):
         self.learning_rate = 1e-4
         self.vision_scratch = False
         self.max_steps = 30
-        self.grad_accumulation = 100
+        self.grad_accumulation = 1 #00
         self.action_history = []
         optimizer_grouped_parameters = []
         lr = 1e-4
@@ -201,7 +201,7 @@ class alignmentAgent(habitat.Agent):
         self.loss.backward()
         self.loss = None
 
-        if steps and steps % self.grad_accumulation == 0:
+        if (steps + 1) % self.grad_accumulation == 0:
             self.optimizer.step()
             self.model.zero_grad()
 
@@ -395,6 +395,152 @@ class alignmentAgent(habitat.Agent):
 
         return category_one_hot, one_hot, stop_one_hot, target_action, args
 
+    def _get_batch_target_onehot(self, observations):
+            batch_size = len(observations)
+            one_hot = torch.zeros((batch_size,6), device=self.bert_gpu_device)
+            category_one_hot = torch.zeros((batch_size,3), device=self.bert_gpu_device)
+            stop_one_hot = torch.zeros((batch_size,2), device=self.bert_gpu_device)
+
+            for i, ob in enumerate(observations):
+                idx = ob["golden_action"]
+                one_hot[i][idx] = 1
+                if idx < 4:
+                    category_one_hot[i][0] = 1
+                else:
+                    category_one_hot[i][idx-3] = 1
+                if idx == 5:
+                    stop_one_hot[i][1] = 1
+                else:
+                    stop_one_hot[i][0] = 1
+
+
+            return category_one_hot, one_hot, stop_one_hot, target_action
+
+    def tensorize(self, observations):
+        batch_size = len(observations)
+        max_regions = self._max_region_num + 1
+        imgs = []
+        instructions = []
+        masks = []
+        segments_ids = []
+        co_attention_masks = []
+        for ob in obs:
+            imgs.append(ob["rgb"])
+
+            instruction = torch.tensor(
+                                ob["tokens"],
+                                dtype=torch.float,
+                                device=self.bert_gpu_device
+                          ).unsqueeze(0)
+            input_mask = torch.tensor(
+                                ob["mask"],
+                                dtype=torch.float,
+                                device=self.bert_gpu_device
+                         ).unsqueeze(0)
+            segment = torch.tensor(
+                                    [1 - i for i in input_mask],
+                                    dtype=torch.float,
+                                    device=self.bert_gpu_device
+                        ).unsqueeze(0)
+            co_attention_mask = torch.zeros((
+                                    max_regions,
+                                    self._max_seq_length
+                                ), dtype=torch.float
+                                , device=self.bert_gpu_device
+                        ).unsqueeze(0)
+
+            instructions.append(instruction)
+            masks.append(input_mask)
+            segments_ids.append(segment)
+            co_attention_masks.append(co_attention_mask)
+
+        features, boxes, num_boxes = self._get_image_features([im])
+        tensor_features = []
+        spatials = []
+        image_masks = []
+        for i, l_features, l_boxes, l_num_boxes in zip (features, boxes, num_boxes):
+
+            mix_num_boxes = min(int(l_num_boxes), max_regions)
+            mix_boxes_pad = torch.zeros((max_regions, 5)
+                                        , dtype=torch.float
+                                        , device=self.bert_gpu_device)
+            mix_features_pad = torch.zeros((max_regions, 2048)
+                                        , dtype=torch.float
+                                        , device=self.bert_gpu_device)
+
+            image_mask = [1] * (int(mix_num_boxes))
+            while len(image_mask) < max_regions:
+                image_mask.append(0)
+
+            mix_boxes_pad[:mix_num_boxes] = l_boxes[:mix_num_boxes]
+            mix_features_pad[:mix_num_boxes] = l_features[:mix_num_boxes]
+
+            feat = mix_features_pad.unsqueeze(0)
+            img_mask = torch.tensor(image_mask
+                                        , dtype=torch.long
+                                        , device=self.bert_gpu_device
+                                    ).unsqueeze(0)
+            spat = mix_boxes_pad.unsqueeze(0)
+
+            tensor_features.append(feat)
+            spatials.append(spat)
+            image_masks.append(img_mask)
+
+
+        instructions = torch.cat(instructions, dim=0)
+        masks = torch.cat(masks, dim=0)
+        segments_ids = torch.cat(segments_ids, dim=0)
+        co_attention_masks = torch.cat(co_attention_masks, dim=0)
+        tensor_features = torch.cat(tensor_features, dim=0)
+        spatials = torch.cat(spatials, dim=0)
+        image_masks = torch.cat(image_masks, dim=0)
+
+        return instructions, masks, segment_ids, co_attention_masks, tensor_features, spatials, image_masks
+
+    def act_batch(self, observations):
+        batch_size = len(observations)
+        instructions, masks, segment_ids, co_attention_masks, \
+            tensor_features, spatials, image_masks = \
+            self.tensorize(observations)
+        category_target, target, stop_target, target_action = \
+            self._get_batch_target_onehot(
+                        observations
+                    )
+        vil_prediction, vil_logit, vil_binary_prediction, vision_prediction, \
+        vision_logit, linguisic_prediction, linguisic_logit = \
+        self.model(
+            instruction.unsqueeze(0),
+            features.unsqueeze(0),
+            spatials.unsqueeze(0),
+            segment_ids.unsqueeze(0),
+            input_mask.unsqueeze(0),
+            image_mask.unsqueeze(0),
+            co_attention_mask.unsqueeze(0)
+        )
+
+        instruction = None
+        features = None
+        spatials = None
+        segment_ids = None
+        input_mask = None
+        image_mask = None
+        co_attention_mask = None
+
+        reduced_probs = torch.cat((torch.sum(vil_prediction[:,:4], dim=-1, keepdims=True),
+                                    vil_prediction[:,4:]), dim=1)
+        stop_probs = torch.cat((torch.sum(vil_prediction[:,:-1], dim=-1, keepdims=True),
+                                    vil_prediction[:,-1:]), dim=-1)
+
+        self.loss = 0.15 * self.criterion(reduced_probs, category_target) + \
+            0.35 * self.criterion(vil_prediction, target) + \
+            0.5 * self.criterion(stop_probs, stop_target)
+
+        self.loss = self.loss.mean() * target.size(1)
+        batch_score = self.compute_score_with_logits(vil_prediction, target).sum() / float(batch_size)
+
+        #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
+        print("Target action ", target_action)
+
 
 
     def act(self, observations, episode, goals):
@@ -498,8 +644,8 @@ class alignmentAgent(habitat.Agent):
         one_hots = torch.zeros(*labels.size(), device=self.bert_gpu_device)
         one_hots.scatter_(1, logits.view(-1, 1), 1)
         scores = one_hots * labels
-        idx = torch.argmax(one_hots, dim=1).item()
-        print("Predicted action", self.model_actions[idx])
+        #idx = torch.argmax(one_hots, dim=1).item()
+        #print("Predicted action", self.model_actions[idx])
         return scores
 
 
