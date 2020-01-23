@@ -240,11 +240,11 @@ class alignmentAgent(habitat.Agent):
                     self.loss_weight["b"] = 0.1
 
             print("Weights adjusted to ",
-                    self.loss_weight["a"],
+                    bcolors.OKBLUE + "A: " + str(self.loss_weight["a"]) + bcolors.ENDC ,
                     a_avg,
-                    self.loss_weight["b"],
+                    bcolors.OKBLUE + "B: " + str(self.loss_weight["b"]) + bcolors.ENDC ,
                     b_avg,
-                    self.loss_weight["c"],
+                    bcolors.OKBLUE + "C: " + str(self.loss_weight["c"]) + bcolors.ENDC ,
                     c_avg
                 )
 
