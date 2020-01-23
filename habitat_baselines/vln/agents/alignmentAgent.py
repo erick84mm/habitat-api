@@ -222,19 +222,22 @@ class alignmentAgent(habitat.Agent):
                 self.loss_weight["b"] = 0.25
                 self.loss_weight["c"] = 0.70
             else:
-                self.loss_weight["c"] = 0.1
+                self.loss_weight["c"] = 0.05
                 if b_avg < 0.5:
                     self.loss_weight["a"] = 0.1
-                    self.loss_weight["b"] = 0.8
+                    self.loss_weight["b"] = 0.85
                 elif 0.5 < b_avg < 0.6:
-                    self.loss_weight["a"] = 0.25
-                    self.loss_weight["b"] = 0.65
+                    self.loss_weight["a"] = 0.15
+                    self.loss_weight["b"] = 0.8
                 elif 0.6 < b_avg < 0.7:
+                    self.loss_weight["a"] = 0.2
+                    self.loss_weight["b"] = 0.75
+                elif 0.7 < b_avg < 0.8:
+                    self.loss_weight["a"] = 0.25
+                    self.loss_weight["b"] = 0.7
+                elif 0.8 < b_avg < 0.9:
                     self.loss_weight["a"] = 0.35
-                    self.loss_weight["b"] = 0.55
-                elif 0.7 < b_avg < 0.9:
-                    self.loss_weight["a"] = 0.45
-                    self.loss_weight["b"] = 0.45
+                    self.loss_weight["b"] = 0.6
                 else:
                     self.loss_weight["a"] = 0.8
                     self.loss_weight["b"] = 0.1
