@@ -104,17 +104,18 @@ class VLNBenchmark(habitat.Benchmark):
 
                     agent.train_step(steps)
                     rollout_observations = []
+                    self.episode_losses.append(sum(episode_loss) / len(episode_loss))
+                    self.episode_batch_scores.append(sum(episode_batch_score) / len(episode_batch_score))
+                    print("Episode loss", self.episode_losses[-1])
+                    print("Episode Batch Score", self.episode_batch_scores[-1])
+                    writer.add_scalar('episode_Loss/train', self.episode_losses[-1], count_episodes)
+                    writer.add_scalar('episode_batch_scores/train', self.episode_batch_scores[-1], count_episodes)
 
             self._env._current_episode.reset()
 
             count_episodes += 1
 
-            self.episode_losses.append(sum(episode_loss) / len(episode_loss))
-            self.episode_batch_scores.append(sum(episode_batch_score) / len(episode_batch_score))
-            print("Episode loss", self.episode_losses[-1])
-            print("Episode Batch Score", self.episode_batch_scores[-1])
-            writer.add_scalar('episode_Loss/train', self.episode_losses[-1], count_episodes)
-            writer.add_scalar('episode_batch_scores/train', self.episode_batch_scores[-1], count_episodes)
+
             metrics = self._env.get_metrics()
             for m, v in metrics.items():
                 if m != "distance_to_goal":
@@ -193,16 +194,16 @@ class VLNBenchmark(habitat.Benchmark):
                 steps += 1
                 agent.train_step(steps)
 
-                self.episode_losses.append(sum(episode_loss) / len(episode_loss))
-                self.episode_batch_scores.append(sum(episode_batch_score) / len(episode_batch_score))
-                print("Episode loss", self.episode_losses[-1])
-                print("Episode Batch Score", self.episode_batch_scores[-1])
-                writer.add_scalar('episode_Loss/train', self.episode_losses[-1], count_episodes)
-                writer.add_scalar('episode_batch_scores/train', self.episode_batch_scores[-1], count_episodes)
-
-
             self._env._current_episode.reset()
+
             count_episodes += 1
+
+            self.episode_losses.append(sum(episode_loss) / len(episode_loss))
+            self.episode_batch_scores.append(sum(episode_batch_score) / len(episode_batch_score))
+            print("Episode loss", self.episode_losses[-1])
+            print("Episode Batch Score", self.episode_batch_scores[-1])
+            writer.add_scalar('episode_Loss/train', self.episode_losses[-1], count_episodes)
+            writer.add_scalar('episode_batch_scores/train', self.episode_batch_scores[-1], count_episodes)
             metrics = self._env.get_metrics()
             for m, v in metrics.items():
                 if m != "distance_to_goal":
