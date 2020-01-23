@@ -197,7 +197,7 @@ class alignmentAgent(habitat.Agent):
         return cfg
 
     def adjust_weights(self):
-        num = 100
+        num = 500
         if len(self.loss_weight["c_loss"]) > (num - 1):
             self.loss_weight["a_loss"] = self.loss_weight["a_loss"][-num:]
             self.loss_weight["b_loss"] = self.loss_weight["b_loss"][-num:]
@@ -236,8 +236,8 @@ class alignmentAgent(habitat.Agent):
                     self.loss_weight["a"] = 0.45
                     self.loss_weight["b"] = 0.45
                 else:
-                    self.loss_weight["b"] = 0.1
                     self.loss_weight["a"] = 0.8
+                    self.loss_weight["b"] = 0.1
 
             print("Weights adjusted to ",
                     self.loss_weight["a"],
