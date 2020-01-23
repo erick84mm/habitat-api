@@ -41,7 +41,7 @@ class VLNBenchmark(habitat.Benchmark):
         count_episodes = 0
         agg_metrics = defaultdict(float)
         steps = 0
-        action_padding_idx = agent.mode_actions.index("<ignore>")
+        action_padding_idx = agent.model_actions.index("<ignore>")
         rollout_observations = []
         while count_episodes < num_episodes:
             if count_episodes and count_episodes % checkpoint_iter == 0:
