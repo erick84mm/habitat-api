@@ -1408,7 +1408,7 @@ class BertModel(BertPreTrainedModel):
 
         embedding_output = self.embeddings(input_txt, token_type_ids)
 
-        if input_actions:
+        if input_actions is not None:
             a_embedding_output = self.a_embedding(input_actions)
             embedding_output = torch.cat((embedding_output_aux, a_embedding_output), dim=-1)
 
