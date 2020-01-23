@@ -457,13 +457,13 @@ class alignmentAgent(habitat.Agent):
             segments_ids.append(segment)
             co_attention_masks.append(co_attention_mask)
 
-        features, boxes, num_boxes = self._get_image_features(imgs)
+
         tensor_features = []
         spatials = []
         image_masks = []
-        for i, (l_features, l_boxes, l_num_boxes) in enumerate(zip(features, boxes, num_boxes)):
-
-            mix_num_boxes = min(int(l_num_boxes), max_regions)
+        for im in imgs:
+            features, boxes, num_boxes = self._get_image_features([im])
+            mix_num_boxes = min(int(num_boxes[0]), max_regions)
             mix_boxes_pad = torch.zeros((max_regions, 5)
                                         , dtype=torch.float
                                         , device=self.bert_gpu_device)
@@ -475,8 +475,8 @@ class alignmentAgent(habitat.Agent):
             while len(image_mask) < max_regions:
                 image_mask.append(0)
 
-            mix_boxes_pad[:mix_num_boxes] = l_boxes[:mix_num_boxes]
-            mix_features_pad[:mix_num_boxes] = l_features[:mix_num_boxes]
+            mix_boxes_pad[:mix_num_boxes] = boxes[0][:mix_num_boxes]
+            mix_features_pad[:mix_num_boxes] = features[0][:mix_num_boxes]
 
             feat = mix_features_pad.unsqueeze(0)
             img_mask = torch.tensor(image_mask
