@@ -1569,6 +1569,7 @@ class VILBertForVLTasks(BertPreTrainedModel):
         image_attention_mask=None,
         co_attention_mask=None,
         output_all_encoded_layers=False,
+        input_actions=None
     ):
         sequence_output_t, sequence_output_v, pooled_output_t, pooled_output_v, _ = self.bert(
             input_txt,
@@ -1579,6 +1580,7 @@ class VILBertForVLTasks(BertPreTrainedModel):
             image_attention_mask,
             co_attention_mask,
             output_all_encoded_layers=False,
+            input_actions=input_actions
         )
 
         vil_prediction = 0
