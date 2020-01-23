@@ -115,7 +115,7 @@ class alignmentAgent(habitat.Agent):
     }
 
 
-    def __init__(self, config, num_train_optimization_steps=3100):
+    def __init__(self, config, num_train_optimization_steps=3100, include_actions=True):
         #Load vilBert config
         print("Loading ViLBERT model configuration")
         self.vilbert_config = BertConfig.from_json_file(config.BERT_CONFIG)
@@ -141,6 +141,9 @@ class alignmentAgent(habitat.Agent):
         print("Detectron2 loaded")
         self._max_region_num = 36
         self._max_seq_length = 128
+        if include_actions:
+            self._max_seq_length = 128 + 10
+
         self.criterion = nn.BCEWithLogitsLoss(reduction='mean')
         self.loss = 0
         self.learning_rate = 1e-4
@@ -468,10 +471,17 @@ class alignmentAgent(habitat.Agent):
         masks = []
         segments_ids = []
         co_attention_masks = []
+        previous_actions = []
         for ob in observations:
             imgs.append(ob["rgb"])
             instruction = torch.tensor(
                                 ob["tokens"],
+                                dtype=torch.long,
+                                device=self.bert_gpu_device
+                          ).unsqueeze(0)
+
+            actions = torch.tensor(
+                                ob["actions"],
                                 dtype=torch.long,
                                 device=self.bert_gpu_device
                           ).unsqueeze(0)
@@ -500,6 +510,7 @@ class alignmentAgent(habitat.Agent):
             masks.append(input_mask)
             segments_ids.append(segment)
             co_attention_masks.append(co_attention_mask)
+            previous_actions.append(actions)
 
 
         tensor_features = []
@@ -542,12 +553,12 @@ class alignmentAgent(habitat.Agent):
         spatials = torch.cat(spatials, dim=0)
         image_masks = torch.cat(image_masks, dim=0)
 
-        return instructions, masks, segments_ids, co_attention_masks, tensor_features, spatials, image_masks
+        return instructions, previous_actions, masks, segments_ids, co_attention_masks, tensor_features, spatials, image_masks
 
     def act_batch(self, observations):
         batch_size = len(observations)
-        instructions, input_masks, segment_ids, co_attention_masks, \
-            features, spatials, image_masks = \
+        instructions, previous_actions, input_masks, segment_ids,  \
+        co_attention_masks, features, spatials, image_masks = \
             self.tensorize(observations)
         category_target, target, stop_target = \
             self._get_batch_target_onehot(
@@ -562,10 +573,12 @@ class alignmentAgent(habitat.Agent):
             segment_ids,
             input_masks,
             image_masks,
-            co_attention_masks
+            co_attention_masks,
+            input_actions=previous_actions,
         )
 
         instructions = None
+        previous_actions = None
         features = None
         spatials = None
         segment_ids = None

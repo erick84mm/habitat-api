@@ -271,13 +271,13 @@ class R2RSerializer:
 
 def tokenize_bert(text, berttokenizer, padding=True, max_length=128, padding_index=0):
     tokens = berttokenizer.tokenize(text)
+    tokens = tokens[:max_length-2]
     tokens = ["[CLS]"] + tokens + ["[SEP]"]
     tokens = [
         berttokenizer.vocab.get(w, berttokenizer.vocab["[UNK]"])
         for w in tokens
     ]
 
-    tokens = tokens[:max_length]
     segment_ids = [0] * len(tokens)
     input_mask = [1] * len(tokens)
 

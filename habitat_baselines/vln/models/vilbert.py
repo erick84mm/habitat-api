@@ -300,7 +300,7 @@ class BertActionEmbeddings(nn.Module):
     def __init__(self, config):
         super(BertActionEmbeddings, self).__init__()
         self.action_embeddings = nn.Embedding(
-            config.action_vocab_size, config.hidden_size, padding_idx=0
+            config.action_vocab_size, config.hidden_size, padding_idx=7
         )
         self.position_embeddings = nn.Embedding(
             config.max_position_embeddings, config.hidden_size
@@ -321,7 +321,7 @@ class BertActionEmbeddings(nn.Module):
         )
         position_ids = position_ids.unsqueeze(0).expand_as(input_ids)
         if token_type_ids is None:
-            token_type_ids = torch.zeros_like(input_ids)
+            token_type_ids = torch.ones_like(input_ids)
 
         words_embeddings = self.word_embeddings(input_ids)
         position_embeddings = self.position_embeddings(position_ids)
@@ -1339,7 +1339,7 @@ class BertModel(BertPreTrainedModel):
         self.embeddings = BertEmbeddings(config)
 
         # initialize action embedding
-        #self.a_embedding = BertActionEmbeddings(config)
+        self.a_embedding = BertActionEmbeddings(config)
 
         # initlize the vision embedding
         self.v_embeddings = BertImageEmbeddings(config)
@@ -1361,6 +1361,7 @@ class BertModel(BertPreTrainedModel):
         co_attention_mask=None,
         output_all_encoded_layers=False,
         output_all_attention_masks=False,
+        input_actions=None,
     ):
         if attention_mask is None:
             attention_mask = torch.ones_like(input_txt)
@@ -1406,6 +1407,11 @@ class BertModel(BertPreTrainedModel):
         )  # fp16 compatibility
 
         embedding_output = self.embeddings(input_txt, token_type_ids)
+
+        if input_actions:
+            a_embedding_output = self.a_embedding(input_actions)
+            embedding_output = torch.cat((embedding_output_aux, a_embedding_output), dim=-1)
+
         v_embedding_output = self.v_embeddings(input_imgs, image_loc)
 
         encoded_layers_t, encoded_layers_v, all_attention_mask = self.encoder(
