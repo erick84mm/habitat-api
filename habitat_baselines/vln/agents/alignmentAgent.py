@@ -462,7 +462,7 @@ class alignmentAgent(habitat.Agent):
         tensor_features = []
         spatials = []
         image_masks = []
-        for i, l_features, l_boxes, l_num_boxes in enumerate(zip(features, boxes, num_boxes)):
+        for i, (l_features, l_boxes, l_num_boxes) in enumerate(zip(features, boxes, num_boxes)):
 
             mix_num_boxes = min(int(l_num_boxes), max_regions)
             mix_boxes_pad = torch.zeros((max_regions, 5)
