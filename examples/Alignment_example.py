@@ -87,6 +87,7 @@ class VLNBenchmark(habitat.Benchmark):
                 # Adding tokens from episode
                 observations["tokens"] = self._env._current_episode.instruction.tokens
                 observations["mask"] = self._env._current_episode.instruction.mask
+                observations["segment"] =  [1 - i for i in self._env._current_episode.instruction.mask]
 
                 rollout_observations.append(observations)
                 observations = self._env.step(action) # Step 1

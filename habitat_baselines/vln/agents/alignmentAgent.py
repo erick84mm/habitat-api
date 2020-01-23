@@ -427,18 +427,18 @@ class alignmentAgent(habitat.Agent):
         for ob in observations:
             imgs.append(ob["rgb"])
 
-            instruction = torch.tensor(
+            instruction = torch.FloatTensor(
                                 ob["tokens"],
                                 dtype=torch.float,
                                 device=self.bert_gpu_device
-                          ).unsqueeze(0)
+                          ) .unsqueeze(0)
             input_mask = torch.tensor(
                                 ob["mask"],
                                 dtype=torch.float,
                                 device=self.bert_gpu_device
                          ).unsqueeze(0)
             segment = torch.tensor(
-                                    [1 - i for i in input_mask],
+                                    ob["segment"],
                                     dtype=torch.float,
                                     device=self.bert_gpu_device
                         ).unsqueeze(0)
