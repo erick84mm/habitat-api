@@ -218,6 +218,7 @@ class alignmentAgent(habitat.Agent):
         # Normalize the image by substracting mean
         # Moves the image to device (already in device)
         images = self.detector.model.preprocess_image(inputs)
+        sizes = images.image_sizes
 
         # Features from the backbone
         features = self.detector.model.backbone(images.tensor)
@@ -230,7 +231,7 @@ class alignmentAgent(habitat.Agent):
                             features,
                             None
                         )
-
+        images = None
         # The C4 model uses Res5ROIHeads where pooled feature can be extracted
         proposal_boxes = [x.proposal_boxes for x in proposals]
         features = [features[f] for f in self.detector.model.roi_heads.in_features]
@@ -291,7 +292,7 @@ class alignmentAgent(habitat.Agent):
         # Post processing for bounding boxes (rescale to raw_image)
         boxes = []
         for instances, input_per_image, image_size in zip(
-                instances_list, inputs, images.image_sizes
+                instances_list, inputs, sizes
             ):
             height = input_per_image.get("height", image_size[0])
             width = input_per_image.get("width", image_size[1])
@@ -461,7 +462,7 @@ class alignmentAgent(habitat.Agent):
         tensor_features = []
         spatials = []
         image_masks = []
-        for i, l_features, l_boxes, l_num_boxes in zip (features, boxes, num_boxes):
+        for i, l_features, l_boxes, l_num_boxes in enumerate(zip(features, boxes, num_boxes)):
 
             mix_num_boxes = min(int(l_num_boxes), max_regions)
             mix_boxes_pad = torch.zeros((max_regions, 5)
