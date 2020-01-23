@@ -237,7 +237,15 @@ class alignmentAgent(habitat.Agent):
                 else:
                     self.loss_weight["b"] = 0.1
                     self.loss_weight["a"] = 0.8
-            print("Weights adjusted to ", self.loss_weight["a"], self.loss_weight["b"], self.loss_weight["c"])
+            
+            print("Weights adjusted to ",
+                    self.loss_weight["a"],
+                    a_avg,
+                    self.loss_weight["b"],
+                    b_avg,
+                    self.loss_weight["c"],
+                    c_avg
+                )
 
     def reset(self, steps):
         self.loss = None
