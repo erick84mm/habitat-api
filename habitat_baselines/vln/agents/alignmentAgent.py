@@ -148,14 +148,20 @@ class alignmentAgent(habitat.Agent):
         self.max_steps = 30
         self.grad_accumulation = 1 #00
         self.action_history = []
+        self.loss_weight = {
+                "a": 0.1,
+                "b": 0.1,
+                "c": 0.8,
+                "a_loss": [],
+                "b_loss": [],
+                "c_loss": [],
+        }
         optimizer_grouped_parameters = []
-        lr = 1e-4
+        lr = 1e-3
         no_decay = ["bias", "LayerNorm.bias", "LayerNorm.weight"]
 
         for key, value in dict(self.model.named_parameters()).items():
             if value.requires_grad:
-                if 'vil_prediction' in key:
-                    lr = 1e-4
                 if any(nd in key for nd in no_decay):
                     optimizer_grouped_parameters += [
                         {"params": [value], "lr": lr, "weight_decay": 0.01}
@@ -190,9 +196,53 @@ class alignmentAgent(habitat.Agent):
         cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(checkpoint)
         return cfg
 
+    def adjust_weights(self):
+        if len(self.loss_weight["c_loss"]) > 9:
+            self.loss_weight["a_loss"] = self.loss_weight["a_loss"][-10:]
+            self.loss_weight["b_loss"] = self.loss_weight["b_loss"][-10:]
+            self.loss_weight["c_loss"] = self.loss_weight["c_loss"][-10:]
+            a_avg = sum(self.loss_weight["a_loss"]) / 10
+            b_avg = sum(self.loss_weight["b_loss"]) / 10
+            c_avg = sum(self.loss_weight["c_loss"]) / 10
+            if c_avg < 0.5:
+                self.loss_weight["a"] = 0.05
+                self.loss_weight["b"] = 0.05
+                self.loss_weight["c"] = 0.90
+            elif 0.5 < c_avg < 0.6:
+                self.loss_weight["a"] = 0.05
+                self.loss_weight["b"] = 0.10
+                self.loss_weight["c"] = 0.85
+            elif 0.6 < c_avg < 0.7:
+                self.loss_weight["a"] = 0.05
+                self.loss_weight["b"] = 0.15
+                self.loss_weight["c"] = 0.8
+            elif 0.7 < c_avg < 0.9:
+                self.loss_weight["a"] = 0.05
+                self.loss_weight["b"] = 0.25
+                self.loss_weight["c"] = 0.70
+            else:
+                self.loss_weight["c"] = 0.1
+                if b_avg < 0.5:
+                    self.loss_weight["a"] = 0.1
+                    self.loss_weight["b"] = 0.8
+                elif 0.5 < b_avg < 0.6:
+                    self.loss_weight["a"] = 0.25
+                    self.loss_weight["b"] = 0.65
+                elif 0.6 < b_avg < 0.7:
+                    self.loss_weight["a"] = 0.35
+                    self.loss_weight["b"] = 0.55
+                elif 0.7 < b_avg < 0.9:
+                    self.loss_weight["a"] = 0.45
+                    self.loss_weight["b"] = 0.45
+                else:
+                    self.loss_weight["b"] = 0.1
+                    self.loss_weight["a"] = 0.8
+            print("Weights adjusted to ", self.loss_weight["a"], self.loss_weight["b"], self.loss_weight["c"])
+
     def reset(self, steps):
         self.loss = None
         self.action_history = []
+        self.adjust_weights()
         pass
 
 
@@ -537,12 +587,19 @@ class alignmentAgent(habitat.Agent):
         stop_probs = torch.cat((torch.sum(vil_prediction[:,:-1], dim=-1, keepdims=True),
                                     vil_prediction[:,-1:]), dim=-1)
 
-        self.loss = 0.15 * self.criterion(reduced_probs, category_target) + \
-            0.35 * self.criterion(vil_prediction, target) + \
-            0.5 * self.criterion(stop_probs, stop_target)
+        self.loss = self.loss_weight["a"] * self.criterion(reduced_probs, category_target) + \
+            self.loss_weight["b"] * self.criterion(vil_prediction, target) + \
+            self.loss_weight["c"] * self.criterion(stop_probs, stop_target)
 
         self.loss = self.loss.mean() * target.size(1)
-        batch_score = self.compute_score_with_logits(vil_prediction, target).sum() / float(batch_size)
+        scores, reduce_scores, stop_scores = self.compute_all_scores_with_logits(vil_prediction, target)
+
+        scores = scores.sum() / float(batch_size)
+        reduce_scores = reduce_scores.sum() / float(batch_size)
+        stop_scores = stop_scores.sum() / float(batch_size)
+        self.loss_weight["a_loss"].append(scores.item())
+        self.loss_weight["b_loss"].append(reduce_scores.item())
+        self.loss_weight["c_loss"].append(stop_scores.item())
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         #print("Target action ", target_action)
@@ -653,6 +710,29 @@ class alignmentAgent(habitat.Agent):
         #idx = torch.argmax(one_hots, dim=1).item()
         #print("Predicted action", self.model_actions[idx])
         return scores
+
+    def compute_all_scores_with_logits(self, logits, labels):
+
+
+        reduced_labels = torch.cat((torch.sum(labels[:,:4], dim=-1, keepdims=True),
+                                        labels[:,4:]), dim=1)
+        stop_labels = torch.cat((torch.sum(labels[:,:-1], dim=-1, keepdims=True),
+                                        labels[:,-1:]), dim=-1)
+
+        logits = torch.max(logits, 1)[1].data  # argmax
+        one_hots = torch.zeros(*labels.size(), device=self.bert_gpu_device)
+        one_hots.scatter_(1, logits.view(-1, 1), 1)
+
+
+        reduced_one_hots = torch.cat((torch.sum(one_hots[:,:4], dim=-1, keepdims=True),
+                                        one_hots[:,4:]), dim=1)
+        stop_one_hots = torch.cat((torch.sum(one_hots[:,:-1], dim=-1, keepdims=True),
+                                        one_hots[:,-1:]), dim=-1)
+        scores = one_hots * labels
+        reduce_scores = reduced_one_hots * reduced_labels
+        stop_scores = stop_one_hots * stop_labels
+
+        return scores, reduce_scores, stop_scores
 
 
     def save(self, path):

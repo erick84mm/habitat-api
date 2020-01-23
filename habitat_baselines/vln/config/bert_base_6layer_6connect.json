@@ -26,5 +26,6 @@
   "v_initializer_range":0.02,
   "v_biattention_id":[0, 1, 2, 3, 4, 5],
   "t_biattention_id":[6, 7, 8, 9, 10, 11],
-  "pooling_method": "mul"
+  "pooling_method": "mul",
+  "action_vocab_size": 6
 }
