@@ -426,12 +426,14 @@ class alignmentAgent(habitat.Agent):
         co_attention_masks = []
         for ob in observations:
             imgs.append(ob["rgb"])
-
+            print(ob["tokens"])
             instruction = torch.FloatTensor(
                                 ob["tokens"],
                                 dtype=torch.float,
                                 device=self.bert_gpu_device
                           ) .unsqueeze(0)
+
+            print(ob["mask"])
             input_mask = torch.tensor(
                                 ob["mask"],
                                 dtype=torch.float,
