@@ -269,7 +269,7 @@ def main():
 
     experiment_config = get_config()
     task_config = experiment_config.TASK_CONFIG
-    agent = alignmentAgent(experiment_config)
+    agent = alignmentAgent(experiment_config, num_train_optimization_steps=10*args.num_episodes)
     benchmark = VLNBenchmark(args.experiment_name)
     train_metrics = benchmark.train_batch(agent, num_episodes=args.num_episodes, batch_size=args.batch_size)
 

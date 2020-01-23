@@ -428,27 +428,27 @@ class alignmentAgent(habitat.Agent):
             imgs.append(ob["rgb"])
             instruction = torch.tensor(
                                 ob["tokens"],
-                                dtype=torch.float,
+                                dtype=torch.long,
                                 device=self.bert_gpu_device
                           ).unsqueeze(0)
 
             #print(ob["mask"])
             input_mask = torch.tensor(
                                 ob["mask"],
-                                dtype=torch.float,
+                                dtype=torch.long,
                                 device=self.bert_gpu_device
                          ).unsqueeze(0)
 
             #print(ob["segment"])
             segment = torch.tensor(
                                     ob["segment"],
-                                    dtype=torch.float,
+                                    dtype=torch.long,
                                     device=self.bert_gpu_device
                         ).unsqueeze(0)
             co_attention_mask = torch.zeros((
                                     max_regions,
                                     self._max_seq_length
-                                ), dtype=torch.float
+                                ), dtype=torch.long
                                 , device=self.bert_gpu_device
                         ).unsqueeze(0)
 
