@@ -437,8 +437,11 @@ class alignmentAgent(habitat.Agent):
                                 dtype=torch.float,
                                 device=self.bert_gpu_device
                          ).unsqueeze(0)
+
+            print(ob["segment"])
             segment = torch.tensor(
                                     ob["segment"],
+                                    dtype=torch.float,
                                     device=self.bert_gpu_device
                         ).unsqueeze(0)
             co_attention_mask = torch.zeros((
