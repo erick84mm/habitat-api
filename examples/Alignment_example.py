@@ -105,7 +105,7 @@ class VLNBenchmark(habitat.Benchmark):
                 if m != "distance_to_goal":
                     agg_metrics[m] += v
 
-        agent.reset()
+        agent.reset(steps)
         print(count_episodes)
         avg_metrics = {k: v / count_episodes for k, v in agg_metrics.items()}
         avg_metrics["losses"] = sum(self.losses) / len(self.losses)
