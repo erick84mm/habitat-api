@@ -207,116 +207,119 @@ class alignmentAgent(habitat.Agent):
 
     def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
         # imgs tensor(batch, H, W, C)
+        with torch.no_grad():
+            inputs = []
+            for img in imgs:
+                raw_img = img.permute(2,0,1)
+                raw_img = raw_img.to(self.detectron2_gpu_device)
+                (_, height, width) = raw_img.shape
+                inputs.append({"image": raw_img, "height": height, "width": width})
 
-        inputs = []
-        for img in imgs:
-            raw_img = img.permute(2,0,1)
-            raw_img = raw_img.to(self.detectron2_gpu_device)
-            (_, height, width) = raw_img.shape
-            inputs.append({"image": raw_img, "height": height, "width": width})
+            # Normalize the image by substracting mean
+            # Moves the image to device (already in device)
+            images = self.detector.model.preprocess_image(inputs)
+            sizes = images.image_sizes
 
-        # Normalize the image by substracting mean
-        # Moves the image to device (already in device)
-        images = self.detector.model.preprocess_image(inputs)
-        sizes = images.image_sizes
+            # Features from the backbone
+            features = self.detector.model.backbone(images.tensor)
 
-        # Features from the backbone
-        features = self.detector.model.backbone(images.tensor)
+            # Get RPN proposals
+            # proposal_generator inputs are the images, features, gt_instances
+            # since is detect we don't need the gt instances
+            proposals, _ = self.detector.model.proposal_generator(
+                                images,
+                                features,
+                                None
+                            )
+            images = None
+            # The C4 model uses Res5ROIHeads where pooled feature can be extracted
+            proposal_boxes = [x.proposal_boxes for x in proposals]
+            features = [features[f] for f in self.detector.model.roi_heads.in_features]
+            box_features = self.detector.model.roi_heads._shared_roi_transform(
+                features, proposal_boxes
+            )
+            features = None
+            # Pooled features to use in the agent
+            feature_pooled = box_features.mean(dim=[2, 3])
 
-        # Get RPN proposals
-        # proposal_generator inputs are the images, features, gt_instances
-        # since is detect we don't need the gt instances
-        proposals, _ = self.detector.model.proposal_generator(
-                            images,
-                            features,
-                            None
-                        )
-        images = None
-        # The C4 model uses Res5ROIHeads where pooled feature can be extracted
-        proposal_boxes = [x.proposal_boxes for x in proposals]
-        features = [features[f] for f in self.detector.model.roi_heads.in_features]
-        box_features = self.detector.model.roi_heads._shared_roi_transform(
-            features, proposal_boxes
-        )
-        # Pooled features to use in the agent
-        feature_pooled = box_features.mean(dim=[2, 3])
+            # Predict classes and boxes for each proposal.
+            pred_class_logits, pred_proposal_deltas = \
+                self.detector.model.roi_heads.box_predictor(feature_pooled)
 
-        # Predict classes and boxes for each proposal.
-        pred_class_logits, pred_proposal_deltas = \
-            self.detector.model.roi_heads.box_predictor(feature_pooled)
+            rcnn_outputs = FastRCNNOutputs(
+                self.detector.model.roi_heads.box2box_transform,
+                pred_class_logits,
+                pred_proposal_deltas,
+                proposals,
+                self.detector.model.roi_heads.smooth_l1_beta,
+            )
+            proposals = None
 
-        rcnn_outputs = FastRCNNOutputs(
-            self.detector.model.roi_heads.box2box_transform,
-            pred_class_logits,
-            pred_proposal_deltas,
-            proposals,
-            self.detector.model.roi_heads.smooth_l1_beta,
-        )
+            # Filter proposals using Non-Maximum Suppression (NMS)
+            instances_list, ids_list = [], []
+            probs_list = rcnn_outputs.predict_probs()
+            boxes_list = rcnn_outputs.predict_boxes()
+            #image_shapes = [x.image_size for x in proposals]
+            num_boxes = []
+            for probs, boxes, image_size in zip(probs_list, boxes_list, sizes):
 
-        # Filter proposals using Non-Maximum Suppression (NMS)
-        instances_list, ids_list = [], []
-        probs_list = rcnn_outputs.predict_probs()
-        boxes_list = rcnn_outputs.predict_boxes()
-        image_shapes = [x.image_size for x in proposals]
-        num_boxes = []
-        for probs, boxes, image_size in zip(probs_list, boxes_list, image_shapes):
-
-            # We need to get topk_per_image boxes so we gradually increase
-            # the tolerance of the nms_thresh if we don't have enough boxes
-            for nms_thresh in np.arange(0.3, 1.0, 0.1):
-                instances, ids = fast_rcnn_inference_single_image(
-                    boxes,
-                    probs,
-                    image_size,
-                    score_thresh=score_thresh,
-                    nms_thresh=nms_thresh,
-                    topk_per_image=max_regions,
-                    device=self.detectron2_gpu_device
-                )
-                #
-                if len(ids) >= min_num_image:
-                    break
-            num_boxes.append(len(ids)+1)
-            instances_list.append(instances)
-            ids_list.append(ids)
-
-        # Post processing for features
-        features_list = feature_pooled.split(rcnn_outputs.num_preds_per_image) # (sum_proposals, 2048) --> [(p1, 2048), (p2, 2048), ..., (pn, 2048)]
-        roi_features_list = []
-        for ids, features in zip(ids_list, features_list):
-            head_box = torch.sum(features[ids], axis=0) / \
-                       len(features[ids])
-            head_box = head_box.unsqueeze(0)
-            roi_features_list.append(torch.cat((head_box, features[ids]), 0))
-
-        # Post processing for bounding boxes (rescale to raw_image)
-        boxes = []
-        for instances, input_per_image, image_size in zip(
-                instances_list, inputs, sizes
-            ):
-            height = input_per_image.get("height", image_size[0])
-            width = input_per_image.get("width", image_size[1])
-            raw_instances = detector_postprocess(instances, height, width)
-
-            box = torch.zeros(
-                    (len(raw_instances)+1, 5),
-                    device=self.detectron2_gpu_device
-                 )
-            box[0] = torch.tensor(
-                        [[0,0,1,1,1]],
+                # We need to get topk_per_image boxes so we gradually increase
+                # the tolerance of the nms_thresh if we don't have enough boxes
+                for nms_thresh in np.arange(0.3, 1.0, 0.1):
+                    instances, ids = fast_rcnn_inference_single_image(
+                        boxes,
+                        probs,
+                        image_size,
+                        score_thresh=score_thresh,
+                        nms_thresh=nms_thresh,
+                        topk_per_image=max_regions,
                         device=self.detectron2_gpu_device
-                       ).float()
-            box[1:,:4] = raw_instances.pred_boxes.tensor
-            box[:,0] /= float(width)
-            box[:,1] /= float(width)
-            box[:,2] /= float(width)
-            box[:,3] /= float(width)
-            box[:,4] = (box[:,3] - box[:,1]) * (box[:,2] - box[:,0]) / \
-                (float(height) * float(width))
+                    )
+                    #
+                    if len(ids) >= min_num_image:
+                        break
+                num_boxes.append(len(ids)+1)
+                instances_list.append(instances)
+                ids_list.append(ids)
 
-            boxes.append(box)
-        # features, boxes, image_mask
-        return roi_features_list, boxes, num_boxes
+            # Post processing for features
+            features_list = feature_pooled.split(rcnn_outputs.num_preds_per_image) # (sum_proposals, 2048) --> [(p1, 2048), (p2, 2048), ..., (pn, 2048)]
+            feature_pooled = None
+            roi_features_list = []
+            for ids, features in zip(ids_list, features_list):
+                head_box = torch.sum(features[ids], axis=0) / \
+                           len(features[ids])
+                head_box = head_box.unsqueeze(0)
+                roi_features_list.append(torch.cat((head_box, features[ids]), 0))
+
+            # Post processing for bounding boxes (rescale to raw_image)
+            boxes = []
+            for instances, input_per_image, image_size in zip(
+                    instances_list, inputs, sizes
+                ):
+                height = input_per_image.get("height", image_size[0])
+                width = input_per_image.get("width", image_size[1])
+                raw_instances = detector_postprocess(instances, height, width)
+
+                box = torch.zeros(
+                        (len(raw_instances)+1, 5),
+                        device=self.detectron2_gpu_device
+                     )
+                box[0] = torch.tensor(
+                            [[0,0,1,1,1]],
+                            device=self.detectron2_gpu_device
+                           ).float()
+                box[1:,:4] = raw_instances.pred_boxes.tensor
+                box[:,0] /= float(width)
+                box[:,1] /= float(width)
+                box[:,2] /= float(width)
+                box[:,3] /= float(width)
+                box[:,4] = (box[:,3] - box[:,1]) * (box[:,2] - box[:,0]) / \
+                    (float(height) * float(width))
+
+                boxes.append(box)
+            # features, boxes, image_mask
+            return roi_features_list, boxes, num_boxes
 
     def train(self):
         self.model.train()
