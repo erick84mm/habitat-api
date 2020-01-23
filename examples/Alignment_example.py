@@ -21,7 +21,6 @@ class VLNBenchmark(habitat.Benchmark):
         self.episode_losses = []
         self.episode_batch_scores = []
         self._name = name
-        self.max_seq_length = config.MAX_TOKEN_LENGTH
 
     def evaluate(
         self,
