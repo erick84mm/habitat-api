@@ -499,7 +499,7 @@ class alignmentAgent(habitat.Agent):
         spatials = torch.cat(spatials, dim=0)
         image_masks = torch.cat(image_masks, dim=0)
 
-        return instructions, masks, segment_ids, co_attention_masks, tensor_features, spatials, image_masks
+        return instructions, masks, segments_ids, co_attention_masks, tensor_features, spatials, image_masks
 
     def act_batch(self, observations):
         batch_size = len(observations)
