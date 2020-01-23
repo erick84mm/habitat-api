@@ -611,7 +611,7 @@ class alignmentAgent(habitat.Agent):
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         #print("Target action ", target_action)
-        return  self.loss.item(), score.item()
+        return  self.loss.item(), scores.item()
 
 
     def act(self, observations, episode, goals):
