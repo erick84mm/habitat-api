@@ -424,7 +424,7 @@ class alignmentAgent(habitat.Agent):
         masks = []
         segments_ids = []
         co_attention_masks = []
-        for ob in obs:
+        for ob in observations:
             imgs.append(ob["rgb"])
 
             instruction = torch.tensor(
