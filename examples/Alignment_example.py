@@ -104,7 +104,7 @@ class VLNBenchmark(habitat.Benchmark):
                 if len(rollout_observations) == batch_size:
 
                     ## Act with batch
-                    action, loss, batch_score = agent.act_batch(
+                    loss, batch_score = agent.act_batch(
                         rollout_observations
                     )
                     episode_loss.append(loss)
@@ -269,7 +269,7 @@ def main():
 
     experiment_config = get_config()
     task_config = experiment_config.TASK_CONFIG
-    agent = alignmentAgent(experiment_config, num_train_optimization_steps=10*args.num_episodes)
+    agent = alignmentAgent(experiment_config, num_train_optimization_steps=10*args.num_episodes / args.batch_size )
     benchmark = VLNBenchmark(args.experiment_name)
     train_metrics = benchmark.train_batch(agent, num_episodes=args.num_episodes, batch_size=args.batch_size)
 

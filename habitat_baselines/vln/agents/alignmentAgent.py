@@ -543,7 +543,7 @@ class alignmentAgent(habitat.Agent):
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         #print("Target action ", target_action)
-
+        return  self.loss.item(), batch_score.item()
 
 
     def act(self, observations, episode, goals):
