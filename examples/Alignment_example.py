@@ -95,7 +95,7 @@ class VLNBenchmark(habitat.Benchmark):
 
                     ## Act with batch
                     action, loss, batch_score = agent.act_batch(
-                        observations
+                        rollout_observations
                     )
                     episode_loss.append(loss)
                     episode_batch_score.append(batch_score)
