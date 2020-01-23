@@ -260,6 +260,10 @@ def main():
     parser.add_argument(
         "--experiment-name", type=str, default="exp"
     )
+
+    parser.add_argument(
+        "--batch-size", type=int, default=1
+    )
     args = parser.parse_args()
 
 
@@ -267,7 +271,7 @@ def main():
     task_config = experiment_config.TASK_CONFIG
     agent = alignmentAgent(experiment_config)
     benchmark = VLNBenchmark(args.experiment_name)
-    train_metrics = benchmark.train_batch(agent, num_episodes=args.num_episodes)
+    train_metrics = benchmark.train_batch(agent, num_episodes=args.num_episodes, batch_size=args.batch_size)
 
     for k, v in train_metrics.items():
         print("{0}: {1}".format(k, v))
