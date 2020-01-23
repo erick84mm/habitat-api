@@ -552,6 +552,7 @@ class alignmentAgent(habitat.Agent):
         tensor_features = torch.cat(tensor_features, dim=0)
         spatials = torch.cat(spatials, dim=0)
         image_masks = torch.cat(image_masks, dim=0)
+        previous_actions = torch.cat(previous_actions, dim=0)
 
         return instructions, previous_actions, masks, segments_ids, co_attention_masks, tensor_features, spatials, image_masks
 
