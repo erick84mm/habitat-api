@@ -401,7 +401,6 @@ class alignmentAgent(habitat.Agent):
             one_hot = torch.zeros((batch_size,6), device=self.bert_gpu_device)
             category_one_hot = torch.zeros((batch_size,3), device=self.bert_gpu_device)
             stop_one_hot = torch.zeros((batch_size,2), device=self.bert_gpu_device)
-
             for i, ob in enumerate(observations):
                 idx = ob["golden_action"]
                 one_hot[i][idx] = 1
@@ -415,7 +414,7 @@ class alignmentAgent(habitat.Agent):
                     stop_one_hot[i][0] = 1
 
 
-            return category_one_hot, one_hot, stop_one_hot, target_action
+            return category_one_hot, one_hot, stop_one_hot
 
     def tensorize(self, observations):
         batch_size = len(observations)
@@ -506,7 +505,7 @@ class alignmentAgent(habitat.Agent):
         instructions, masks, segment_ids, co_attention_masks, \
             tensor_features, spatials, image_masks = \
             self.tensorize(observations)
-        category_target, target, stop_target, target_action = \
+        category_target, target, stop_target = \
             self._get_batch_target_onehot(
                         observations
                     )
@@ -543,7 +542,7 @@ class alignmentAgent(habitat.Agent):
         batch_score = self.compute_score_with_logits(vil_prediction, target).sum() / float(batch_size)
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
-        print("Target action ", target_action)
+        #print("Target action ", target_action)
 
 
 
