@@ -457,7 +457,7 @@ class alignmentAgent(habitat.Agent):
             segments_ids.append(segment)
             co_attention_masks.append(co_attention_mask)
 
-        features, boxes, num_boxes = self._get_image_features([im])
+        features, boxes, num_boxes = self._get_image_features(imgs)
         tensor_features = []
         spatials = []
         image_masks = []
