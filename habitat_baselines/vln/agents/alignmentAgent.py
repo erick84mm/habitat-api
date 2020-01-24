@@ -592,6 +592,8 @@ class alignmentAgent(habitat.Agent):
         input_masks = None
         image_masks = None
         co_attention_masks = None
+        print(linguisic_prediction.shape, linguisic_logit.shape)
+        #rint(linguisic_logit)
 
         reduced_probs = torch.cat((torch.sum(vil_prediction[:,:4], dim=-1, keepdims=True),
                                     vil_prediction[:,4:]), dim=1)
