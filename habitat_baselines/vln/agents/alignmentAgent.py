@@ -209,17 +209,17 @@ class alignmentAgent(habitat.Agent):
             b_avg = sum(self.loss_weight["b_loss"]) / num
             c_avg = sum(self.loss_weight["c_loss"]) / num
             if c_avg > 0.92:
-                self.loss_weight["c"] = 0.00
+                self.loss_weight["c"] = 0.1
                 if b_avg > 0.92:
-                    self.loss_weight["a"] = 1
-                    self.loss_weight["b"] = 0
+                    self.loss_weight["a"] = 0.8
+                    self.loss_weight["b"] = 0.1
                 else:
                     self.loss_weight["a"] = 0.05
-                    self.loss_weight["b"] = 0.95
+                    self.loss_weight["b"] = 0.85
             else:
-                self.loss_weight["a"] = 0
+                self.loss_weight["a"] = 0.05
                 self.loss_weight["b"] = 0.05
-                self.loss_weight["c"] = 0.95
+                self.loss_weight["c"] = 0.90
 
             self.loss_weight["a_loss"] = self.loss_weight["a_loss"][-int(num/2):]
             self.loss_weight["b_loss"] = self.loss_weight["b_loss"][-int(num/2):]
