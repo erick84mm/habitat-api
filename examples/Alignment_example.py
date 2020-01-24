@@ -104,8 +104,8 @@ class VLNBenchmark(habitat.Benchmark):
                     self._env._current_episode.instruction.mask + \
                     action_mask
                 observations["segment"] = \
-                    [0] * len(self._env._current_episode.instruction.tokens)+ \
-                    action_segment_ids
+                    [0] * len(self._env._current_episode.instruction.tokens)#+ \
+                    #action_segment_ids
 
                 rollout_observations.append(observations)
                 action_sequence.append(action_idx)
