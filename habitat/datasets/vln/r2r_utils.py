@@ -375,7 +375,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                 },
                 "BERT_vocab":{
                     "action_tokens": action_tokens_ids
-                }
+                },
                 "scenes":list(set(scenes))
             }
 
