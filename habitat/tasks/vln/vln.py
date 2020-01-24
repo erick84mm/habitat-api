@@ -1059,4 +1059,4 @@ class VLNTask(EmbodiedTask):
         return {}
 
     def get_action_tokens(self):
-        return return self._dataset.get_action_tokens()
+        return self._dataset.get_action_tokens()
