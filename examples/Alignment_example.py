@@ -81,7 +81,6 @@ class VLNBenchmark(habitat.Benchmark):
                 target_action, action_args = \
                     agent._teacher_actions(observations, goal_viewpoint)
                 action_idx = agent.model_actions.index(target_action)
-                action_sequence.append(action_idx)
                 observations["golden_action"] = action_idx
                 action = {"action": target_action, "action_args": action_args}
 
@@ -109,6 +108,7 @@ class VLNBenchmark(habitat.Benchmark):
                     #action_segment_ids
 
                 rollout_observations.append(observations)
+                action_sequence.append(action_idx)
                 observations = self._env.step(action) # Step 1
                 observations = {
                                 "rgb": observations["rgb"],
