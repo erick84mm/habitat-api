@@ -132,6 +132,7 @@ class VLNBenchmark(habitat.Benchmark):
                     self.episode_batch_scores.append(sum(episode_batch_score) / len(episode_batch_score))
                     print("Episode loss", self.episode_losses[-1])
                     print("Episode Batch Score", self.episode_batch_scores[-1])
+                    writer.add_scalar('lr/train', agent.get_lr(), count_episodes)
                     writer.add_scalar('episode_Loss/train', self.episode_losses[-1], count_episodes)
                     writer.add_scalar('episode_batch_scores/train', self.episode_batch_scores[-1], count_episodes)
 

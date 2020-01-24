@@ -147,7 +147,7 @@ class alignmentAgent(habitat.Agent):
 
         self.criterion = nn.BCEWithLogitsLoss(reduction='mean')
         self.loss = 0
-        self.learning_rate = 1e-4
+        self.learning_rate = 1e-3
         self.vision_scratch = False
         self.max_steps = 30
         self.grad_accumulation = 1 #00
@@ -161,19 +161,20 @@ class alignmentAgent(habitat.Agent):
                 "c_loss": [],
         }
         optimizer_grouped_parameters = []
-        lr = 1e-3
         no_decay = ["bias", "LayerNorm.bias", "LayerNorm.weight"]
 
         for key, value in dict(self.model.named_parameters()).items():
             if value.requires_grad:
                 if any(nd in key for nd in no_decay):
                     optimizer_grouped_parameters += [
-                        {"params": [value], "lr": lr, "weight_decay": 0.01}
+                        {"params": [value], "lr": self.learning_rate , "weight_decay": 0.01}
                     ]
                 if not any(nd in key for nd in no_decay):
                     optimizer_grouped_parameters += [
-                        {"params": [value], "lr": lr, "weight_decay": 0.0}
+                        {"params": [value], "lr": self.learning_rate , "weight_decay": 0.0}
                     ]
+
+        print(len(list(self.model.named_parameters())), len(optimizer_grouped_parameters))
 
         self.optimizer = Adam(
                             optimizer_grouped_parameters,
@@ -239,6 +240,10 @@ class alignmentAgent(habitat.Agent):
         self.action_history = []
         self.adjust_weights()
         pass
+
+    def get_lr(self):
+        for param_group in self.optimizer.param_groups:
+            return param_group['lr']
 
 
     def train_step(self, steps):
