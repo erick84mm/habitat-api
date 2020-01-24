@@ -592,8 +592,8 @@ class alignmentAgent(habitat.Agent):
         stop_probs = torch.cat((torch.sum(vil_prediction[:,:-1], dim=-1, keepdims=True),
                                     vil_prediction[:,-1:]), dim=-1)
 
-        self.loss = self.loss_weight["a"] * self.criterion(reduced_probs, category_target) + \
-            self.loss_weight["b"] * self.criterion(vil_prediction, target) + \
+        self.loss = self.loss_weight["b"] * self.criterion(reduced_probs, category_target) + \
+            self.loss_weight["a"] * self.criterion(vil_prediction, target) + \
             self.loss_weight["c"] * self.criterion(stop_probs, stop_target)
 
         self.loss = self.loss.mean() * target.size(1)
