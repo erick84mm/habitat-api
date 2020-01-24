@@ -33,6 +33,7 @@ from torchvision.ops import nms
 from detectron2.structures import Boxes, Instances
 from detectron2.modeling.postprocessing import detector_postprocess
 from habitat_baselines.vln.models.optimization import Adam
+from detectron2.data import MetadataCatalog
 
 
 # We need the indices of the features to keep
@@ -152,9 +153,9 @@ class alignmentAgent(habitat.Agent):
         self.grad_accumulation = 1 #00
         self.action_history = []
         self.loss_weight = {
-                "a": 0,
-                "b": 0.05,
-                "c": 0.95,
+                "a": 0.1,
+                "b": 0.1,
+                "c": 0.8,
                 "a_loss": [],
                 "b_loss": [],
                 "c_loss": [],
@@ -214,12 +215,12 @@ class alignmentAgent(habitat.Agent):
                     self.loss_weight["a"] = 0.8
                     self.loss_weight["b"] = 0.1
                 else:
-                    self.loss_weight["a"] = 0.05
-                    self.loss_weight["b"] = 0.85
+                    self.loss_weight["a"] = 0.1
+                    self.loss_weight["b"] = 0.8
             else:
-                self.loss_weight["a"] = 0.05
-                self.loss_weight["b"] = 0.05
-                self.loss_weight["c"] = 0.90
+                self.loss_weight["a"] = 0.1
+                self.loss_weight["b"] = 0.1
+                self.loss_weight["c"] = 0.80
 
             self.loss_weight["a_loss"] = self.loss_weight["a_loss"][-int(num/2):]
             self.loss_weight["b_loss"] = self.loss_weight["b_loss"][-int(num/2):]
@@ -592,10 +593,10 @@ class alignmentAgent(habitat.Agent):
         stop_probs = torch.cat((torch.sum(vil_prediction[:,:-1], dim=-1, keepdims=True),
                                     vil_prediction[:,-1:]), dim=-1)
 
-        self.loss = self.loss_weight["b"] * self.criterion(reduced_probs, category_target) + \
-            self.loss_weight["a"] * self.criterion(vil_prediction, target) + \
-            self.loss_weight["c"] * self.criterion(stop_probs, stop_target)
-
+        #self.loss = self.loss_weight["b"] * self.criterion(reduced_probs, category_target) + \
+        #    self.loss_weight["a"] * self.criterion(vil_prediction, target) + \
+        #    self.loss_weight["c"] * self.criterion(stop_probs, stop_target)
+        self.loss = self.criterion(vil_prediction, target)
         self.loss = self.loss.mean() * target.size(1)
         scores, reduce_scores, stop_scores = self.compute_all_scores_with_logits(vil_prediction, target)
 
