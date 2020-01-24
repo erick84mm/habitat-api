@@ -1410,7 +1410,7 @@ class BertModel(BertPreTrainedModel):
 
         if input_actions is not None:
             a_embedding_output = self.a_embedding(input_actions)
-            embedding_output = torch.cat((embedding_output_aux, a_embedding_output), dim=-1)
+            embedding_output = torch.cat((embedding_output, a_embedding_output), dim=-1)
 
         v_embedding_output = self.v_embeddings(input_imgs, image_loc)
 
