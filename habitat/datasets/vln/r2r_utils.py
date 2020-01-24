@@ -303,6 +303,20 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                          do_lower_case=True,
                          do_basic_tokenize=True
                      )
+
+    action_tokens_dict = {
+        'action_left_token': '<LEFT>',
+        'action_right_token': '<RIGHT>',
+        'action_up_token': '<UP>',
+        'action_down_token': '<DOWN>',
+        'action_teleport_token': '<TELEPORT>',
+        'action_stop_token': '<STOP>',
+        'action_start_token': '<START>',
+        'action_ignore_token': '<IGNORE>',
+    }
+    berttokenizer.add_special_tokens(action_tokens_dict)
+    action_tokens_ids = {k:berttokenizer.vocab.get(v, berttokenizer.vocab["[UNK]"]) for k,v in action_tokens_dict.items()}
+    print(action_tokens_ids)
     for split in splits:
         habitat_episodes = []
         scenes = []
@@ -359,6 +373,9 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                     'UNK_INDEX': 1,
                     'PAD_INDEX': 0
                 },
+                "BERT_vocab":{
+                    "action_tokens": action_tokens_ids
+                }
                 "scenes":list(set(scenes))
             }
 

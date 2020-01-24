@@ -132,6 +132,8 @@ class alignmentAgent(habitat.Agent):
             self.vilbert_config,
             num_labels=len(self.model_actions) - 2, # number of predicted actions 6
             )
+        new_voc_size = self.vilbert_config.vocab_size + 8
+        self.model.resize_token_embeddings(new_voc_size)
         self.model.to(self.bert_gpu_device)
         print("ViLBERT loaded on GPU {}".format(self.bert_gpu))
 

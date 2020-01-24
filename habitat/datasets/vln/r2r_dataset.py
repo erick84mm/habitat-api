@@ -65,6 +65,7 @@ class R2RDatasetV1(Dataset):
         self.episodes: List[VLNEpisode] = []
         self.train_vocab: VocabDict = []
         self.trainval_vocab: VocabDict = []
+        self.action_tokens = {}
         self.connectivity = []
         self.scenes: List[str] = []
         self.config = config
@@ -84,6 +85,8 @@ class R2RDatasetV1(Dataset):
         self.trainval_vocab = VocabDict(
             word_list=deserialized["trainval_vocab"]["word_list"]
         )
+
+        self.action_tokens = deserialized["BERT_vocab"]["action_tokens"]
 
         self.scenes = deserialized["scenes"]
 
@@ -173,3 +176,6 @@ class R2RDatasetV1(Dataset):
         # In VLN the observations are from left to right but here is backwards.
         # The observations must be sorted by absolute relative heading
         return observations[::1]
+
+    def get_action_tokens(self):
+        return self.action_tokens

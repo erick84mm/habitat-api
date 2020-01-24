@@ -21,6 +21,8 @@ class VLNBenchmark(habitat.Benchmark):
         self.episode_losses = []
         self.episode_batch_scores = []
         self._name = name
+        self.action_tokens = self._env._task.get_action_tokens()
+        print(self.action_tokens)
 
     def evaluate(
         self,
@@ -132,8 +134,7 @@ class VLNBenchmark(habitat.Benchmark):
                     self.episode_batch_scores.append(sum(episode_batch_score) / len(episode_batch_score))
                     print("Episode loss", self.episode_losses[-1])
                     print("Episode Batch Score", self.episode_batch_scores[-1])
-                    writer.add_scalar('min_lr/train', min(agent.optimizer.get_lr()), count_episodes)
-                    writer.add_scalar('max_lr/train', max(agent.optimizer.get_lr()), count_episodes)
+                    writer.add_scalar('lr/train', agent.optimizer.show_lr(), count_episodes)
                     writer.add_scalar('episode_Loss/train', self.episode_losses[-1], count_episodes)
                     writer.add_scalar('episode_batch_scores/train', self.episode_batch_scores[-1], count_episodes)
 

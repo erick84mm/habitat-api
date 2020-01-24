@@ -1057,3 +1057,6 @@ class VLNTask(EmbodiedTask):
         if self._dataset:
             return self._dataset.get_navigable_locations(scan, viewpoint)
         return {}
+
+    def get_action_tokens(self):
+        return return self._dataset.get_action_tokens()
