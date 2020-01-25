@@ -125,7 +125,7 @@ class VLNBenchmark(habitat.Benchmark):
         agent,
         num_episodes: Optional[int] = None,
         feedback="teacher",
-        checkpoint_iter = 10,
+        checkpoint_iter = 1000,
         batch_size = 4
     ):
         print("Training is running on device ", torch.cuda.current_device())
@@ -138,6 +138,7 @@ class VLNBenchmark(habitat.Benchmark):
         rollout_observations = []
         while count_episodes < num_episodes:
             if count_episodes and count_episodes % checkpoint_iter == 0:
+                print(type(count_episodes), type(self._name))
                 agent.save("checkpoints/{}_train_{}.check".format(
                                                         self._name,
                                                         count_episodes
