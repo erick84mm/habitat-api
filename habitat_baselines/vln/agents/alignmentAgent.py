@@ -211,7 +211,8 @@ class alignmentAgent(habitat.Agent):
 
         MetadataCatalog.get("vg").thing_classes = vg_classes
         self.class_names = vg_classes
-        cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(checkpoint)
+        cfg.MODEL.WEIGHTS = "http://nlp.cs.unc.edu/models/faster_rcnn_from_caffe.pkl"
+        #cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(checkpoint)
         return cfg
 
     def adjust_weights(self):
