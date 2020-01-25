@@ -848,12 +848,12 @@ class alignmentAgent(habitat.Agent):
         logit = torch.max(vil_prediction, 1)[1].data  # argmax
         #elif self.mode == "sample":
         action = self.model_actions[logit]
-        self.save["path_id"] = ob["path_id"]
-        self.save["images"].append(ob["rgb"].tolist())
-        self.save["boxes"].append(spatials[0].tolist())
-        self.save["box_probs"].append(vision_logit.tolist())
+        #self.save["path_id"] = ob["path_id"]
+        #self.save["images"].append(ob["rgb"].tolist())
+        #self.save["boxes"].append(spatials[0].tolist())
+        #self.save["box_probs"].append(vision_logit.tolist())
         #self.save["text"].append(linguistic_tokens.tolist())
-        self.save["actions"].append(action)
+        #self.save["actions"].append(action)
         #print(vision_logit.tolist()) #, linguistic_tokens.tolist(), spatials[0].tolist())
 
         next_action = {"action": action, "action_args": action_args}
