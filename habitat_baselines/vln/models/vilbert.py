@@ -1091,6 +1091,9 @@ class BertPreTrainingHeads(nn.Module):
         self.fusion_method = config.fusion_method
         self.dropout = nn.Dropout(0.1)
 
+    def resize_token_embeddings(self, new_num_tokens):
+        self.predictions.resize_token_embeddings(new_num_tokens)
+
     def forward(
         self, sequence_output_t, sequence_output_v, pooled_output_t, pooled_output_v
     ):
@@ -1522,9 +1525,6 @@ class BertForMultiModalPreTraining(BertPreTrainedModel):
             self.vis_criterion = nn.MSELoss(reduction="none")
         else:
             self.vis_criterion = nn.KLDivLoss(reduction="none")
-
-    def resize_token_embeddings(self, new_num_tokens):
-        self.cls.resize_token_embeddings(new_num_tokens)
 
     def forward(
         self,
