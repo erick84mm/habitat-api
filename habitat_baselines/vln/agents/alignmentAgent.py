@@ -286,17 +286,17 @@ class alignmentAgent(habitat.Agent):
         return labels
 
     def get_image_target_onehot(self, classes, instr_tokens):
-        one_hot = []
-
-        for c in classes:
-            token = self.get_word_token(c)
-            if c in instr_tokens:
-                one_hot.append(1)
+        one_hots = []
+        class_labels = self.get_image_labels(classes)
+        for cl , cl_id in zip(classes_labels, classes):
+            token_id = self.get_word_token(cl)
+            if token_id in instr_tokens:
+                one_hots.append(1)
             else:
-                one_hot.append(0)
+                one_hots.append(0)
 
-        one_hot = torch.tensor(
-                        one_hot,
+        one_hots = torch.tensor(
+                        one_hots,
                         dtype=torch.long,
                         device=self.bert_gpu_device
                  ).unsqueeze(0)
@@ -522,7 +522,7 @@ class alignmentAgent(habitat.Agent):
 
     def _get_tensor_image_features(self, im, max_regions=37):
         features, boxes, num_boxes, pred_class_logits = \
-            self._get_image_features([im])
+            self._get_image_features([im], min_num_image=36)
         #print(self.get_image_labels(pred_class_logits[0].tolist()))
         mix_num_boxes = min(int(num_boxes[0]), max_regions)
         mix_boxes_pad = torch.zeros((max_regions, 5)
@@ -648,9 +648,9 @@ class alignmentAgent(habitat.Agent):
         input_masks = None
         image_masks = None
         co_attention_masks = None
-        print("vision_prediction", vision_prediction.shape)
-        print("vision_logit", vision_logit.shape)
-        print("linguisic_prediction", linguisic_prediction.shape)
+        #print("vision_prediction", vision_prediction.shape)
+        #print("vision_logit", vision_logit.shape) # choose vision or not
+        #print("linguisic_prediction", linguisic_prediction.shape)
         print("linguisic_logit", linguisic_logit.shape)
 
         linguistic_tokens = torch.max(linguisic_prediction, 1)[1].data  # argmax
@@ -665,7 +665,10 @@ class alignmentAgent(habitat.Agent):
         #self.loss = self.loss_weight["b"] * self.criterion(reduced_probs, category_target) + \
         #    self.loss_weight["a"] * self.criterion(vil_prediction, target) + \
         #    self.loss_weight["c"] * self.criterion(stop_probs, stop_target)
-        self.loss = self.criterion(vil_prediction, target)
+        self.loss = self.criterion(vil_prediction, target) + \
+                    self.criterion(vision_logit, image_one_hots) #+ \
+                    #self.criterion(linguisic_prediction)
+
         self.loss = self.loss.mean() * target.size(1)
         scores, reduce_scores, stop_scores = self.compute_all_scores_with_logits(vil_prediction, target)
 
