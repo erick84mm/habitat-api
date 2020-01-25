@@ -90,6 +90,12 @@ class VLNBenchmark(habitat.Benchmark):
                     [observations]
                 )
 
+                target_action["action_args"].update(
+                    {
+                    "episode": self._env._current_episode
+                    }
+                )
+
                 action_idx = agent.model_actions.index(target_action["action"])
                 action_token_id = self.action_tokens[self.action_tokens_idx[action_idx]]
                 action_sequence.append(action_token_id)
