@@ -282,11 +282,11 @@ def tokenize_bert(text, berttokenizer, padding=True, max_length=128, padding_ind
     segment_ids = [0] * len(tokens)
     input_mask = [1] * len(tokens)
 
-    if len(tokens) < max_length:
+    if padding and len(tokens) < max_length:
         # Note here we pad in front of the sentence
-        padding = [padding_index] * (max_length - len(tokens))
-        tokens = tokens + padding
-        input_mask += padding
+        padding_toks = [padding_index] * (max_length - len(tokens))
+        tokens = tokens + padding_toks
+        input_mask += padding_toks
 
     return tokens, input_mask
 
@@ -335,8 +335,8 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                     viewpoint = episode["path"][0]
                     distance = 0
                     heading = normalize_heading(episode["heading"])
-                    # 10 tokens will be reserved for the actions
-                    tokens, mask = tokenize_bert(instr, berttokenizer, max_length=118)
+                    # 10 tokens will be reserved for the actions + sep
+                    tokens, mask = tokenize_bert(instr, berttokenizer, max_length=117, padding=False)
 
                     if "distance" in episode:
                         distance = episode["distance"]

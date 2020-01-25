@@ -21,6 +21,9 @@ class VLNBenchmark(habitat.Benchmark):
         self.episode_losses = []
         self.episode_batch_scores = []
         self._name = name
+        self.action_tokens_idx = ['action_left_token', 'action_right_token',
+        'action_up_token', 'action_down_token', 'action_teleport_token',
+        'action_stop_token', 'action_start_token', 'action_ignore_token']
         self.action_tokens = self._env._task.get_action_tokens()
         print(self.action_tokens)
 
@@ -43,7 +46,8 @@ class VLNBenchmark(habitat.Benchmark):
         count_episodes = 0
         agg_metrics = defaultdict(float)
         steps = 0
-        action_padding_idx = agent.model_actions.index("<ignore>")
+        ignore_idx = agent.model_actions.index("<ignore>")
+        action_padding_idx = action_tokens[action_tokens_idx[ignore_idx]]
         rollout_observations = []
         while count_episodes < num_episodes:
             if count_episodes and count_episodes % checkpoint_iter == 0:
@@ -83,7 +87,8 @@ class VLNBenchmark(habitat.Benchmark):
                 target_action, action_args = \
                     agent._teacher_actions(observations, goal_viewpoint)
                 action_idx = agent.model_actions.index(target_action)
-                observations["golden_action"] = action_idx
+                action_token_id = action_tokens[action_tokens_idx[action_idx]]
+                observations["golden_action"] = action_token_id
                 action = {"action": target_action, "action_args": action_args}
 
                 action["action_args"].update(
@@ -92,25 +97,31 @@ class VLNBenchmark(habitat.Benchmark):
                     }
                 )
                 # Adding tokens from episode
-                action_tokens = action_sequence[-10:]
-                padding = [action_padding_idx] * (10 - len(action_tokens))
-                action_mask = [1] * len(action_tokens) + [0] * len(padding)
-                action_tokens = action_tokens + padding
-                action_segment_ids = [1] * len(action_tokens)
+                sep_token_id = self._env._current_episode.instruction.tokens[-1]
+                action_tokens = action_sequence[-10:] + sep_token_id
+                action_mask = [1] * len(action_tokens)
+
+                tokens = self._env._current_episode.instruction.tokens + \
+                    action_tokens
+                mask = self._env._current_episode.instruction.mask + \
+                    action_mask
+                segment = [0] * \
+                    len(self._env._current_episode.instruction.tokens)
+                    + [1] * len(action_tokens)
+
+                padding = [0] * (128 - len(tokens))
+                tokens += padding
+                mask += padding
+                segment += padding
 
                 # add padding at the end
                 observations["actions"] = action_tokens
-                observations["tokens"] = \
-                    self._env._current_episode.instruction.tokens #+ \
-                observations["mask"] = \
-                    self._env._current_episode.instruction.mask #+ \
-                    #action_mask
-                observations["segment"] = \
-                    [0] * len(self._env._current_episode.instruction.tokens)#+ \
-                    #action_segment_ids
+                observations["tokens"] = tokens
+                observations["mask"] = mask
+                observations["segment"] = segment
 
                 rollout_observations.append(observations)
-                action_sequence.append(action_idx)
+                action_sequence.append(action_token_id)
                 observations = self._env.step(action) # Step 1
                 observations = {
                                 "rgb": observations["rgb"],
