@@ -47,7 +47,7 @@ class VLNBenchmark(habitat.Benchmark):
         agg_metrics = defaultdict(float)
         steps = 0
         ignore_idx = agent.model_actions.index("<ignore>")
-        action_padding_idx = action_tokens[action_tokens_idx[ignore_idx]]
+        action_padding_idx = self.action_tokens[self.action_tokens_idx[ignore_idx]]
         rollout_observations = []
         while count_episodes < num_episodes:
             if count_episodes and count_episodes % checkpoint_iter == 0:
@@ -87,7 +87,7 @@ class VLNBenchmark(habitat.Benchmark):
                 target_action, action_args = \
                     agent._teacher_actions(observations, goal_viewpoint)
                 action_idx = agent.model_actions.index(target_action)
-                action_token_id = action_tokens[action_tokens_idx[action_idx]]
+                action_token_id = self.action_tokens[self.action_tokens_idx[action_idx]]
                 observations["golden_action"] = action_token_id
                 action = {"action": target_action, "action_args": action_args}
 
