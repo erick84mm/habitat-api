@@ -276,6 +276,9 @@ class alignmentAgent(habitat.Agent):
             labels.append(classes[c])
         return labels
 
+    def choose_related_images(self, classes, text):
+        return
+
 
     def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
         # imgs tensor(batch, H, W, C)
@@ -549,7 +552,7 @@ class alignmentAgent(habitat.Agent):
         for im in imgs:
             features, boxes, num_boxes, pred_class_logits = \
                 self._get_image_features([im])
-            print(self.get_image_labels(pred_class_logits[0].tolist()))
+            #print(self.get_image_labels(pred_class_logits[0].tolist()))
             mix_num_boxes = min(int(num_boxes[0]), max_regions)
             mix_boxes_pad = torch.zeros((max_regions, 5)
                                         , dtype=torch.float
