@@ -479,7 +479,7 @@ class alignmentAgent(habitat.Agent):
         masks = []
         segments_ids = []
         co_attention_masks = []
-        previous_actions = []
+        #previous_actions = []
         for ob in observations:
             imgs.append(ob["rgb"])
             instruction = torch.tensor(
@@ -488,11 +488,11 @@ class alignmentAgent(habitat.Agent):
                                 device=self.bert_gpu_device
                           ).unsqueeze(0)
 
-            actions = torch.tensor(
-                                ob["actions"],
-                                dtype=torch.long,
-                                device=self.bert_gpu_device
-                          ).unsqueeze(0)
+            #actions = torch.tensor(
+            #                    ob["actions"],
+            #                    dtype=torch.long,
+            #                    device=self.bert_gpu_device
+            #              ).unsqueeze(0)
 
             #print(ob["mask"])
             input_mask = torch.tensor(
@@ -518,7 +518,7 @@ class alignmentAgent(habitat.Agent):
             masks.append(input_mask)
             segments_ids.append(segment)
             co_attention_masks.append(co_attention_mask)
-            previous_actions.append(actions)
+            #previous_actions.append(actions)
 
 
         tensor_features = []
@@ -560,13 +560,13 @@ class alignmentAgent(habitat.Agent):
         tensor_features = torch.cat(tensor_features, dim=0)
         spatials = torch.cat(spatials, dim=0)
         image_masks = torch.cat(image_masks, dim=0)
-        previous_actions = torch.cat(previous_actions, dim=0)
+        #previous_actions = torch.cat(previous_actions, dim=0)
 
-        return instructions, previous_actions, masks, segments_ids, co_attention_masks, tensor_features, spatials, image_masks
+        return instructions, masks, segments_ids, co_attention_masks, tensor_features, spatials, image_masks
 
     def act_batch(self, observations):
         batch_size = len(observations)
-        instructions, previous_actions, input_masks, segment_ids,  \
+        instructions, input_masks, segment_ids,  \
         co_attention_masks, features, spatials, image_masks = \
             self.tensorize(observations)
         category_target, target, stop_target = \
