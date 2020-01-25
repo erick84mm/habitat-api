@@ -54,6 +54,7 @@ class VLNBenchmark(habitat.Benchmark):
             episode_batch_score = []
             action_sequence = [agent.model_actions.index("<start>")]
             while not self._env.episode_over:
+                print(action_sequence)
                 episode = self._env._current_episode
                 # Adding observations to rollout
 
