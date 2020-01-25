@@ -833,15 +833,17 @@ class alignmentAgent(habitat.Agent):
             "actions": []
         }
         '''
+        ob = observations[0]
         #print(linguisic_prediction.shape)
         linguistic_tokens = torch.max(linguisic_prediction, 2)[1].data  # argmax
         selected_images = vision_logit.tolist()
-
+        if len(ob['adjacentViewpoints']) <= 1:
+            teleport_idx = self.model_actions.index("TELEPORT")
+            vil_prediction[0][teleport_idx] = -float('inf')
         #if self.mode == "argmax":
         logit = torch.max(vil_prediction, 1)[1].data  # argmax
         #elif self.mode == "sample":
         action = self.model_actions[logit]
-        ob = observations[0]
         self.save["path_id"] = ob["path_id"]
         #self.save["images"].append(ob["rgb"].tolist())
         #self.save["boxes"].append(spatials[0].tolist())
@@ -854,6 +856,7 @@ class alignmentAgent(habitat.Agent):
         if action == "TELEPORT":
             next_action = self._teleport_target(ob)
 
+        if next_action
         return next_action
 
     def save_example(self):
