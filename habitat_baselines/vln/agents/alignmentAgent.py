@@ -286,7 +286,7 @@ class alignmentAgent(habitat.Agent):
         return labels
 
     def get_image_target_onehot(self, classes, instr_tokens):
-        one_hots = []
+        one_hots = [[0]]
         class_labels = self.get_image_labels(classes)
         for cl , cl_id in zip(class_labels, classes):
             token_id = self.get_word_token(cl)
