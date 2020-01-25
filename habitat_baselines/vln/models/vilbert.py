@@ -1049,8 +1049,7 @@ class BertLMPredictionHead(nn.Module):
 
         num_tokens_to_copy = min(old_num_tokens, new_num_tokens)
 
-        new_bias.data[:num_tokens_to_copy, :] = \
-            self.bias.data[:num_tokens_to_copy, :]
+        new_bias.data.zero_()
         new_linear.weight.data[:num_tokens_to_copy, :] = \
             self.decoder.weight.data[:num_tokens_to_copy, :]
 
