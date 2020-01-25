@@ -683,7 +683,7 @@ class alignmentAgent(habitat.Agent):
             image_masks,
             co_attention_masks
         )
-        
+
         for i, ob in enumerate(observations):
             if not any(True for obs in ob['adjacentViewpoints'] if obs[0] == 0):
                 teleport_idx = self.model_actions.index("TELEPORT")
@@ -839,7 +839,7 @@ class alignmentAgent(habitat.Agent):
         '''
         ob = observations[0]
         #print(linguisic_prediction.shape)
-        linguistic_tokens = torch.max(linguisic_prediction, 2)[1].data  # argmax
+        linguistic_tokens = torch.max(linguisic_prediction, 1)[1].data  # argmax
         selected_images = vision_logit.tolist()
         if not any(True for obs in ob['adjacentViewpoints'] if obs[0] == 0):
             teleport_idx = self.model_actions.index("TELEPORT")
@@ -849,18 +849,18 @@ class alignmentAgent(habitat.Agent):
         #elif self.mode == "sample":
         action = self.model_actions[logit]
         self.save["path_id"] = ob["path_id"]
-        #self.save["images"].append(ob["rgb"].tolist())
-        #self.save["boxes"].append(spatials[0].tolist())
-        #self.save["box_probs"].append(vision_logit.tolist())
-        self.save["text"].append(linguistic_tokens.tolist())
+        self.save["images"].append(ob["rgb"].tolist())
+        self.save["boxes"].append(spatials[0].tolist())
+        self.save["box_probs"].append(vision_logit.tolist())
+        #self.save["text"].append(linguistic_tokens.tolist())
         self.save["actions"].append(action)
         #print(vision_logit.tolist()) #, linguistic_tokens.tolist(), spatials[0].tolist())
 
         next_action = {"action": action, "action_args": action_args}
-        print(action)
+        #print(action)
         if action == "TELEPORT":
             next_action = self._teleport_target(ob)
-        print("next action", next_action)
+        #print("next action", next_action)
         return next_action
 
     def save_example(self):
