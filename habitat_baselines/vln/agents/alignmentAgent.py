@@ -202,7 +202,7 @@ class alignmentAgent(habitat.Agent):
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
         # Find a model from detectron2's model zoo. Download model
 
-        data_path = '/home/erick/Research/vln/libs/habitat/habitat-api/habitat_baselines/data/genome/1600-400-20/'
+        data_path = '/home/erick/Research/vln/libs/habitat/habitat-api/habitat_baselines/vln/data/genome/1600-400-20/'
 
         vg_classes = []
         with open(os.path.join(data_path, 'objects_vocab.txt')) as f:
