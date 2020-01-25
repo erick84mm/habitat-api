@@ -870,7 +870,7 @@ class alignmentAgent(habitat.Agent):
             type(self.save["boxes"][0]),
             type(self.save["box_probs"][0]),
             type(self.save["text"][0]),
-            type(self.save["actions"][0]),  
+            type(self.save["actions"][0])  
             )
         with open(os.path.join(PATH, path_id), "w+") as outfile:
             json.dump(self.save, outfile)
