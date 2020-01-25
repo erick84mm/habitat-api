@@ -1523,6 +1523,9 @@ class BertForMultiModalPreTraining(BertPreTrainedModel):
         else:
             self.vis_criterion = nn.KLDivLoss(reduction="none")
 
+    def resize_token_embeddings(self, new_num_tokens):
+        self.cls.resize_token_embeddings(new_num_tokens)
+
     def forward(
         self,
         input_ids,
