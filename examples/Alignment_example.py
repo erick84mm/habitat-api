@@ -98,7 +98,7 @@ class VLNBenchmark(habitat.Benchmark):
                 )
                 # Adding tokens from episode
                 sep_token_id = self._env._current_episode.instruction.tokens[-1]
-                action_tokens = action_sequence[-10:] + sep_token_id
+                action_tokens = action_sequence[-10:] + [sep_token_id]
                 action_mask = [1] * len(action_tokens)
 
                 tokens = self._env._current_episode.instruction.tokens + \
