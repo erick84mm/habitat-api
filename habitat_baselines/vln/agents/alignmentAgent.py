@@ -297,7 +297,7 @@ class alignmentAgent(habitat.Agent):
 
         one_hots = torch.tensor(
                         one_hots,
-                        dtype=torch.long,
+                        dtype=torch.float,
                         device=self.bert_gpu_device
                  ).unsqueeze(0)
 
