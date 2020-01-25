@@ -520,7 +520,7 @@ class alignmentAgent(habitat.Agent):
                     view_point=AgentState(position=posB, rotation=rotA)
                 )
                 action_args = {"target": viewpoint}
-                print("the target is ", location)s
+                print("the target is ", location)
                 return {"action": action, "action_args": action_args}
 
         return {"action": action, "action_args": action_args}
@@ -855,7 +855,7 @@ class alignmentAgent(habitat.Agent):
         print(action)
         if action == "TELEPORT":
             next_action = self._teleport_target(ob)
-        print(next_action)
+        print("next action", next_action)
         return next_action
 
     def save_example(self):
