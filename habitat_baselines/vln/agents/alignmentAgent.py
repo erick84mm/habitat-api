@@ -144,12 +144,12 @@ class alignmentAgent(habitat.Agent):
         print("Detectron2 loaded")
         self._max_region_num = 36
         self._max_seq_length = 128
-        if include_actions:
-            self._max_seq_length = 128 + 10
+        #if include_actions:
+            #self._max_seq_length = 128 + 10
 
         self.criterion = nn.BCEWithLogitsLoss(reduction='mean')
         self.loss = 0
-        self.learning_rate = 1e-3
+        self.learning_rate = 3e-5
         self.vision_scratch = False
         self.max_steps = 30
         self.grad_accumulation = 1 #00
@@ -371,7 +371,7 @@ class alignmentAgent(habitat.Agent):
 
                 boxes.append(box)
             # features, boxes, image_mask
-            return roi_features_list, boxes, num_boxes
+            return roi_features_list, boxes, num_boxes, pred_class_logits, pred_proposal_deltas
 
     def train(self):
         self.model.train()
@@ -525,7 +525,8 @@ class alignmentAgent(habitat.Agent):
         spatials = []
         image_masks = []
         for im in imgs:
-            features, boxes, num_boxes = self._get_image_features([im])
+            features, boxes, num_boxes, pred_class_logits, \
+                pred_proposal_deltas = self._get_image_features([im])
             mix_num_boxes = min(int(num_boxes[0]), max_regions)
             mix_boxes_pad = torch.zeros((max_regions, 5)
                                         , dtype=torch.float
