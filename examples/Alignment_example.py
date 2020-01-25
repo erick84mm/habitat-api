@@ -29,9 +29,86 @@ class VLNBenchmark(habitat.Benchmark):
 
     def evaluate(
         self,
-        agent
+        agent,
+        num_episodes: Optional[int] = None,
+        feedback="argmax",
+        batch_size = 4
     ):
-        return
+        print("Training is running on device ", torch.cuda.current_device())
+        agent.eval()
+        count_episodes = 0
+        agg_metrics = defaultdict(float)
+        steps = 0
+        ignore_idx = agent.model_actions.index("<ignore>")
+        action_padding_idx = self.action_tokens[self.action_tokens_idx[ignore_idx]]
+        rollout_observations = []
+        
+        while count_episodes < num_episodes:
+            agent.reset(steps)
+            observations = self._env.reset()
+            observations = {
+                            "rgb": observations["rgb"],
+                            "adjacentViewpoints": observations["adjacentViewpoints"]
+                            }
+            episode_loss = []
+            episode_batch_score = []
+            action_sequence = [agent.model_actions.index("<start>")]
+            while not self._env.episode_over:
+                episode = self._env._current_episode
+                # Adding observations to rollout
+
+                # Adding tokens from episode
+                sep_token_id = self._env._current_episode.instruction.tokens[-1]
+                action_tokens = action_sequence[-10:] + [sep_token_id]
+                action_mask = [1] * len(action_tokens)
+
+                tokens = self._env._current_episode.instruction.tokens + \
+                    action_tokens
+                mask = self._env._current_episode.instruction.mask + \
+                    action_mask
+                segment = [0] * \
+                    len(self._env._current_episode.instruction.tokens) + \
+                    [1] * len(action_tokens)
+
+                padding = [0] * (128 - len(tokens))
+                tokens += padding
+                mask += padding
+                segment += padding
+
+                # add padding at the end
+                observations["target_tokens"] = []
+                observations["tokens"] = tokens
+                observations["mask"] = mask
+                observations["segment"] = segment
+
+                target_action = agent.act_eval(
+                    [observations]
+                )
+
+                action_idx = agent.model_actions.index(target_action["action"])
+                action_token_id = self.action_tokens[self.action_tokens_idx[action_idx]]
+                action_sequence.append(action_token_id)
+                observations = self._env.step(action) # Step 1
+                observations = {
+                                "rgb": observations["rgb"],
+                                "adjacentViewpoints": observations["adjacentViewpoints"]
+                                }
+                steps += 1
+            self._env._current_episode.reset()
+            count_episodes += 1
+
+            metrics = self._env.get_metrics()
+            for m, v in metrics.items():
+                if m != "distance_to_goal":
+                    agg_metrics[m] += v
+
+        agent.reset(steps)
+        print(count_episodes)
+        avg_metrics = {k: v / count_episodes for k, v in agg_metrics.items()}
+        #avg_metrics["losses"] = sum(self.losses) / len(self.losses)
+        #avg_metrics["batch_score"] = sum(self.batch_scores) / len(self.batch_scores)
+
+        return avg_metrics
 
     def train_batch(
         self,

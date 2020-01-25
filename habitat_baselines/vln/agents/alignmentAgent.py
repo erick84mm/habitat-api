@@ -168,6 +168,12 @@ class alignmentAgent(habitat.Agent):
                 "b_loss": [],
                 "c_loss": [],
         }
+        self.save = {
+            "images": [],
+            "boxes": [],
+            "text": [],
+            "actions": []
+        }
         optimizer_grouped_parameters = []
         no_decay = ["bias", "LayerNorm.bias", "LayerNorm.weight"]
 
@@ -262,6 +268,12 @@ class alignmentAgent(habitat.Agent):
         self.loss = None
         self.action_history = []
         self.adjust_weights()
+        self.save = {
+            "images": [],
+            "boxes": [],
+            "text": [],
+            "actions": []
+        }
         pass
 
     def get_lr(self):
@@ -429,6 +441,9 @@ class alignmentAgent(habitat.Agent):
     def train(self):
         self.model.train()
 
+    def eval(self):
+        self.model.eval()
+
     def _teacher_actions(self, observations, goal):
         action = ""
         action_args = {}
@@ -484,6 +499,31 @@ class alignmentAgent(habitat.Agent):
                     cv2.waitKey(0)
                 '''
         return action, action_args
+
+    def _teleport_target(self, observations):
+        action = ""
+        action_args = {}
+        navigable_locations = observations["adjacentViewpoints"]
+
+        for location in navigable_locations[1:]:
+            if location[0] == 1: # location is restricted
+                continue
+            else:
+                action = "TELEPORT"
+                action_args
+                image_id = location[1]
+                posB = location[4:7]  # start_position
+                rotA = navigable_locations[0][14:18]  # camera_rotation
+                viewpoint = ViewpointData(
+                    image_id=image_id,
+                    view_point=AgentState(position=posB, rotation=rotA)
+                )
+                action_args = {"target": viewpoint}
+                break
+
+        return {"action": action, "action_args": action_args}
+
+
 
     def _get_target_onehot(self, observations, goals):
         target_action, args = self._teacher_actions(observations, goals)
@@ -685,8 +725,8 @@ class alignmentAgent(habitat.Agent):
 
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         #print("Target action ", target_action)
-        return  self.loss.item(), scores.item()
 
+        return  self.loss.item(), scores.item()
 
     def act(self, observations, episode, goals):
 
@@ -760,6 +800,40 @@ class alignmentAgent(habitat.Agent):
         #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
         print("Target action ", target_action)
         return {"action": target_action, "action_args": action_args}, self.loss.item(), batch_score.item()
+
+    def act_eval(self, observations):
+        action = "<start>"
+        action_args = {}
+
+        instructions, input_masks, segment_ids,  \
+        co_attention_masks, features, spatials, image_masks, \
+        image_one_hots, target_tokens = \
+            self.tensorize(observations)
+
+        vil_prediction, vil_logit, vil_binary_prediction, vision_prediction, \
+        vision_logit, linguisic_prediction, linguisic_logit = \
+        self.model(
+            instructions,
+            features,
+            spatials,
+            segment_ids,
+            input_masks,
+            image_masks,
+            co_attention_masks
+        )
+
+        #if self.mode == "argmax":
+        logit = torch.max(vil_prediction, 1)[1].data  # argmax
+        #elif self.mode == "sample":
+        action = self.model_actions[logit]
+        next_action = {"action": action, "action_args": action_args}
+        if action == "TELEPORT":
+            next_action = self._teleport_target(observations)
+
+        return next_action
+
+    def save_example(self):
+        return
 
     def compute_mistakes(self, stop_probs, category_probs, logits, labels):
         logits = torch.max(logits, 1)[1].data  # argmax
