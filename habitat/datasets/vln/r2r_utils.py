@@ -305,16 +305,17 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                      )
 
     action_tokens_dict = {
-        'action_left_token': '<LEFT>',
-        'action_right_token': '<RIGHT>',
-        'action_up_token': '<UP>',
-        'action_down_token': '<DOWN>',
-        'action_teleport_token': '<TELEPORT>',
-        'action_stop_token': '<STOP>',
-        'action_start_token': '<START>',
-        'action_ignore_token': '<IGNORE>',
+        'action_left_token': 'action_left',
+        'action_right_token': 'action_right',
+        'action_up_token': 'action_up',
+        'action_down_token': 'action_down',
+        'action_teleport_token': 'action_teleport',
+        'action_stop_token': 'action_stop',
+        'action_start_token': 'action_start',
+        'action_ignore_token': 'action_ignore',
     }
-    berttokenizer.add_tokens(list(action_tokens_dict.values()))
+    num_added_toks = berttokenizer.add_tokens(list(action_tokens_dict.values()))
+    print('We have added', num_added_toks, 'tokens')
     action_tokens_ids = {k:berttokenizer.vocab.get(v, berttokenizer.vocab["[UNK]"]) for k,v in action_tokens_dict.items()}
     print(list(action_tokens_dict.values()), action_tokens_ids, berttokenizer.vocab["[UNK]"])
     for split in splits:
