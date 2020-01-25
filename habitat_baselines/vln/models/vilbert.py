@@ -365,7 +365,7 @@ class BertEmbeddings(nn.Module):
             # Copy word embeddings from the previous weights
             num_tokens_to_copy = min(old_num_tokens, new_num_tokens)
             new_embeddings.weight.data[:num_tokens_to_copy, :] = \
-                old_embeddings.weight.data[:num_tokens_to_copy, :]
+                self.word_embeddings.weight.data[:num_tokens_to_copy, :]
 
             self.word_embeddings = new_embeddings
 
