@@ -88,7 +88,7 @@ class VLNBenchmark(habitat.Benchmark):
                     agent._teacher_actions(observations, goal_viewpoint)
                 action_idx = agent.model_actions.index(target_action)
                 action_token_id = self.action_tokens[self.action_tokens_idx[action_idx]]
-                observations["golden_action"] = action_token_id
+                observations["golden_action"] = action_idx
                 action = {"action": target_action, "action_args": action_args}
 
                 action["action_args"].update(

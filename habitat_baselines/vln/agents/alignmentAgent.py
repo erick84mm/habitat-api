@@ -453,9 +453,9 @@ class alignmentAgent(habitat.Agent):
 
     def _get_batch_target_onehot(self, observations):
             batch_size = len(observations)
-            one_hot = torch.zeros((batch_size,6), device=self.bert_gpu_device)
-            category_one_hot = torch.zeros((batch_size,3), device=self.bert_gpu_device)
-            stop_one_hot = torch.zeros((batch_size,2), device=self.bert_gpu_device)
+            one_hot = torch.zeros((batch_size, 6), device=self.bert_gpu_device)
+            category_one_hot = torch.zeros((batch_size, 3), device=self.bert_gpu_device)
+            stop_one_hot = torch.zeros((batch_size, 2), device=self.bert_gpu_device)
             for i, ob in enumerate(observations):
                 idx = ob["golden_action"]
                 one_hot[i][idx] = 1
