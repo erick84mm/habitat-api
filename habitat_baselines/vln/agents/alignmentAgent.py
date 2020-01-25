@@ -271,8 +271,9 @@ class alignmentAgent(habitat.Agent):
 
     def get_image_labels(self, pred_class_logits):
         labels = []
+        classes = self.class_names.tolist()
         for c in pred_class_logits:
-            labels.append(self.class_names[c])
+            labels.append(classes[c])
         return labels
 
 
@@ -548,7 +549,6 @@ class alignmentAgent(habitat.Agent):
         for im in imgs:
             features, boxes, num_boxes, pred_class_logits = \
                 self._get_image_features([im])
-            print(type(pred_class_logits))
             print(self.get_image_labels(pred_class_logits))
             mix_num_boxes = min(int(num_boxes[0]), max_regions)
             mix_boxes_pad = torch.zeros((max_regions, 5)
