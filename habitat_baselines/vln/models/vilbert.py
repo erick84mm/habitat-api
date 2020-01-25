@@ -1022,7 +1022,7 @@ class BertLMPredictionHead(nn.Module):
     def __init__(self, config, bert_model_embedding_weights):
         super(BertLMPredictionHead, self).__init__()
         self.transform = BertPredictionHeadTransform(config)
-
+        self.initializer_range = config.initializer_range
         # The output weights are the same as the input embeddings, but there is
         # an output-only bias for each token.
         self.decoder = nn.Linear(
@@ -1032,6 +1032,29 @@ class BertLMPredictionHead(nn.Module):
         )
         self.decoder.weight = bert_model_embedding_weights
         self.bias = nn.Parameter(torch.zeros(bert_model_embedding_weights.size(0)))
+
+    def resize_token_embeddings(self, new_num_tokens):
+        old_num_tokens, old_embedding_dim = self.decoder.weight.size()
+        new_linear = nn.Linear(
+            new_num_tokens,
+            old_embedding_dim,
+            bias=False,
+        )
+        new_bias = nn.Parameter(
+            torch.zeros((new_num_tokens, old_embedding_dim))
+        )
+
+        # initialize
+        new_linear.weight.data.normal_(mean=0.0, std=self.initializer_range)
+        num_tokens_to_copy = min(old_num_tokens, new_num_tokens)
+
+        new_bias.weight.data[:num_tokens_to_copy, :] = \
+            self.bias.weight.data[:num_tokens_to_copy, :]
+        new_linear.weight.data[:num_tokens_to_copy, :] = \
+            self.decoder.weight.data[:num_tokens_to_copy, :]
+
+        self.decoder = new_linear
+        self.bias = new_bias
 
     def forward(self, hidden_states):
         hidden_states = self.transform(hidden_states)
@@ -1580,6 +1603,7 @@ class VILBertForVLTasks(BertPreTrainedModel):
 
     def resize_token_embeddings(self, new_num_tokens):
         self.bert.resize_token_embeddings(new_num_tokens)
+        self.cls.resize_token_embeddings(new_num_tokens)
 
     def forward(
         self,
