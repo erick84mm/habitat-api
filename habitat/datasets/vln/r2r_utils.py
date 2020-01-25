@@ -25,6 +25,7 @@ SCENE_ID = "mp3d/{scan}/{scan}.glb"
 base_vocab = ['<pad>', '<unk>', '<s>', '</s>']
 padding_idx = base_vocab.index('<pad>')
 
+
 def load_nav_graph(data):
     ''' Load connectivity graph for each scan '''
 
@@ -315,8 +316,8 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
         'action_ignore_token': 'action_ignore',
     }
     num_added_toks = berttokenizer.add_tokens(list(action_tokens_dict.values()))
-    print('We have added', num_added_toks, 'tokens')
-    action_tokens_ids = {k:berttokenizer.vocab.get(v, berttokenizer.vocab["[UNK]"]) for k,v in action_tokens_dict.items()}
+    print('We have added', num_added_toks, 'tokens', len(berttokenizer.vocab))
+    action_tokens_ids = {k:berttokenizer.added_tokens_encoder[v] for k,v in action_tokens_dict.items()}
     print(list(action_tokens_dict.values()), action_tokens_ids, berttokenizer.vocab["[UNK]"])
     for split in splits:
         habitat_episodes = []
