@@ -42,7 +42,7 @@ class VLNBenchmark(habitat.Benchmark):
         ignore_idx = agent.model_actions.index("<ignore>")
         action_padding_idx = self.action_tokens[self.action_tokens_idx[ignore_idx]]
         rollout_observations = []
-        
+
         while count_episodes < num_episodes:
             agent.reset(steps)
             observations = self._env.reset()
@@ -77,6 +77,7 @@ class VLNBenchmark(habitat.Benchmark):
 
                 # add padding at the end
                 observations["target_tokens"] = []
+                observations["scene_id"] = episode.scene_id
                 observations["tokens"] = tokens
                 observations["mask"] = mask
                 observations["segment"] = segment
@@ -101,7 +102,8 @@ class VLNBenchmark(habitat.Benchmark):
             for m, v in metrics.items():
                 if m != "distance_to_goal":
                     agg_metrics[m] += v
-
+        if steps % 10 == 0:
+            agent.save_example()
         agent.reset(steps)
         print(count_episodes)
         avg_metrics = {k: v / count_episodes for k, v in agg_metrics.items()}
@@ -382,13 +384,16 @@ def main():
     task_config = experiment_config.TASK_CONFIG
     agent = alignmentAgent(experiment_config, num_train_optimization_steps=10*args.num_episodes / args.batch_size )
     benchmark = VLNBenchmark(args.experiment_name)
-    train_metrics = benchmark.train_batch(agent, num_episodes=args.num_episodes, batch_size=args.batch_size)
 
-    for k, v in train_metrics.items():
-        print("{0}: {1}".format(k, v))
+    if args.train:
+        train_metrics = benchmark.train_batch(agent, num_episodes=args.num_episodes, batch_size=args.batch_size)
 
-
-
+        for k, v in train_metrics.items():
+            print("{0}: {1}".format(k, v))
+    if args.val:
+        eval_metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
+        for k, v in train_metrics.items():
+            print("{0}: {1}".format(k, v))
 
 if __name__ == "__main__":
     main()

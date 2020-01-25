@@ -695,7 +695,7 @@ class alignmentAgent(habitat.Agent):
         #print("vision_prediction", vision_prediction.shape)
         #print("vision_logit", vision_logit.shape) # choose vision or not
         #print("linguisic_prediction", linguisic_prediction.shape)
-        print("linguisic_logit", linguisic_logit.shape)
+        #print("linguisic_logit", linguisic_logit.shape)
 
         linguistic_tokens = torch.max(linguisic_prediction, 1)[1].data  # argmax
         #print(linguisic_prediction.shape, linguisic_logit.shape)
@@ -822,10 +822,32 @@ class alignmentAgent(habitat.Agent):
             co_attention_masks
         )
 
+        '''
+        self.save = {
+            "path_id":""
+            "images": [],
+            "boxes": [],
+            "box_probs": [],
+            "text": [],
+            "actions": []
+        }
+        '''
+
+        linguistic_tokens = torch.max(linguisic_prediction, 1)[1].data  # argmax
+        selected_images = vision_logit.tolist()
+
         #if self.mode == "argmax":
         logit = torch.max(vil_prediction, 1)[1].data  # argmax
         #elif self.mode == "sample":
         action = self.model_actions[logit]
+
+        self.save["path_id"] = observations["path_id"]
+        self.save["images"].append(observations["rgb"])
+        self.save["boxes"].append(spatials[0].tolist())
+        self.save["box_probs"].append(vision_logit.tolist())
+        self.save["text"].append(linguistic_tokens.tolist())
+        self.save["actions"].append(action)
+
         next_action = {"action": action, "action_args": action_args}
         if action == "TELEPORT":
             next_action = self._teleport_target(observations)
@@ -833,7 +855,11 @@ class alignmentAgent(habitat.Agent):
         return next_action
 
     def save_example(self):
-        return
+        PATH = "/home/erick/Research/vln/examples/"
+        path_id = self.save["path_id"] + ".json"
+        with open(os.path.join(PATH, path_id), "w+") as outfile:
+            json.dump(self.save, outfile)
+
 
     def compute_mistakes(self, stop_probs, category_probs, logits, labels):
         logits = torch.max(logits, 1)[1].data  # argmax
