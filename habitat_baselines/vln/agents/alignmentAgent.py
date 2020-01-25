@@ -683,6 +683,11 @@ class alignmentAgent(habitat.Agent):
             image_masks,
             co_attention_masks
         )
+        
+        for i, ob in enumerate(observations):
+            if not any(True for obs in ob['adjacentViewpoints'] if obs[0] == 0):
+                teleport_idx = self.model_actions.index("TELEPORT")
+                vil_prediction[i][teleport_idx] = -float('inf')
 
         instructions = None
         previous_actions = None
