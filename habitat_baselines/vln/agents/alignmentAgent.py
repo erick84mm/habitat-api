@@ -932,7 +932,7 @@ class alignmentAgent(habitat.Agent):
         model_to_save = (
                 self.model.module if hasattr(model, "module") else self.model
             )
-        torch.save(model_to_save.state_dict(), path)
+        #torch.save(model_to_save.state_dict(), path)
 
     def load(self, path):
         ''' Loads parameters (but not training state) '''
