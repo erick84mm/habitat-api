@@ -847,7 +847,7 @@ class alignmentAgent(habitat.Agent):
         self.save["box_probs"].append(vision_logit.tolist())
         self.save["text"].append(linguistic_tokens.tolist())
         self.save["actions"].append(action)
-        print(vision_logit.tolist()) #, linguistic_tokens.tolist(), spatials[0].tolist())
+        #print(vision_logit.tolist()) #, linguistic_tokens.tolist(), spatials[0].tolist())
 
         next_action = {"action": action, "action_args": action_args}
         if action == "TELEPORT":
@@ -858,6 +858,20 @@ class alignmentAgent(habitat.Agent):
     def save_example(self):
         PATH = "/home/erick/Research/vln/examples/"
         path_id = self.save["path_id"] + ".json"
+        print(
+            type(self.save),
+            type(self.save["path_id"]),
+            type(self.save["images"]),
+            type(self.save["boxes"]),
+            type(self.save["box_probs"]),
+            type(self.save["text"]),
+            type(self.save["actions"]),
+            type(self.save["images"][0]),
+            type(self.save["boxes"][0]),
+            type(self.save["box_probs"][0]),
+            type(self.save["text"][0]),
+            type(self.save["actions"][0]),  
+            )
         with open(os.path.join(PATH, path_id), "w+") as outfile:
             json.dump(self.save, outfile)
 
