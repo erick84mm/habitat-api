@@ -357,7 +357,7 @@ class BertEmbeddings(nn.Module):
     def resize_token_embeddings(self, new_num_tokens):
             old_num_tokens, old_embedding_dim = self.word_embeddings.weight.size()
             new_embeddings = nn.Embedding(new_num_tokens, old_embedding_dim)
-            new_embeddings.to(self.embeddings.weight.device)
+            new_embeddings.to(self.word_embeddings.weight.device)
 
             # initialize all new embeddings (in particular added tokens)
             new_embeddings.weight.data.normal_(mean=0.0, std=self.initializer_range)
