@@ -352,6 +352,7 @@ class alignmentAgent(habitat.Agent):
 
             # Post processing for bounding boxes (rescale to raw_image)
             boxes = []
+            classes = []
             for instances, input_per_image, image_size in zip(
                     instances_list, inputs, sizes
                 ):
@@ -376,8 +377,9 @@ class alignmentAgent(habitat.Agent):
                     (float(height) * float(width))
 
                 boxes.append(box)
+                classes.append(raw_instances.pred_classes)
             # features, boxes, image_mask
-            return roi_features_list, boxes, num_boxes, pred_class_logits#, pred_proposal_deltas
+            return roi_features_list, boxes, num_boxes, classes#, pred_proposal_deltas
 
     def train(self):
         self.model.train()
@@ -533,6 +535,7 @@ class alignmentAgent(habitat.Agent):
         for im in imgs:
             features, boxes, num_boxes, pred_class_logits = \
                 self._get_image_features([im])
+            print(pred_class_logits)
             print(pred_class_logits.shape)
             mix_num_boxes = min(int(num_boxes[0]), max_regions)
             mix_boxes_pad = torch.zeros((max_regions, 5)
