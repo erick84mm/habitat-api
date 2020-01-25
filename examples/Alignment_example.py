@@ -125,7 +125,7 @@ class VLNBenchmark(habitat.Benchmark):
         agent,
         num_episodes: Optional[int] = None,
         feedback="teacher",
-        checkpoint_iter = 1000,
+        checkpoint_iter = 10,
         batch_size = 4
     ):
         print("Training is running on device ", torch.cuda.current_device())
