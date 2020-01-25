@@ -687,7 +687,7 @@ class alignmentAgent(habitat.Agent):
         for i, ob in enumerate(observations):
             if not any(True for obs in ob['adjacentViewpoints'] if obs[0] == 0):
                 teleport_idx = self.model_actions.index("TELEPORT")
-                vil_prediction[i][teleport_idx] = 0
+                vil_prediction[i][teleport_idx] = -100.0
 
         instructions = None
         previous_actions = None
