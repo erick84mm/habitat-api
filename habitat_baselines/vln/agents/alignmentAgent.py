@@ -856,7 +856,6 @@ class alignmentAgent(habitat.Agent):
         if action == "TELEPORT":
             next_action = self._teleport_target(ob)
 
-        if next_action
         return next_action
 
     def save_example(self):
