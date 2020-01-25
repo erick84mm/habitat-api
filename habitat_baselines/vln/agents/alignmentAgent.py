@@ -520,7 +520,7 @@ class alignmentAgent(habitat.Agent):
                     view_point=AgentState(position=posB, rotation=rotA)
                 )
                 action_args = {"target": viewpoint}
-                print("the target is ", location)
+                #print("the target is ", location)
                 return {"action": action, "action_args": action_args}
 
         return {"action": action, "action_args": action_args}
