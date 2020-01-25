@@ -549,7 +549,7 @@ class alignmentAgent(habitat.Agent):
             features, boxes, num_boxes, pred_class_logits = \
                 self._get_image_features([im])
 
-            print(self.get_image_labels(pred_class_logits.to('cpu')))
+            print(self.get_image_labels(pred_class_logits))
             mix_num_boxes = min(int(num_boxes[0]), max_regions)
             mix_boxes_pad = torch.zeros((max_regions, 5)
                                         , dtype=torch.float
