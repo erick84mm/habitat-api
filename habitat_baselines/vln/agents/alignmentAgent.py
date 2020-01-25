@@ -842,7 +842,7 @@ class alignmentAgent(habitat.Agent):
         action = self.model_actions[logit]
         ob = observations[0]
         self.save["path_id"] = ob["path_id"]
-        self.save["images"].append(ob["rgb"])
+        self.save["images"].append(ob["rgb"].tolist())
         self.save["boxes"].append(spatials[0].tolist())
         self.save["box_probs"].append(vision_logit.tolist())
         self.save["text"].append(linguistic_tokens.tolist())
@@ -870,7 +870,7 @@ class alignmentAgent(habitat.Agent):
             type(self.save["boxes"][0]),
             type(self.save["box_probs"][0]),
             type(self.save["text"][0]),
-            type(self.save["actions"][0])  
+            type(self.save["actions"][0])
             )
         with open(os.path.join(PATH, path_id), "w+") as outfile:
             json.dump(self.save, outfile)
