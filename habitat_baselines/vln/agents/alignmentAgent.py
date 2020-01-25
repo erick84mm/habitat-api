@@ -854,7 +854,7 @@ class alignmentAgent(habitat.Agent):
 
         next_action = {"action": action, "action_args": action_args}
         if action == "TELEPORT":
-            next_action = self._teleport_target(observations)
+            next_action = self._teleport_target(observations[0])
 
         return next_action
 
