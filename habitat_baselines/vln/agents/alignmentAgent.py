@@ -520,8 +520,8 @@ class alignmentAgent(habitat.Agent):
                     view_point=AgentState(position=posB, rotation=rotA)
                 )
                 action_args = {"target": viewpoint}
-                print("the target is ", location)
-                break
+                print("the target is ", location)s
+                return {"action": action, "action_args": action_args}
 
         return {"action": action, "action_args": action_args}
 
@@ -852,9 +852,10 @@ class alignmentAgent(habitat.Agent):
         #print(vision_logit.tolist()) #, linguistic_tokens.tolist(), spatials[0].tolist())
 
         next_action = {"action": action, "action_args": action_args}
+        print(action)
         if action == "TELEPORT":
             next_action = self._teleport_target(ob)
-
+        print(next_action)
         return next_action
 
     def save_example(self):
