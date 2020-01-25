@@ -348,11 +348,26 @@ class BertEmbeddings(nn.Module):
         self.token_type_embeddings = nn.Embedding(
             config.type_vocab_size, config.hidden_size
         )
-
+        self.initializer_range = config.initializer_range
         # self.LayerNorm is not snake-cased to stick with TensorFlow model variable name and be able to load
         # any TensorFlow checkpoint file
         self.LayerNorm = BertLayerNorm(config.hidden_size, eps=1e-12)
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
+
+    def resize_token_embeddings(self, new_num_tokens):
+            old_num_tokens, old_embedding_dim = self.word_embeddings.weight.size()
+            new_embeddings = nn.Embedding(new_num_tokens, old_embedding_dim)
+            new_embeddings.to(self.embeddings.weight.device)
+
+            # initialize all new embeddings (in particular added tokens)
+            new_embeddings.weight.data.normal_(mean=0.0, std=self.initializer_range)
+
+            # Copy word embeddings from the previous weights
+            num_tokens_to_copy = min(old_num_tokens, new_num_tokens)
+            new_embeddings.weight.data[:num_tokens_to_copy, :] = \
+                old_embeddings.weight.data[:num_tokens_to_copy, :]
+
+            self.word_embeddings = new_embeddings
 
     def forward(self, input_ids, token_type_ids=None):
         seq_length = input_ids.size(1)
@@ -1352,19 +1367,7 @@ class BertModel(BertPreTrainedModel):
 
 
     def resize_token_embeddings(self, new_num_tokens):
-        old_num_tokens, old_embedding_dim = self.embeddings.weight.size()
-        new_embeddings = nn.Embedding(new_num_tokens, old_embedding_dim)
-        new_embeddings.to(self.embeddings.weight.device)
-
-        # initialize all new embeddings (in particular added tokens)
-        new_embeddings.weight.data.normal_(mean=0.0, std=self.config.initializer_range)
-
-        # Copy word embeddings from the previous weights
-        num_tokens_to_copy = min(old_num_tokens, new_num_tokens)
-        new_embeddings.weight.data[:num_tokens_to_copy, :] = \
-            old_embeddings.weight.data[:num_tokens_to_copy, :]
-
-        self.embeddings = new_embeddings
+        self.embeddings.resize_token_embeddings(new_num_tokens)
 
     def forward(
         self,
