@@ -200,7 +200,16 @@ class alignmentAgent(habitat.Agent):
         cfg.MODEL.DEVICE = "cuda:" + str(self.detectron2_gpu)
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
         # Find a model from detectron2's model zoo. Download model
-        self.class_names = MetadataCatalog.get(cfg.DATASETS.TRAIN[0]).thing_classes
+
+        data_path = 'data/genome/1600-400-20'
+
+        vg_classes = []
+        with open(os.path.join(data_path, 'objects_vocab.txt')) as f:
+            for object in f.readlines():
+                vg_classes.append(object.split(',')[0].lower().strip())
+
+        MetadataCatalog.get("vg").thing_classes = vg_classes
+        self.class_names = vg_classes
         cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(checkpoint)
         return cfg
 
@@ -260,6 +269,7 @@ class alignmentAgent(habitat.Agent):
 
     def get_image_logits(self, pred_class_logits):
 
+        self.class_names
         return
 
 
