@@ -314,9 +314,9 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
         'action_start_token': '<START>',
         'action_ignore_token': '<IGNORE>',
     }
-    berttokenizer.add_special_tokens(action_tokens_dict)
+    berttokenizer.add_tokens(list(action_tokens_dict.values()))
     action_tokens_ids = {k:berttokenizer.vocab.get(v, berttokenizer.vocab["[UNK]"]) for k,v in action_tokens_dict.items()}
-    print(action_tokens_ids)
+    print(action_tokens_ids, berttokenizer.vocab["[UNK]"])
     for split in splits:
         habitat_episodes = []
         scenes = []

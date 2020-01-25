@@ -1350,6 +1350,22 @@ class BertModel(BertPreTrainedModel):
 
         self.apply(self.init_bert_weights)
 
+
+    def resize_token_embeddings(self, new_num_tokens):
+        old_num_tokens, old_embedding_dim = self.embeddings.weight.size()
+        new_embeddings = nn.Embedding(new_num_tokens, old_embedding_dim)
+        new_embeddings.to(self.embeddings.weight.device)
+
+        # initialize all new embeddings (in particular added tokens)
+        new_embeddings.weight.data.normal_(mean=0.0, std=self.config.initializer_range)
+
+        # Copy word embeddings from the previous weights
+        num_tokens_to_copy = min(old_num_tokens, new_num_tokens)
+        new_embeddings.weight.data[:num_tokens_to_copy, :] = \
+            old_embeddings.weight.data[:num_tokens_to_copy, :]
+
+        self.embeddings = new_embeddings
+
     def forward(
         self,
         input_txt,
@@ -1558,6 +1574,9 @@ class VILBertForVLTasks(BertPreTrainedModel):
         self.linguisic_logit = nn.Linear(config.hidden_size, 1)
         self.fusion_method = config.fusion_method
         self.apply(self.init_bert_weights)
+
+    def resize_token_embeddings(self, new_num_tokens):
+        self.bert.resize_token_embeddings(new_num_tokens)
 
     def forward(
         self,
