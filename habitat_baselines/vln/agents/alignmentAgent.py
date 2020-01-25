@@ -928,6 +928,7 @@ class alignmentAgent(habitat.Agent):
 
     def save(self, path):
         ''' Snapshot models '''
+        print("I enter save method")
         model_to_save = (
                 self.model.module if hasattr(model, "module") else self.model
             )
