@@ -101,7 +101,7 @@ class VLNBenchmark(habitat.Benchmark):
                 # add padding at the end
                 observations["actions"] = action_tokens
                 observations["tokens"] = \
-                    self._env._current_episode.instruction.tokens + \
+                    self._env._current_episode.instruction.tokens #+ \
                 observations["mask"] = \
                     self._env._current_episode.instruction.mask #+ \
                     #action_mask
