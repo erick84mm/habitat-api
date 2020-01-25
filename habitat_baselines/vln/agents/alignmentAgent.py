@@ -582,8 +582,7 @@ class alignmentAgent(habitat.Agent):
             segment_ids,
             input_masks,
             image_masks,
-            co_attention_masks,
-            input_actions=previous_actions,
+            co_attention_masks
         )
 
         instructions = None
