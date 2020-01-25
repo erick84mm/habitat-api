@@ -112,8 +112,8 @@ class alignmentAgent(habitat.Agent):
                     "IS_R_101_DC5_3x": "COCO-InstanceSegmentation/mask_rcnn_R_101_DC5_3x.yaml",
                     "IS_R_101_FPN_3x": "COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml",
                     "IS_X_101_FPN_3x": "COCO-InstanceSegmentation/mask_rcnn_X_101_32x8d_FPN_3x.yaml",
-                    "BUA_R_101_C4":"VG-Detection/faster_rcnn_R_101_C4_caffe.yaml",
-                    "BUA_R_101_C4_MAX":"VG-Detection/faster_rcnn_R_101_C4_caffemaxpool.yaml"
+                    "BUA_R_101_C4": "VG-Detection/faster_rcnn_R_101_C4_caffe.yaml",
+                    "BUA_R_101_C4_MAX": "VG-Detection/faster_rcnn_R_101_C4_caffemaxpool.yaml"
     }
 
 
