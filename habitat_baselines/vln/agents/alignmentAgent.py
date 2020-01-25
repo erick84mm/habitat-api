@@ -169,8 +169,10 @@ class alignmentAgent(habitat.Agent):
                 "c_loss": [],
         }
         self.save = {
+            "path_id":"",
             "images": [],
             "boxes": [],
+            "box_probs": [],
             "text": [],
             "actions": []
         }
@@ -269,12 +271,14 @@ class alignmentAgent(habitat.Agent):
         self.action_history = []
         self.adjust_weights()
         self.save = {
+            "path_id":"",
             "images": [],
             "boxes": [],
+            "box_probs": [],
             "text": [],
             "actions": []
         }
-        pass
+        #pass
 
     def get_lr(self):
         for param_group in self.optimizer.param_groups:
