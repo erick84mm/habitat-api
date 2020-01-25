@@ -391,6 +391,8 @@ def main():
         for k, v in train_metrics.items():
             print("{0}: {1}".format(k, v))
     if args.val:
+        if args.checkpoint_num:
+            agent.load("checkpoints/{}_{}.check".format(args.experiment_name, args.checkpoint_num))
         eval_metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
         for k, v in train_metrics.items():
             print("{0}: {1}".format(k, v))

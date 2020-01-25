@@ -921,6 +921,6 @@ class alignmentAgent(habitat.Agent):
         ''' Snapshot models '''
         torch.save(self.model.state_dict(), path)
 
-    def load(self, encoder_path, decoder_path):
+    def load(self, path):
         ''' Loads parameters (but not training state) '''
         self.model.load_state_dict(torch.load(path))
