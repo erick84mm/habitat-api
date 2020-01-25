@@ -832,7 +832,7 @@ class alignmentAgent(habitat.Agent):
             "actions": []
         }
         '''
-
+        print(linguisic_prediction.shape)
         linguistic_tokens = torch.max(linguisic_prediction, 1)[1].data  # argmax
         selected_images = vision_logit.tolist()
 
