@@ -302,8 +302,8 @@ class alignmentAgent(habitat.Agent):
                         dtype=torch.float,
                         device=self.bert_gpu_device
                  ).unsqueeze(0)
-        print(chosen_labels)
-        print(instr_tokens)
+        #print(chosen_labels)
+        #print(instr_tokens)
 
         return one_hots
 
