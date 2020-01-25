@@ -142,6 +142,7 @@ class VLNBenchmark(habitat.Benchmark):
                                                         self._name,
                                                         count_episodes
                                                     )
+                print(save_path)
                 agent.save(save_path)
                 print("{} episodes have been processed".format(count_episodes))
             agent.reset(steps)
