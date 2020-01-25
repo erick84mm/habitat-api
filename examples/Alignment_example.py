@@ -394,6 +394,7 @@ def main():
     benchmark = VLNBenchmark(args.experiment_name)
 
     if args.train:
+        print("Running training")
         train_metrics = benchmark.train_batch(agent, num_episodes=args.num_episodes, batch_size=args.batch_size)
 
         for k, v in train_metrics.items():

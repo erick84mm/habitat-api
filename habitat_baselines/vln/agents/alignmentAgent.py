@@ -687,7 +687,7 @@ class alignmentAgent(habitat.Agent):
         for i, ob in enumerate(observations):
             if not any(True for obs in ob['adjacentViewpoints'] if obs[0] == 0):
                 teleport_idx = self.model_actions.index("TELEPORT")
-                vil_prediction[i][teleport_idx] = -float('inf')
+                vil_prediction[i][teleport_idx] = -float(10)
 
         instructions = None
         previous_actions = None
@@ -869,7 +869,6 @@ class alignmentAgent(habitat.Agent):
 
         with open(os.path.join(PATH, path_id), "w+") as outfile:
             json.dump(self.save, outfile)
-
 
     def compute_mistakes(self, stop_probs, category_probs, logits, labels):
         logits = torch.max(logits, 1)[1].data  # argmax
