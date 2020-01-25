@@ -35,6 +35,7 @@ from detectron2.structures import Boxes, Instances
 from detectron2.modeling.postprocessing import detector_postprocess
 from habitat_baselines.vln.models.optimization import Adam
 from detectron2.data import MetadataCatalog
+from transformers import BertTokenizer
 
 
 # We need the indices of the features to keep
@@ -147,7 +148,11 @@ class alignmentAgent(habitat.Agent):
         self._max_seq_length = 128
         #if include_actions:
             #self._max_seq_length = 128 + 10
-
+        self.tokenizer = BertTokenizer.from_pretrained(
+                             "bert-base-uncased",
+                             do_lower_case=True,
+                             do_basic_tokenize=True
+                         )
         self.criterion = nn.BCEWithLogitsLoss(reduction='mean')
         self.loss = 0
         self.learning_rate = 3e-6
@@ -249,6 +254,10 @@ class alignmentAgent(habitat.Agent):
                     c_avg
                 )
 
+    def get_word_token(self, word):
+        token = self.tokenizer.vocab.get(word, self.tokenizer.vocab["[UNK]"])
+        return token
+
     def reset(self, steps):
         self.loss = None
         self.action_history = []
@@ -276,8 +285,23 @@ class alignmentAgent(habitat.Agent):
             labels.append(classes[c])
         return labels
 
-    def choose_related_images(self, classes, text):
-        return
+    def get_image_target_onehot(self, classes, instr_tokens):
+        one_hot = []
+
+        for c in classes:
+            token = self.get_word_token(c)
+            if c in instr_tokens:
+                one_hot.append(1)
+            else:
+                one_hot.append(0)
+
+        one_hot = torch.tensor(
+                        one_hot,
+                        dtype=torch.long,
+                        device=self.bert_gpu_device
+                 ).unsqueeze(0)
+
+        return one_hot
 
 
     def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
@@ -496,28 +520,65 @@ class alignmentAgent(habitat.Agent):
 
             return category_one_hot, one_hot, stop_one_hot
 
+    def _get_tensor_image_features(self, im, max_regions=37):
+        features, boxes, num_boxes, pred_class_logits = \
+            self._get_image_features([im])
+        #print(self.get_image_labels(pred_class_logits[0].tolist()))
+        mix_num_boxes = min(int(num_boxes[0]), max_regions)
+        mix_boxes_pad = torch.zeros((max_regions, 5)
+                                    , dtype=torch.float
+                                    , device=self.bert_gpu_device)
+        mix_features_pad = torch.zeros((max_regions, 2048)
+                                    , dtype=torch.float
+                                    , device=self.bert_gpu_device)
+
+        image_mask = [1] * (int(mix_num_boxes))
+        while len(image_mask) < max_regions:
+            image_mask.append(0)
+
+        mix_boxes_pad[:mix_num_boxes] = boxes[0][:mix_num_boxes]
+        mix_features_pad[:mix_num_boxes] = features[0][:mix_num_boxes]
+
+        feat = mix_features_pad.unsqueeze(0)
+        img_mask = torch.tensor(image_mask
+                                    , dtype=torch.long
+                                    , device=self.bert_gpu_device
+                                ).unsqueeze(0)
+        spat = mix_boxes_pad.unsqueeze(0)
+        return feat, img_mask, spat, pred_class_logits
+
     def tensorize(self, observations):
         batch_size = len(observations)
         max_regions = self._max_region_num + 1
-        imgs = []
         instructions = []
         masks = []
         segments_ids = []
         co_attention_masks = []
-        #previous_actions = []
+        tensor_features = []
+        spatials = []
+        image_masks = []
+        target_tokens = []
+        image_logits = []
         for ob in observations:
-            imgs.append(ob["rgb"])
+            im = ob["rgb"]
+            feat, spat, img_mask, labels = self._get_tensor_image_features(im)
+            img_logit = self.get_image_target_onehot(labels, ob["tokens"])
+            tensor_features.append(feat)
+            spatials.append(spat)
+            image_masks.append(img_mask)
+            image_logits.append(img_logit)
+
             instruction = torch.tensor(
                                 ob["tokens"],
                                 dtype=torch.long,
                                 device=self.bert_gpu_device
                           ).unsqueeze(0)
 
-            #actions = torch.tensor(
-            #                    ob["actions"],
-            #                    dtype=torch.long,
-            #                    device=self.bert_gpu_device
-            #              ).unsqueeze(0)
+            t_tokens = torch.tensor(
+                                ob["target_tokens"],
+                                dtype=torch.long,
+                                device=self.bert_gpu_device
+                          ).unsqueeze(0)
 
             #print(ob["mask"])
             input_mask = torch.tensor(
@@ -543,42 +604,7 @@ class alignmentAgent(habitat.Agent):
             masks.append(input_mask)
             segments_ids.append(segment)
             co_attention_masks.append(co_attention_mask)
-            #previous_actions.append(actions)
-
-
-        tensor_features = []
-        spatials = []
-        image_masks = []
-        for im in imgs:
-            features, boxes, num_boxes, pred_class_logits = \
-                self._get_image_features([im])
-            #print(self.get_image_labels(pred_class_logits[0].tolist()))
-            mix_num_boxes = min(int(num_boxes[0]), max_regions)
-            mix_boxes_pad = torch.zeros((max_regions, 5)
-                                        , dtype=torch.float
-                                        , device=self.bert_gpu_device)
-            mix_features_pad = torch.zeros((max_regions, 2048)
-                                        , dtype=torch.float
-                                        , device=self.bert_gpu_device)
-
-            image_mask = [1] * (int(mix_num_boxes))
-            while len(image_mask) < max_regions:
-                image_mask.append(0)
-
-            mix_boxes_pad[:mix_num_boxes] = boxes[0][:mix_num_boxes]
-            mix_features_pad[:mix_num_boxes] = features[0][:mix_num_boxes]
-
-            feat = mix_features_pad.unsqueeze(0)
-            img_mask = torch.tensor(image_mask
-                                        , dtype=torch.long
-                                        , device=self.bert_gpu_device
-                                    ).unsqueeze(0)
-            spat = mix_boxes_pad.unsqueeze(0)
-
-            tensor_features.append(feat)
-            spatials.append(spat)
-            image_masks.append(img_mask)
-
+            target_tokens.append(t_tokens)
 
         instructions = torch.cat(instructions, dim=0)
         masks = torch.cat(masks, dim=0)
@@ -587,14 +613,16 @@ class alignmentAgent(habitat.Agent):
         tensor_features = torch.cat(tensor_features, dim=0)
         spatials = torch.cat(spatials, dim=0)
         image_masks = torch.cat(image_masks, dim=0)
-        #previous_actions = torch.cat(previous_actions, dim=0)
+        image_logits = torch.cat(image_logits, dim=0)
+        target_tokens = torch.cat(target_tokens, dim=0)
 
-        return instructions, masks, segments_ids, co_attention_masks, tensor_features, spatials, image_masks
+        return instructions, masks, segments_ids, co_attention_masks, tensor_features, spatials, image_masks, image_logits, target_tokens
 
     def act_batch(self, observations):
         batch_size = len(observations)
         instructions, input_masks, segment_ids,  \
-        co_attention_masks, features, spatials, image_masks = \
+        co_attention_masks, features, spatials, image_masks, \
+        image_one_hots, target_tokens = \
             self.tensorize(observations)
         category_target, target, stop_target = \
             self._get_batch_target_onehot(
@@ -620,7 +648,11 @@ class alignmentAgent(habitat.Agent):
         input_masks = None
         image_masks = None
         co_attention_masks = None
-
+        print("vision_prediction", vision_prediction.shape)
+        print("vision_logit", vision_logit.shape)
+        print("linguisic_prediction", linguisic_prediction.shape)
+        print("linguisic_logit", linguisic_logit.shape)
+        
         linguistic_tokens = torch.max(linguisic_prediction, 1)[1].data  # argmax
         #print(linguisic_prediction.shape, linguisic_logit.shape)
         #print(linguistic_tokens[:,-10:])
