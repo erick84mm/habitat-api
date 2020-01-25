@@ -280,11 +280,9 @@ class alignmentAgent(habitat.Agent):
             "actions": []
         }
         #pass
-
     def get_lr(self):
         for param_group in self.optimizer.param_groups:
             return param_group['lr']
-
 
     def train_step(self, steps):
         self.loss = self.loss / self.grad_accumulation
@@ -323,7 +321,6 @@ class alignmentAgent(habitat.Agent):
         #print(instr_tokens)
 
         return one_hots
-
 
     def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
         # imgs tensor(batch, H, W, C)
@@ -527,8 +524,6 @@ class alignmentAgent(habitat.Agent):
                 break
 
         return {"action": action, "action_args": action_args}
-
-
 
     def _get_target_onehot(self, observations, goals):
         target_action, args = self._teacher_actions(observations, goals)
@@ -929,3 +924,4 @@ class alignmentAgent(habitat.Agent):
     def load(self, path):
         ''' Loads parameters (but not training state) '''
         self.model.load_state_dict(torch.load(path))
+        print("model loaded from path " + path)
