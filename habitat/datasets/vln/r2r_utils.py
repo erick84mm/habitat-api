@@ -316,7 +316,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
     }
     berttokenizer.add_tokens(list(action_tokens_dict.values()))
     action_tokens_ids = {k:berttokenizer.vocab.get(v, berttokenizer.vocab["[UNK]"]) for k,v in action_tokens_dict.items()}
-    print(action_tokens_ids, berttokenizer.vocab["[UNK]"])
+    print(list(action_tokens_dict.values()), action_tokens_ids, berttokenizer.vocab["[UNK]"])
     for split in splits:
         habitat_episodes = []
         scenes = []
@@ -333,7 +333,8 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                     viewpoint = episode["path"][0]
                     distance = 0
                     heading = normalize_heading(episode["heading"])
-                    tokens, mask = tokenize_bert(instr, berttokenizer)
+                    # 10 tokens will be reserved for the actions
+                    tokens, mask = tokenize_bert(instr, berttokenizer, max_length=118)
 
                     if "distance" in episode:
                         distance = episode["distance"]
