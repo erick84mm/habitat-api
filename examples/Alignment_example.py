@@ -44,7 +44,7 @@ class VLNBenchmark(habitat.Benchmark):
         rollout_observations = []
 
         while count_episodes < num_episodes:
-            # 1 in 3 posibilities to save 
+            # 1 in 3 posibilities to save
             if steps % 3 == 0:
                 agent.save_example()
             agent.reset(steps)
@@ -396,7 +396,7 @@ def main():
         if args.checkpoint_num:
             agent.load("checkpoints/{}_{}.check".format(args.experiment_name, args.checkpoint_num))
         eval_metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
-        for k, v in train_metrics.items():
+        for k, v in eval_metrics.items():
             print("{0}: {1}".format(k, v))
 
 if __name__ == "__main__":
