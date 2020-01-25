@@ -1042,21 +1042,16 @@ class BertLMPredictionHead(nn.Module):
             new_num_tokens,
             bias=False,
         )
-        new_bias = nn.Parameter(
-            torch.zeros((new_num_tokens, old_embedding_dim))
-        )
 
         # initialize
         new_linear.weight.data.normal_(mean=0.0, std=self.initializer_range)
 
         num_tokens_to_copy = min(old_num_tokens, new_num_tokens)
 
-        new_bias.data.zero_()
         new_linear.weight.data[:num_tokens_to_copy, :] = \
             self.decoder.weight.data[:num_tokens_to_copy, :]
 
         self.decoder = new_linear
-        self.bias = new_bias
 
     def forward(self, hidden_states):
         hidden_states = self.transform(hidden_states)
