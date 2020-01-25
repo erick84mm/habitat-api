@@ -859,20 +859,6 @@ class alignmentAgent(habitat.Agent):
         PATH = "/home/erick/Research/vln/examples/"
         path_id = self.save["path_id"] + ".json"
 
-        print(
-            type(self.save),
-            type(self.save["path_id"]),
-            type(self.save["images"]),
-            type(self.save["boxes"]),
-            type(self.save["box_probs"]),
-            type(self.save["text"]),
-            type(self.save["actions"]),
-            type(self.save["images"][0]),
-            type(self.save["boxes"][0]),
-            type(self.save["box_probs"][0]),
-            type(self.save["text"][0]),
-            type(self.save["actions"][0])
-            )
         with open(os.path.join(PATH, path_id), "w+") as outfile:
             json.dump(self.save, outfile)
 
