@@ -291,9 +291,9 @@ class alignmentAgent(habitat.Agent):
         for cl , cl_id in zip(class_labels, classes):
             token_id = self.get_word_token(cl)
             if token_id in instr_tokens:
-                one_hots.append(1)
+                one_hots.append([1])
             else:
-                one_hots.append(0)
+                one_hots.append([0])
 
         one_hots = torch.tensor(
                         one_hots,
