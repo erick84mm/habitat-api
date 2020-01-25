@@ -847,7 +847,7 @@ class alignmentAgent(habitat.Agent):
         self.save["box_probs"].append(vision_logit.tolist())
         self.save["text"].append(linguistic_tokens.tolist())
         self.save["actions"].append(action)
-        print(type(vision_logit.tolist()), type(linguistic_tokens.tolist()), type(spatials[0].tolist()), type(action), type(ob["path_id"]))
+        print(vision_logit.tolist(), linguistic_tokens.tolist(), spatials[0].tolist())
 
         next_action = {"action": action, "action_args": action_args}
         if action == "TELEPORT":
