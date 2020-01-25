@@ -269,10 +269,11 @@ class alignmentAgent(habitat.Agent):
             self.optimizer.step()
             self.model.zero_grad()
 
-    def get_image_logits(self, pred_class_logits):
-
-        self.class_names
-        return
+    def get_image_labels(self, pred_class_logits):
+        labels = []
+        for class in pred_class_logits:
+            labels.append(self.class_names[class])
+        return labels
 
 
     def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
@@ -547,8 +548,8 @@ class alignmentAgent(habitat.Agent):
         for im in imgs:
             features, boxes, num_boxes, pred_class_logits = \
                 self._get_image_features([im])
-            print(pred_class_logits)
-            print(pred_class_logits.shape)
+
+            print(self.get_image_labels(pred_class_logits.to('cpu')))
             mix_num_boxes = min(int(num_boxes[0]), max_regions)
             mix_boxes_pad = torch.zeros((max_regions, 5)
                                         , dtype=torch.float
