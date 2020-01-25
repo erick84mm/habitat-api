@@ -1046,10 +1046,11 @@ class BertLMPredictionHead(nn.Module):
 
         # initialize
         new_linear.weight.data.normal_(mean=0.0, std=self.initializer_range)
+
         num_tokens_to_copy = min(old_num_tokens, new_num_tokens)
 
-        new_bias.weight.data[:num_tokens_to_copy, :] = \
-            self.bias.weight.data[:num_tokens_to_copy, :]
+        new_bias.data[:num_tokens_to_copy, :] = \
+            self.bias.data[:num_tokens_to_copy, :]
         new_linear.weight.data[:num_tokens_to_copy, :] = \
             self.decoder.weight.data[:num_tokens_to_copy, :]
 
