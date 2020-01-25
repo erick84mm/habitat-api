@@ -44,6 +44,9 @@ class VLNBenchmark(habitat.Benchmark):
         rollout_observations = []
 
         while count_episodes < num_episodes:
+            # 1 in 3 posibilities to save 
+            if steps % 3 == 0:
+                agent.save_example()
             agent.reset(steps)
             observations = self._env.reset()
             observations = {
@@ -103,8 +106,6 @@ class VLNBenchmark(habitat.Benchmark):
             for m, v in metrics.items():
                 if m != "distance_to_goal":
                     agg_metrics[m] += v
-        if steps % 2 == 0:
-            agent.save_example()
         agent.reset(steps)
         print(count_episodes)
         avg_metrics = {k: v / count_episodes for k, v in agg_metrics.items()}
