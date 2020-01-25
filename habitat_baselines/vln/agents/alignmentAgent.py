@@ -200,8 +200,7 @@ class alignmentAgent(habitat.Agent):
         cfg.MODEL.DEVICE = "cuda:" + str(self.detectron2_gpu)
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
         # Find a model from detectron2's model zoo. Download model
-        self.class_names = MetadataCatalog.get(cfg.DATASETS.TRAIN[0])
-        print(MetadataCatalog.get(cfg.DATASETS.TRAIN[0]))
+        self.class_names = MetadataCatalog.get(cfg.DATASETS.TRAIN[0]).thing_classes
         cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(checkpoint)
         return cfg
 
@@ -258,6 +257,11 @@ class alignmentAgent(habitat.Agent):
         if (steps + 1) % self.grad_accumulation == 0:
             self.optimizer.step()
             self.model.zero_grad()
+
+    def get_image_logits(self, pred_class_logits):
+
+        return
+
 
     def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
         # imgs tensor(batch, H, W, C)
@@ -373,7 +377,7 @@ class alignmentAgent(habitat.Agent):
 
                 boxes.append(box)
             # features, boxes, image_mask
-            return roi_features_list, boxes, num_boxes, pred_class_logits, pred_proposal_deltas
+            return roi_features_list, boxes, num_boxes, pred_class_logits#, pred_proposal_deltas
 
     def train(self):
         self.model.train()
@@ -527,8 +531,9 @@ class alignmentAgent(habitat.Agent):
         spatials = []
         image_masks = []
         for im in imgs:
-            features, boxes, num_boxes, pred_class_logits, \
-                pred_proposal_deltas = self._get_image_features([im])
+            features, boxes, num_boxes, pred_class_logits = \
+                self._get_image_features([im])
+            print(pred_class_logits)
             mix_num_boxes = min(int(num_boxes[0]), max_regions)
             mix_boxes_pad = torch.zeros((max_regions, 5)
                                         , dtype=torch.float
