@@ -512,7 +512,6 @@ class alignmentAgent(habitat.Agent):
                 continue
             elif location[0] == 0: # Non restricted location
                 action = "TELEPORT"
-                action_args
                 image_id = location[1]
                 posB = location[4:7]  # start_position
                 rotA = navigable_locations[0][14:18]  # camera_rotation
