@@ -510,7 +510,7 @@ class alignmentAgent(habitat.Agent):
         for location in navigable_locations[1:]:
             if location[0] == 1: # location is restricted
                 continue
-            else:
+            elif location[0] == 0: # Non restricted location
                 action = "TELEPORT"
                 action_args
                 image_id = location[1]
