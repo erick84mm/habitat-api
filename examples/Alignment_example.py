@@ -77,7 +77,7 @@ class VLNBenchmark(habitat.Benchmark):
 
                 # add padding at the end
                 observations["target_tokens"] = []
-                observations["scene_id"] = episode.scene_id
+                observations["path_id"] = episode.scene_id
                 observations["tokens"] = tokens
                 observations["mask"] = mask
                 observations["segment"] = segment
