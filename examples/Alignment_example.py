@@ -103,7 +103,7 @@ class VLNBenchmark(habitat.Benchmark):
             for m, v in metrics.items():
                 if m != "distance_to_goal":
                     agg_metrics[m] += v
-        if steps % 3 == 0:
+        if steps % 2 == 0:
             agent.save_example()
         agent.reset(steps)
         print(count_episodes)
