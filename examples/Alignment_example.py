@@ -46,7 +46,7 @@ class VLNBenchmark(habitat.Benchmark):
         while count_episodes < num_episodes:
             # 1 in 10 posibilities to save
             #if steps and steps % 10 == 0:
-                #agent.save_example()
+                #agent.save_example_to_file()
             agent.reset(steps)
             observations = self._env.reset()
             observations = {
@@ -125,7 +125,7 @@ class VLNBenchmark(habitat.Benchmark):
         agent,
         num_episodes: Optional[int] = None,
         feedback="teacher",
-        checkpoint_iter = 1,
+        checkpoint_iter = 1000,
         batch_size = 4
     ):
         print("Training is running on device ", torch.cuda.current_device())

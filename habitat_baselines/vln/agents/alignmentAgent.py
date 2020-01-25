@@ -169,7 +169,7 @@ class alignmentAgent(habitat.Agent):
                 "b_loss": [],
                 "c_loss": [],
         }
-        self.save = {
+        self.save_example = {
             "path_id":"",
             "images": [],
             "boxes": [],
@@ -271,7 +271,7 @@ class alignmentAgent(habitat.Agent):
         self.loss = None
         self.action_history = []
         self.adjust_weights()
-        self.save = {
+        self.save_example = {
             "path_id":"",
             "images": [],
             "boxes": [],
@@ -828,7 +828,7 @@ class alignmentAgent(habitat.Agent):
         )
 
         '''
-        self.save = {
+        self.save_example = {
             "path_id":""
             "images": [],
             "boxes": [],
@@ -848,12 +848,12 @@ class alignmentAgent(habitat.Agent):
         logit = torch.max(vil_prediction, 1)[1].data  # argmax
         #elif self.mode == "sample":
         action = self.model_actions[logit]
-        #self.save["path_id"] = ob["path_id"]
-        #self.save["images"].append(ob["rgb"].tolist())
-        #self.save["boxes"].append(spatials[0].tolist())
-        #self.save["box_probs"].append(vision_logit.tolist())
-        #self.save["text"].append(linguistic_tokens.tolist())
-        #self.save["actions"].append(action)
+        #self.save_example["path_id"] = ob["path_id"]
+        #self.save_example["images"].append(ob["rgb"].tolist())
+        #self.save_example["boxes"].append(spatials[0].tolist())
+        #self.save_example["box_probs"].append(vision_logit.tolist())
+        #self.save_example["text"].append(linguistic_tokens.tolist())
+        #self.save_example["actions"].append(action)
         #print(vision_logit.tolist()) #, linguistic_tokens.tolist(), spatials[0].tolist())
 
         next_action = {"action": action, "action_args": action_args}
@@ -863,7 +863,7 @@ class alignmentAgent(habitat.Agent):
         #print("next action", next_action)
         return next_action
 
-    def save_example(self):
+    def save_example_to_file(self):
         PATH = "/home/erick/Research/vln/examples/"
         path_id = self.save["path_id"] + ".json"
 
@@ -928,11 +928,7 @@ class alignmentAgent(habitat.Agent):
 
     def save(self, path):
         ''' Snapshot models '''
-        print("I enter save method")
-        model_to_save = (
-                self.model.module if hasattr(model, "module") else self.model
-            )
-        #torch.save(model_to_save.state_dict(), path)
+        torch.save(model_to_save.state_dict(), path)
 
     def load(self, path):
         ''' Loads parameters (but not training state) '''
