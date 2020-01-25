@@ -149,7 +149,7 @@ class alignmentAgent(habitat.Agent):
 
         self.criterion = nn.BCEWithLogitsLoss(reduction='mean')
         self.loss = 0
-        self.learning_rate = 3e-5
+        self.learning_rate = 3e-6
         self.vision_scratch = False
         self.max_steps = 30
         self.grad_accumulation = 1 #00
