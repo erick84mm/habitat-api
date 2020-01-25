@@ -138,11 +138,11 @@ class VLNBenchmark(habitat.Benchmark):
         rollout_observations = []
         while count_episodes < num_episodes:
             if count_episodes and count_episodes % checkpoint_iter == 0:
-                agent.save("checkpoints/{}_train_{}.check".format(
+                save_path = "checkpoints/{}_train_{}.check".format(
                                                         self._name,
                                                         count_episodes
                                                     )
-                )
+                agent.save(save_path)
                 print("{} episodes have been processed".format(count_episodes))
             agent.reset(steps)
             observations = self._env.reset()
