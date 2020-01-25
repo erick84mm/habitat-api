@@ -106,8 +106,8 @@ class VLNBenchmark(habitat.Benchmark):
                 mask = self._env._current_episode.instruction.mask + \
                     action_mask
                 segment = [0] * \
-                    len(self._env._current_episode.instruction.tokens)
-                    + [1] * len(action_tokens)
+                    len(self._env._current_episode.instruction.tokens) + \
+                    [1] * len(action_tokens)
 
                 padding = [0] * (128 - len(tokens))
                 tokens += padding
