@@ -1035,8 +1035,6 @@ class BertLMPredictionHead(nn.Module):
 
     def resize_token_embeddings(self, new_num_tokens):
         old_num_tokens, old_embedding_dim = self.decoder.weight.size()
-        print(self.decoder.weight.size())
-        print(self.bias.data.size())
         new_linear = nn.Linear(
             old_embedding_dim,
             new_num_tokens,
