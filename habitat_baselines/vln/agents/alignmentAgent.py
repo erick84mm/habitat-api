@@ -200,6 +200,8 @@ class alignmentAgent(habitat.Agent):
         cfg.MODEL.DEVICE = "cuda:" + str(self.detectron2_gpu)
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
         # Find a model from detectron2's model zoo. Download model
+        self.class_names = MetadataCatalog.get(cfg.DATASETS.TRAIN[0])
+        print(MetadataCatalog.get(cfg.DATASETS.TRAIN[0]))
         cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(checkpoint)
         return cfg
 
