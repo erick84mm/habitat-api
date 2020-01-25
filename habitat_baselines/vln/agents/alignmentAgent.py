@@ -271,8 +271,9 @@ class alignmentAgent(habitat.Agent):
 
     def get_image_labels(self, pred_class_logits):
         labels = []
-        classes = self.class_names.tolist()
+        classes = self.class_names
         for c in pred_class_logits:
+            print(c)
             labels.append(classes[c])
         return labels
 
