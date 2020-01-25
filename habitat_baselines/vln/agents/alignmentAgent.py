@@ -301,7 +301,7 @@ class alignmentAgent(habitat.Agent):
                         device=self.bert_gpu_device
                  ).unsqueeze(0)
 
-        return one_hot
+        return one_hots
 
 
     def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
