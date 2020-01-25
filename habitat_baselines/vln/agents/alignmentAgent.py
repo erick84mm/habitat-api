@@ -545,7 +545,7 @@ class alignmentAgent(habitat.Agent):
                                     , device=self.bert_gpu_device
                                 ).unsqueeze(0)
         spat = mix_boxes_pad.unsqueeze(0)
-        return feat, img_mask, spat, pred_class_logits
+        return feat, img_mask, spat, pred_class_logits[0].tolist()
 
     def tensorize(self, observations):
         batch_size = len(observations)
@@ -652,7 +652,7 @@ class alignmentAgent(habitat.Agent):
         print("vision_logit", vision_logit.shape)
         print("linguisic_prediction", linguisic_prediction.shape)
         print("linguisic_logit", linguisic_logit.shape)
-        
+
         linguistic_tokens = torch.max(linguisic_prediction, 1)[1].data  # argmax
         #print(linguisic_prediction.shape, linguisic_logit.shape)
         #print(linguistic_tokens[:,-10:])
