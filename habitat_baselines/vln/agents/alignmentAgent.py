@@ -288,10 +288,12 @@ class alignmentAgent(habitat.Agent):
     def get_image_target_onehot(self, classes, instr_tokens):
         one_hots = [[0]]
         class_labels = self.get_image_labels(classes)
+        chosen_labels = []
         for cl , cl_id in zip(class_labels, classes):
             token_id = self.get_word_token(cl)
             if token_id in instr_tokens:
                 one_hots.append([1])
+                chosen_labels.append((cl, cl_id))
             else:
                 one_hots.append([0])
 
@@ -300,6 +302,8 @@ class alignmentAgent(habitat.Agent):
                         dtype=torch.float,
                         device=self.bert_gpu_device
                  ).unsqueeze(0)
+        print(chosen_labels)
+        print(instr_tokens)
 
         return one_hots
 

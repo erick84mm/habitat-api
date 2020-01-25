@@ -112,14 +112,15 @@ class VLNBenchmark(habitat.Benchmark):
 
 
                 padding = [0] * (128 - len(tokens))
-
-                observations["target_tokens"] = tokens + [action_token_id] + padding[:-1]
                 tokens += padding
                 mask += padding
                 segment += padding
 
                 # add padding at the end
-                observations["target_tokens"] = tokens + [action_token_id]
+                observations["target_tokens"] = \
+                    self._env._current_episode.instruction.tokens + \
+                    action_sequence[-10:] + [action_token_id] + \
+                    padding
                 observations["actions"] = action_tokens
                 observations["tokens"] = tokens
                 observations["mask"] = mask
