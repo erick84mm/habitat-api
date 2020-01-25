@@ -842,9 +842,9 @@ class alignmentAgent(habitat.Agent):
         action = self.model_actions[logit]
         ob = observations[0]
         self.save["path_id"] = ob["path_id"]
-        self.save["images"].append(ob["rgb"].tolist())
-        self.save["boxes"].append(spatials[0].tolist())
-        self.save["box_probs"].append(vision_logit.tolist())
+        #self.save["images"].append(ob["rgb"].tolist())
+        #self.save["boxes"].append(spatials[0].tolist())
+        #self.save["box_probs"].append(vision_logit.tolist())
         self.save["text"].append(linguistic_tokens.tolist())
         self.save["actions"].append(action)
         #print(vision_logit.tolist()) #, linguistic_tokens.tolist(), spatials[0].tolist())
@@ -858,6 +858,7 @@ class alignmentAgent(habitat.Agent):
     def save_example(self):
         PATH = "/home/erick/Research/vln/examples/"
         path_id = self.save["path_id"] + ".json"
+
         print(
             type(self.save),
             type(self.save["path_id"]),
