@@ -291,6 +291,8 @@ def tokenize_bert(text, berttokenizer, padding=True, max_length=128, padding_ind
     return tokens, input_mask
 
 def serialize_r2r(config, splits=["train"], force=False) -> None:
+    mini_alignment_path = "/home/erick/Research/vln/libs/habitat/habitat-api/data/datasets/vln/r2r/v1/alignments/mini.json"
+    mini_alignments = read_json(mini_alignment_path)
     json_file_path = config.DATA_PATH[:-3]
     connectivity = load_connectivity(config.CONNECTIVITY_PATH)
     # Building both vocabularies Train and TrainVAL
@@ -379,6 +381,7 @@ def serialize_r2r(config, splits=["train"], force=False) -> None:
                 "BERT_vocab":{
                     "action_tokens": action_tokens_ids
                 },
+                "mini_alignments": mini_alignments,
                 "scenes":list(set(scenes))
             }
 

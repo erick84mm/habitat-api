@@ -69,6 +69,7 @@ class R2RDatasetV1(Dataset):
         self.connectivity = []
         self.scenes: List[str] = []
         self.config = config
+        self.mini_alignments = {}
 
         with gzip.open(config.DATA_PATH.format(split=config.SPLIT), "rt") as f:
             self.from_json(f.read(), scenes_dir=config.SCENES_DIR)
@@ -87,6 +88,7 @@ class R2RDatasetV1(Dataset):
         )
 
         self.action_tokens = deserialized["BERT_vocab"]["action_tokens"]
+        self.mini_alignments = deserialized["mini_alignments"]
 
         self.scenes = deserialized["scenes"]
 
