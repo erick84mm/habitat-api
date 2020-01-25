@@ -89,7 +89,7 @@ class VLNBenchmark(habitat.Benchmark):
                 action_idx = agent.model_actions.index(target_action["action"])
                 action_token_id = self.action_tokens[self.action_tokens_idx[action_idx]]
                 action_sequence.append(action_token_id)
-                observations = self._env.step(action) # Step 1
+                observations = self._env.step(target_action) # Step 1
                 observations = {
                                 "rgb": observations["rgb"],
                                 "adjacentViewpoints": observations["adjacentViewpoints"]
