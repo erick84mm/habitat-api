@@ -55,7 +55,7 @@ class VLNBenchmark(habitat.Benchmark):
                             }
             episode_loss = []
             episode_batch_score = []
-            action_sequence = [agent.model_actions.index("<start>")]
+            action_sequence = [30528]
             while not self._env.episode_over:
                 print(action_sequence)
                 episode = self._env._current_episode
@@ -153,7 +153,7 @@ class VLNBenchmark(habitat.Benchmark):
                             }
             episode_loss = []
             episode_batch_score = []
-            action_sequence = [agent.model_actions.index("<start>")]
+            action_sequence = [30528] #Start token
             while not self._env.episode_over:
                 final_goal = self._env._current_episode.goals[-1].image_id
                 episode = self._env._current_episode
