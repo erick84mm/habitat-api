@@ -429,9 +429,9 @@ class alignmentAgent(habitat.Agent):
                            ).float()
                 box[1:,:4] = raw_instances.pred_boxes.tensor
                 box[:,0] /= float(width)
-                box[:,1] /= float(width)
+                box[:,1] /= float(height)
                 box[:,2] /= float(width)
-                box[:,3] /= float(width)
+                box[:,3] /= float(height)
                 box[:,4] = (box[:,3] - box[:,1]) * (box[:,2] - box[:,0]) / \
                     (float(height) * float(width))
 
