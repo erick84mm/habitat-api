@@ -45,8 +45,8 @@ class VLNBenchmark(habitat.Benchmark):
 
         while count_episodes < num_episodes:
             # 1 in 10 posibilities to save
-            #if steps and steps % 10 == 0:
-                #agent.save_example_to_file()
+            if steps and steps % 3 == 0:
+                agent.save_example_to_file()
             agent.reset(steps)
             observations = self._env.reset()
             observations = {

@@ -175,7 +175,8 @@ class alignmentAgent(habitat.Agent):
             "boxes": [],
             "box_probs": [],
             "text": [],
-            "actions": []
+            "actions": [],
+            "box_one_hots": []
         }
         optimizer_grouped_parameters = []
         no_decay = ["bias", "LayerNorm.bias", "LayerNorm.weight"]
@@ -277,7 +278,8 @@ class alignmentAgent(habitat.Agent):
             "boxes": [],
             "box_probs": [],
             "text": [],
-            "actions": []
+            "actions": [],
+            "box_one_hots": []
         }
         #pass
     def get_lr(self):
@@ -848,12 +850,13 @@ class alignmentAgent(habitat.Agent):
         logit = torch.max(vil_prediction, 1)[1].data  # argmax
         #elif self.mode == "sample":
         action = self.model_actions[logit]
-        #self.save_example["path_id"] = ob["path_id"]
-        #self.save_example["images"].append(ob["rgb"].tolist())
-        #self.save_example["boxes"].append(spatials[0].tolist())
-        #self.save_example["box_probs"].append(vision_logit.tolist())
-        #self.save_example["text"].append(linguistic_tokens.tolist())
-        #self.save_example["actions"].append(action)
+        self.save_example["path_id"] = ob["path_id"]
+        self.save_example["images"].append(ob["rgb"].tolist())
+        self.save_example["boxes"].append(spatials[0].tolist())
+        self.save_example["box_probs"].append(vision_logit.tolist())
+        self.save_example["text"].append(linguistic_tokens.tolist())
+        self.save_example["actions"].append(action)
+        self.save_example["box_one_hots"].append(image_one_hots.tolist())
         #print(vision_logit.tolist()) #, linguistic_tokens.tolist(), spatials[0].tolist())
 
         next_action = {"action": action, "action_args": action_args}
