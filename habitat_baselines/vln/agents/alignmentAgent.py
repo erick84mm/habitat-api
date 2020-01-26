@@ -841,7 +841,7 @@ class alignmentAgent(habitat.Agent):
         '''
         ob = observations[0]
         #print(linguisic_prediction.shape)
-        linguistic_tokens = torch.max(linguisic_prediction, 1)[1].data  # argmax
+        linguistic_tokens = torch.max(linguisic_prediction, -1)[1].data  # argmax
         selected_images = vision_logit.tolist()
         if not any(True for obs in ob['adjacentViewpoints'] if obs[0] == 0):
             teleport_idx = self.model_actions.index("TELEPORT")
