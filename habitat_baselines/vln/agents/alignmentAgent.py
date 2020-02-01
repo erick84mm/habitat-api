@@ -74,6 +74,7 @@ def fast_rcnn_inference_single_image(
             tok = tokenizer.vocab.get(word, tokenizer.vocab["[UNK]"])
             if tok in tokens:
                 filter_classes.append(word)
+        print(words)
         print(filter_classes)
 
         num_objs = boxes.size(0)
