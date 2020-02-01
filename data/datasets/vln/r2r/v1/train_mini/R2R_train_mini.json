@@ -1,5 +1,24 @@
 [
   {
+    "distance": 8.88,
+    "scan": "8WUmhLawc2A",
+    "path_id": 6554,
+    "path": [
+      "01b439d39a8f412fa1837be7afb45254",
+      "32c24c4472f346bc9b292f8997b9f82e",
+      "5848b29e18924f5594fbec08340fb7a9",
+      "74a12d0675b54d6193ba63104a6a8e2e",
+      "34d76d6db3484d04a47482685c9ab420",
+      "b3cb0280416742fc9dcba0d2d9e5d2f7"
+    ], 
+    "heading": 1.573,
+    "instructions": [
+      "Walk left down the hall. Walk to the end of the hall and go right. walk past the small refrigerator and in the hall. Stop just outside the door. ",
+      "Walk towards the pictures on the wall and then turn left, go straight down the hall and take the slight right further down, take a step into the wooden doorway and stop. ",
+      "Walk past the dining room and down the hall. Wait in the theater room, at the end of the hall. "
+    ]
+  },
+  {
     "distance": 10.84,
     "scan": "XcA2TqTSSAj",
     "path_id": 3100,
