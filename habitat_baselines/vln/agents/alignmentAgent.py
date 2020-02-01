@@ -82,7 +82,6 @@ def fast_rcnn_inference_single_image(
 
         for word, c, i in words:
             tok = tokenizer.vocab.get(word, tokenizer.vocab["[UNK]"])
-            img_toks.append(tok)
             ## inserting the relevant first
             if tok in tokens:
                 relevant.append(i)
