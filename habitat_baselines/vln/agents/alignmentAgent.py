@@ -77,8 +77,8 @@ def fast_rcnn_inference_single_image(
             if tok in tokens:
                 filter_classes.append(word)
         print(words)
-        print(img_toks)
-        print(tokens)
+        print("img_tokens", img_toks)
+        print("Tokens", tokens)
         print(filter_classes)
 
         num_objs = boxes.size(0)
