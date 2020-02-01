@@ -601,9 +601,9 @@ class alignmentAgent(habitat.Agent):
 
             return category_one_hot, one_hot, stop_one_hot
 
-    def _get_tensor_image_features(self, im, max_regions=37):
+    def _get_tensor_image_features(self, im, max_regions=37, tokens=[]):
         features, boxes, num_boxes, pred_class_logits = \
-            self._get_image_features([im], min_num_image=36)
+            self._get_image_features([im], min_num_image=36, tokens=tokens)
         #print(self.get_image_labels(pred_class_logits[0].tolist()))
         mix_num_boxes = min(int(num_boxes[0]), max_regions)
         mix_boxes_pad = torch.zeros((max_regions, 5)
@@ -643,7 +643,7 @@ class alignmentAgent(habitat.Agent):
         image_labels = []
         for ob in observations:
             im = ob["rgb"]
-            feat, img_mask, spat, labels = self._get_tensor_image_features(im)
+            feat, img_mask, spat, labels = self._get_tensor_image_features(im,  ob["tokens"])
             img_logit, img_label = self.get_image_target_onehot(labels, ob["tokens"])
             tensor_features.append(feat)
             spatials.append(spat)
