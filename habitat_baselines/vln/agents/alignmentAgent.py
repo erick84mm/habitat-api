@@ -59,8 +59,9 @@ def fast_rcnn_inference_single_image(
 
         # Select max scores
         max_scores, max_classes = scores.max(1)       # R x C --> R
-        print(max_classes.shape)
         
+        print(self.get_image_labels(list(set(max_classes.tolist()))))
+
         num_objs = boxes.size(0)
         boxes = boxes.view(-1, 4)
         idxs = torch.arange(num_objs).cuda(device) * num_bbox_reg_classes + max_classes
