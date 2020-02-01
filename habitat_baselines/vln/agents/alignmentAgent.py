@@ -76,7 +76,7 @@ def fast_rcnn_inference_single_image(
         # Apply NMS
         keep = nms(max_boxes, max_scores, nms_thresh)
         print("Max_boxex", max_boxes.shape)
-        print("keep", keep.shape)
+        print("keep", keep)
 
 
 
