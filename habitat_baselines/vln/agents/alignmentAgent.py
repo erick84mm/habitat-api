@@ -38,6 +38,11 @@ from habitat_baselines.vln.models.optimization import Adam
 from detectron2.data import MetadataCatalog
 from transformers import BertTokenizer
 
+def get_image_labels2(classes, pred_class_logits):
+    labels = []
+    for c in pred_class_logits:
+        labels.append(classes[c])
+    return labels
 
 # We need the indices of the features to keep
 def fast_rcnn_inference_single_image(
@@ -59,8 +64,8 @@ def fast_rcnn_inference_single_image(
 
         # Select max scores
         max_scores, max_classes = scores.max(1)       # R x C --> R
-        
-        print(self.get_image_labels(list(set(max_classes.tolist()))))
+
+        print(get_image_labels2(preferred_labels, list(set(max_classes.tolist()))))
 
         num_objs = boxes.size(0)
         boxes = boxes.view(-1, 4)
@@ -405,7 +410,8 @@ class alignmentAgent(habitat.Agent):
                         score_thresh=score_thresh,
                         nms_thresh=nms_thresh,
                         topk_per_image=max_regions,
-                        device=self.detectron2_gpu_device
+                        device=self.detectron2_gpu_device,
+                        self.class_names
                     )
                     #
                     if len(ids) >= min_num_image:
