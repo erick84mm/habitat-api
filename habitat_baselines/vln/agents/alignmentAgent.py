@@ -38,10 +38,10 @@ from habitat_baselines.vln.models.optimization import Adam
 from detectron2.data import MetadataCatalog
 from transformers import BertTokenizer
 
-def get_image_labels2(classes, pred_class_logits):
+def get_image_labels2(classes, pred_class_logits, keep):
     labels = []
-    for c in pred_class_logits:
-        labels.append((classes[c], c))
+    for c, i in zip(pred_class_logits, keep):
+        labels.append((classes[c], c, i))
     return labels
 
 # We need the indices of the features to keep
@@ -72,36 +72,37 @@ def fast_rcnn_inference_single_image(
         idxs = torch.arange(num_objs).cuda(device) * num_bbox_reg_classes + max_classes
         max_boxes = boxes[idxs]     # Select max boxes according to the max scores.
 
-
         # Apply NMS
         keep = nms(max_boxes, max_scores, nms_thresh)
-        print("Max_boxex", max_boxes.shape)
-        print("keep", keep)
-
-
-
-
         # calculate the closes tokens
-        words = get_image_labels2(preferred_labels, max_classes[keep].tolist())
-        filter_classes = []
-        preferred_classes = []
-        img_toks = []
-        for word, c in words:
+        words = get_image_labels2(preferred_labels, max_classes[keep].tolist(), keep.tolist())
+        relevant = []
+        others = []
+        class_list = []
+
+        for word, c, i in words:
             tok = tokenizer.vocab.get(word, tokenizer.vocab["[UNK]"])
             img_toks.append(tok)
+            ## inserting the relevant first
             if tok in tokens:
-                preferred_classes.append(c)
-                filter_classes.append(word)
-        print(words)
-        print("img_tokens", img_toks)
-        print("Tokens", tokens)
-        print(filter_classes)
+                relevant.append(i)
+            ## repeated predictions go last.
+            elif c in class_list:
+                class_list.append(c)
+                others.append(i)
+            ## Inserting varied predictions first
+            else:
+                class_list.append(c)
+                others.insert(i, 0)
+
+        keep = torch.tensor(relevant+other, device=device)
 
         #remove duplicate classes......
 
 
         if topk_per_image >= 0:
             keep = keep[:topk_per_image]
+            keep = keep[torch.randperm(keep.size()[0])]
         boxes, scores = max_boxes[keep], max_scores[keep]
 
         result = Instances(image_shape)
