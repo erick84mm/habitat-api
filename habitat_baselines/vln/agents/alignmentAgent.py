@@ -70,11 +70,15 @@ def fast_rcnn_inference_single_image(
         # calculate the closes tokens
         words = get_image_labels2(preferred_labels, list(set(max_classes.tolist())))
         filter_classes = []
+        img_toks = []
         for word in words:
             tok = tokenizer.vocab.get(word, tokenizer.vocab["[UNK]"])
+            img_toks.append(tok)
             if tok in tokens:
                 filter_classes.append(word)
         print(words)
+        print(img_toks)
+        print(tokens)
         print(filter_classes)
 
         num_objs = boxes.size(0)
