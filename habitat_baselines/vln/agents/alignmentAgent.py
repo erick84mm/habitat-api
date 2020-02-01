@@ -41,7 +41,7 @@ from transformers import BertTokenizer
 def get_image_labels2(classes, pred_class_logits):
     labels = []
     for c in pred_class_logits:
-        labels.append(classes[c])
+        labels.append((classes[c], c))
     return labels
 
 # We need the indices of the features to keep
@@ -70,16 +70,19 @@ def fast_rcnn_inference_single_image(
         # calculate the closes tokens
         words = get_image_labels2(preferred_labels, list(set(max_classes.tolist())))
         filter_classes = []
-        img_toks = []
-        for word in words:
+        preferred_classes = []
+        for word, c in words:
             tok = tokenizer.vocab.get(word, tokenizer.vocab["[UNK]"])
             img_toks.append(tok)
             if tok in tokens:
+                preferred_classes.append(c)
                 filter_classes.append(word)
         print(words)
         print("img_tokens", img_toks)
         print("Tokens", tokens)
         print(filter_classes)
+        print(scores.shape)
+        print(scores)
 
         num_objs = boxes.size(0)
         boxes = boxes.view(-1, 4)
