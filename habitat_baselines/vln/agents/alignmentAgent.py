@@ -67,8 +67,22 @@ def fast_rcnn_inference_single_image(
         # Select max scores
         max_scores, max_classes = scores.max(1)       # R x C --> R
 
+        num_objs = boxes.size(0)
+        boxes = boxes.view(-1, 4)
+        idxs = torch.arange(num_objs).cuda(device) * num_bbox_reg_classes + max_classes
+        max_boxes = boxes[idxs]     # Select max boxes according to the max scores.
+
+
+        # Apply NMS
+        keep = nms(max_boxes, max_scores, nms_thresh)
+        print("Max_boxex", max_boxes.shape)
+        print("keep", keep.shape)
+
+
+
+
         # calculate the closes tokens
-        words = get_image_labels2(preferred_labels, list(set(max_classes.tolist())))
+        words = get_image_labels2(preferred_labels, list(set(max_classes[keep].tolist())))
         filter_classes = []
         preferred_classes = []
         img_toks = []
@@ -82,18 +96,7 @@ def fast_rcnn_inference_single_image(
         print("img_tokens", img_toks)
         print("Tokens", tokens)
         print(filter_classes)
-        print(scores.shape)
 
-        num_objs = boxes.size(0)
-        boxes = boxes.view(-1, 4)
-        idxs = torch.arange(num_objs).cuda(device) * num_bbox_reg_classes + max_classes
-        max_boxes = boxes[idxs]     # Select max boxes according to the max scores.
-
-
-        # Apply NMS
-        keep = nms(max_boxes, max_scores, nms_thresh)
-        print("Max_boxex", max_boxes.shape)
-        print("keep", keep.shape)
 
         if topk_per_image >= 0:
             keep = keep[:topk_per_image]
