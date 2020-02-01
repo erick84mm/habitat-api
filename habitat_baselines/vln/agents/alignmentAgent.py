@@ -94,7 +94,7 @@ def fast_rcnn_inference_single_image(
                 class_list.append(c)
                 others.insert(i, 0)
 
-        keep = torch.tensor(relevant+other, device=device)
+        keep = torch.tensor(relevant+others, device=device)
 
         #remove duplicate classes......
 
