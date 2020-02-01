@@ -176,7 +176,8 @@ class alignmentAgent(habitat.Agent):
             "box_probs": [],
             "text": [],
             "actions": [],
-            "box_one_hots": []
+            "box_one_hots": [],
+            "box_labels": []
         }
         optimizer_grouped_parameters = []
         no_decay = ["bias", "LayerNorm.bias", "LayerNorm.weight"]
@@ -279,7 +280,8 @@ class alignmentAgent(habitat.Agent):
             "box_probs": [],
             "text": [],
             "actions": [],
-            "box_one_hots": []
+            "box_one_hots": [],
+            "box_labels": []
         }
         #pass
     def get_lr(self):
@@ -313,6 +315,7 @@ class alignmentAgent(habitat.Agent):
                 chosen_labels.append((cl, cl_id))
             else:
                 one_hots.append([0])
+                chosen_labels.append(("", -1))
 
         one_hots = torch.tensor(
                         one_hots,
@@ -322,7 +325,7 @@ class alignmentAgent(habitat.Agent):
         #print(chosen_labels)
         #print(instr_tokens)
 
-        return one_hots
+        return one_hots, chosen_labels
 
     def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
         # imgs tensor(batch, H, W, C)
@@ -605,14 +608,16 @@ class alignmentAgent(habitat.Agent):
         image_masks = []
         target_tokens = []
         image_logits = []
+        image_labels = []
         for ob in observations:
             im = ob["rgb"]
             feat, img_mask, spat, labels = self._get_tensor_image_features(im)
-            img_logit = self.get_image_target_onehot(labels, ob["tokens"])
+            img_logit, img_label = self.get_image_target_onehot(labels, ob["tokens"])
             tensor_features.append(feat)
             spatials.append(spat)
             image_masks.append(img_mask)
             image_logits.append(img_logit)
+            image_labels.append(img_label)
 
             instruction = torch.tensor(
                                 ob["tokens"],
@@ -662,13 +667,13 @@ class alignmentAgent(habitat.Agent):
         image_logits = torch.cat(image_logits, dim=0)
         target_tokens = torch.cat(target_tokens, dim=0)
 
-        return instructions, masks, segments_ids, co_attention_masks, tensor_features, spatials, image_masks, image_logits, target_tokens
+        return instructions, masks, segments_ids, co_attention_masks, tensor_features, spatials, image_masks, image_logits, image_labels, target_tokens
 
     def act_batch(self, observations):
         batch_size = len(observations)
         instructions, input_masks, segment_ids,  \
         co_attention_masks, features, spatials, image_masks, \
-        image_one_hots, target_tokens = \
+        image_one_hots, _ , target_tokens = \
             self.tensorize(observations)
         category_target, target, stop_target = \
             self._get_batch_target_onehot(
@@ -814,7 +819,7 @@ class alignmentAgent(habitat.Agent):
 
         instructions, input_masks, segment_ids,  \
         co_attention_masks, features, spatials, image_masks, \
-        image_one_hots, target_tokens = \
+        image_one_hots, image_labels, target_tokens = \
             self.tensorize(observations)
 
         vil_prediction, vil_logit, vil_binary_prediction, vision_prediction, \
@@ -857,6 +862,7 @@ class alignmentAgent(habitat.Agent):
         self.save_example["text"].append(linguistic_tokens.tolist())
         self.save_example["actions"].append(action)
         self.save_example["box_one_hots"].append(image_one_hots.tolist())
+        self.save_example["box_labels"].append(image_labels)
         #print(vision_logit.tolist()) #, linguistic_tokens.tolist(), spatials[0].tolist())
 
         next_action = {"action": action, "action_args": action_args}
