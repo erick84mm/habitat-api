@@ -411,7 +411,7 @@ class alignmentAgent(habitat.Agent):
                         nms_thresh=nms_thresh,
                         topk_per_image=max_regions,
                         device=self.detectron2_gpu_device,
-                        self.class_names
+                        preferred_labels=self.class_names
                     )
                     #
                     if len(ids) >= min_num_image:
