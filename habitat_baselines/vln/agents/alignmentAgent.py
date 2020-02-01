@@ -82,7 +82,7 @@ def fast_rcnn_inference_single_image(
 
 
         # calculate the closes tokens
-        words = get_image_labels2(preferred_labels, list(set(max_classes[keep].tolist())))
+        words = get_image_labels2(preferred_labels, max_classes[keep].tolist())
         filter_classes = []
         preferred_classes = []
         img_toks = []
@@ -96,6 +96,8 @@ def fast_rcnn_inference_single_image(
         print("img_tokens", img_toks)
         print("Tokens", tokens)
         print(filter_classes)
+
+        #remove duplicate classes......
 
 
         if topk_per_image >= 0:
