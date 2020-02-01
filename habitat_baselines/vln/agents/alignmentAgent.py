@@ -71,6 +71,7 @@ def fast_rcnn_inference_single_image(
         words = get_image_labels2(preferred_labels, list(set(max_classes.tolist())))
         filter_classes = []
         preferred_classes = []
+        img_toks = []
         for word, c in words:
             tok = tokenizer.vocab.get(word, tokenizer.vocab["[UNK]"])
             img_toks.append(tok)
