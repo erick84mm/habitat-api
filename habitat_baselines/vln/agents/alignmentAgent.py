@@ -643,7 +643,7 @@ class alignmentAgent(habitat.Agent):
         image_labels = []
         for ob in observations:
             im = ob["rgb"]
-            feat, img_mask, spat, labels = self._get_tensor_image_features(im,  ob["tokens"])
+            feat, img_mask, spat, labels = self._get_tensor_image_features(im,  tokens=ob["tokens"])
             img_logit, img_label = self.get_image_target_onehot(labels, ob["tokens"])
             tensor_features.append(feat)
             spatials.append(spat)
