@@ -53,7 +53,9 @@ def fast_rcnn_inference_single_image(
         nms_thresh,
         topk_per_image,
         device,
-        preferred_labels = []
+        preferred_labels = [],
+        tokens = [],
+        tokenizer = None
     ):
         scores = scores[:, :-1]
         num_bbox_reg_classes = boxes.shape[1] // 4
@@ -65,7 +67,14 @@ def fast_rcnn_inference_single_image(
         # Select max scores
         max_scores, max_classes = scores.max(1)       # R x C --> R
 
-        print(get_image_labels2(preferred_labels, list(set(max_classes.tolist()))))
+        # calculate the closes tokens
+        words = get_image_labels2(preferred_labels, list(set(max_classes.tolist())))
+        filter_classes = []
+        for word in words:
+            tok = tokenizer.vocab.get(word, tokenizer.vocab["[UNK]"])
+            if tok in tokens:
+                filter_classes.append(word)
+        print(filter_classes)
 
         num_objs = boxes.size(0)
         boxes = boxes.view(-1, 4)
@@ -342,7 +351,7 @@ class alignmentAgent(habitat.Agent):
 
         return one_hots, chosen_labels
 
-    def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36):
+    def _get_image_features(self, imgs, score_thresh=0.2, min_num_image=10, max_regions=36, tokens=[]):
         # imgs tensor(batch, H, W, C)
         with torch.no_grad():
             inputs = []
@@ -411,7 +420,9 @@ class alignmentAgent(habitat.Agent):
                         nms_thresh=nms_thresh,
                         topk_per_image=max_regions,
                         device=self.detectron2_gpu_device,
-                        preferred_labels=self.class_names
+                        preferred_labels=self.class_names,
+                        tokens=tokens,
+                        tokenizer=self.tokenizer
                     )
                     #
                     if len(ids) >= min_num_image:
