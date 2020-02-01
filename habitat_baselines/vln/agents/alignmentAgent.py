@@ -344,6 +344,7 @@ class alignmentAgent(habitat.Agent):
         classes = self.class_names
         for c in pred_class_logits:
             labels.append(classes[c])
+        print(labels)
         return labels
 
     def get_image_target_onehot(self, classes, instr_tokens):
