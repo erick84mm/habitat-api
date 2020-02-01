@@ -750,7 +750,7 @@ class alignmentAgent(habitat.Agent):
         image_masks = None
         co_attention_masks = None
         #print("vision_prediction", vision_prediction.shape)
-        #print("vision_logit", vision_logit.shape) # choose vision or not
+        print("vision_logit", vision_logit.shape) # choose vision or not
         #print("linguisic_prediction", linguisic_prediction.shape)
         #print("linguisic_logit", linguisic_logit.shape)
 
@@ -768,7 +768,7 @@ class alignmentAgent(habitat.Agent):
         #    self.loss_weight["c"] * self.criterion(stop_probs, stop_target)
         self.loss = self.criterion(vil_prediction, target) + \
                     self.criterion(vision_logit, image_one_hots) #+ \
-                    #self.criterion(linguisic_prediction)
+                    #self.criterion(linguisic_logit, )
 
         self.loss = self.loss.mean() * target.size(1)
         scores, reduce_scores, stop_scores = self.compute_all_scores_with_logits(vil_prediction, target)
