@@ -91,7 +91,7 @@ def fast_rcnn_inference_single_image(
         idxs = torch.arange(num_objs).cuda(device) * num_bbox_reg_classes + max_classes
         max_boxes = boxes[idxs]     # Select max boxes according to the max scores.
 
-        print(idxs)
+        print(num_objs)
         # Apply NMS
         keep = nms(max_boxes, max_scores, nms_thresh)
         if topk_per_image >= 0:
