@@ -41,7 +41,14 @@ from transformers import BertTokenizer
 
 # We need the indices of the features to keep
 def fast_rcnn_inference_single_image(
-        boxes, scores, image_shape, score_thresh, nms_thresh, topk_per_image, device
+        boxes,
+        scores,
+        image_shape,
+        score_thresh,
+        nms_thresh,
+        topk_per_image,
+        device,
+        preferred_labels = []
     ):
         scores = scores[:, :-1]
         num_bbox_reg_classes = boxes.shape[1] // 4
@@ -52,6 +59,8 @@ def fast_rcnn_inference_single_image(
 
         # Select max scores
         max_scores, max_classes = scores.max(1)       # R x C --> R
+        print(max_classes.shape)
+        
         num_objs = boxes.size(0)
         boxes = boxes.view(-1, 4)
         idxs = torch.arange(num_objs).cuda(device) * num_bbox_reg_classes + max_classes
