@@ -751,6 +751,7 @@ class alignmentAgent(habitat.Agent):
         co_attention_masks = None
         #print("vision_prediction", vision_prediction.shape)
         print("vision_logit", vision_logit.shape) # choose vision or not
+        print("image one hots", image_one_hots.shape)
         #print("linguisic_prediction", linguisic_prediction.shape)
         #print("linguisic_logit", linguisic_logit.shape)
 
