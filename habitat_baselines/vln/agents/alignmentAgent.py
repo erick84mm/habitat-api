@@ -943,14 +943,7 @@ class alignmentAgent(habitat.Agent):
                 teleport_idx = self.model_actions.index("TELEPORT")
                 vil_prediction[i][teleport_idx] = -100.0
 
-        instructions = None
-        previous_actions = None
-        features = None
-        spatials = None
-        segment_ids = None
-        input_masks = None
-        image_masks = None
-        co_attention_masks = None
+
         #print("vision_prediction", vision_prediction.shape)
         #print("linguisic_prediction", linguisic_prediction.shape)
         #print("linguisic_logit", linguisic_logit.shape)
@@ -968,7 +961,7 @@ class alignmentAgent(habitat.Agent):
         #    self.loss_weight["a"] * self.criterion(vil_prediction, target) + \
         #    self.loss_weight["c"] * self.criterion(stop_probs, stop_target)
         logit = torch.max(vil_prediction, 1)[1].data  # argmax
-        
+
         action = self.model_actions[logit]
         self.save_example["path_id"] = ob["path_id"]
         self.save_example["images"].append(ob["rgb"].tolist())
@@ -978,6 +971,16 @@ class alignmentAgent(habitat.Agent):
         self.save_example["actions"].append(action)
         self.save_example["box_one_hots"].append(image_one_hots.tolist())
         self.save_example["box_labels"].append(image_labels)
+
+        instructions = None
+        previous_actions = None
+        features = None
+        spatials = None
+        segment_ids = None
+        input_masks = None
+        image_masks = None
+        co_attention_masks = None
+        
         scores, reduce_scores, stop_scores = self.compute_all_scores_with_logits(vil_prediction, target)
         vision_scores = self.compute_vision_score(vision_logit, image_one_hots)
 
