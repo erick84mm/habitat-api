@@ -207,6 +207,7 @@ class VLNBenchmark(habitat.Benchmark):
                 segment += padding
 
                 # add padding at the end
+                observations["path_id"] = episode.episode_id
                 observations["target_tokens"] = \
                     self._env._current_episode.instruction.tokens + \
                     action_sequence[-10:] + [action_token_id] + \
