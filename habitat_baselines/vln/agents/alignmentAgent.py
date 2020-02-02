@@ -920,7 +920,7 @@ class alignmentAgent(habitat.Agent):
         batch_size = len(observations)
         instructions, input_masks, segment_ids,  \
         co_attention_masks, features, spatials, image_masks, \
-        image_one_hots, _ , target_tokens = \
+        image_one_hots, image_labels , target_tokens = \
             self.tensorize(observations)
         category_target, target, stop_target = \
             self._get_batch_target_onehot(
@@ -980,7 +980,7 @@ class alignmentAgent(habitat.Agent):
         input_masks = None
         image_masks = None
         co_attention_masks = None
-        
+
         scores, reduce_scores, stop_scores = self.compute_all_scores_with_logits(vil_prediction, target)
         vision_scores = self.compute_vision_score(vision_logit, image_one_hots)
 
