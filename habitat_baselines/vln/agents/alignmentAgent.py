@@ -1015,8 +1015,8 @@ class alignmentAgent(habitat.Agent):
 
     def compute_vision_score(self, logits, labels, batch_size=1):
         logits_one_hots = (logits > 0).long()
-        tp = logits_one_hots * labels
-        fn = labels - tp
+        tp = logits_one_hots * labels # and
+        fn = labels - tp #
         fp = logits_one_hots - tp
         tn = torch.ones((logits.size()),
         device=self.bert_gpu_device).long() - ( fn + fp + tp)
@@ -1060,6 +1060,9 @@ class alignmentAgent(habitat.Agent):
         stop_one_hots = torch.cat((torch.sum(one_hots[:,:-1], dim=-1, keepdims=True),
                                         one_hots[:,-1:]), dim=-1)
         scores = one_hots * labels
+        print("one_hots", one_hots)
+        print("labels", labels)
+        print("scores", scores)
         reduce_scores = reduced_one_hots * reduced_labels
         stop_scores = stop_one_hots * stop_labels
 
