@@ -549,7 +549,7 @@ def main():
     if args.val:
         if args.checkpoint_num:
             agent.load("checkpoints/{}_{}.check".format(args.experiment_name, args.checkpoint_num))
-        eval_metrics = benchmark.eval_batch(agent, num_episodes=args.num_episodes, save=args.save)
+        eval_metrics = benchmark.eval_batch(agent, num_episodes=args.num_episodes, save=args.save, batch_size=args.batch_size)
         for k, v in eval_metrics.items():
             print("{0}: {1}".format(k, v))
 
