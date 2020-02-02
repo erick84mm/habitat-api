@@ -1014,7 +1014,7 @@ class alignmentAgent(habitat.Agent):
         return scores
 
     def compute_vision_score(self, logits, labels, batch_size=1):
-        logits_one_hots = (logits > -4).long()
+        logits_one_hots = (logits > 0).long()
         tp = logits_one_hots * labels # and
         fn = labels - tp #
         fp = logits_one_hots - tp
