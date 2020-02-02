@@ -919,6 +919,8 @@ class alignmentAgent(habitat.Agent):
     def save_example_to_file(self):
         PATH = "/home/erick/Research/vln/examples/"
         path_id = self.save_example["path_id"] + ".json"
+        if self.save_example["actions"][-1] != "STOP":
+            return
 
         with open(os.path.join(PATH, path_id), "w+") as outfile:
             json.dump(self.save_example, outfile)

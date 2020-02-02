@@ -32,7 +32,8 @@ class VLNBenchmark(habitat.Benchmark):
         agent,
         num_episodes: Optional[int] = None,
         feedback="argmax",
-        batch_size = 4
+        batch_size = 4,
+        save = False
     ):
         print("Training is running on device ", torch.cuda.current_device())
         agent.eval()
@@ -45,7 +46,8 @@ class VLNBenchmark(habitat.Benchmark):
 
         while count_episodes < num_episodes:
             # 1 in 10 posibilities to save
-            if steps and steps % 3 == 0:
+            #if steps and steps % 3 == 0:
+            if save:
                 agent.save_example_to_file()
             agent.reset(steps)
             observations = self._env.reset()
@@ -386,6 +388,10 @@ def main():
     parser.add_argument(
         "--batch-size", type=int, default=1
     )
+
+    parser.add_argument(
+            "--save", action='store_true'
+    )
     args = parser.parse_args()
 
 
@@ -403,7 +409,7 @@ def main():
     if args.val:
         if args.checkpoint_num:
             agent.load("checkpoints/{}_{}.check".format(args.experiment_name, args.checkpoint_num))
-        eval_metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes)
+        eval_metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes, save=args.save)
         for k, v in eval_metrics.items():
             print("{0}: {1}".format(k, v))
 
