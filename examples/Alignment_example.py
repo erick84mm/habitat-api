@@ -144,6 +144,9 @@ class VLNBenchmark(habitat.Benchmark):
         vision_scores_r = []
         vision_scores_a = []
         while count_episodes < num_episodes:
+
+            if save and batch_size == 1:
+                agent.save_example_to_file()
             agent.reset(steps)
             observations = self._env.reset()
             observations = {
