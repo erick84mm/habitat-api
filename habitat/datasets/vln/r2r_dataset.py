@@ -182,6 +182,5 @@ class R2RDatasetV1(Dataset):
     def get_action_tokens(self):
         return self.action_tokens
 
-
     def get_mini_alignments_tokens(self):
         return self.mini_alignments

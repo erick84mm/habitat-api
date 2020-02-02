@@ -751,7 +751,7 @@ class alignmentAgent(habitat.Agent):
         co_attention_masks = None
         #print("vision_prediction", vision_prediction.shape)
         #print("linguisic_prediction", linguisic_prediction.shape)
-        print("linguisic_logit", linguisic_logit.shape)
+        #print("linguisic_logit", linguisic_logit.shape)
 
         linguistic_tokens = torch.max(linguisic_prediction, 1)[1].data  # argmax
         #print(linguisic_prediction.shape, linguisic_logit.shape)
