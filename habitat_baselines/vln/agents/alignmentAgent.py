@@ -916,6 +916,70 @@ class alignmentAgent(habitat.Agent):
         #print("next action", next_action)
         return next_action
 
+    def act_eval_batch(self, observations):
+        batch_size = len(observations)
+        instructions, input_masks, segment_ids,  \
+        co_attention_masks, features, spatials, image_masks, \
+        image_one_hots, _ , target_tokens = \
+            self.tensorize(observations)
+        category_target, target, stop_target = \
+            self._get_batch_target_onehot(
+                        observations
+                    )
+        vil_prediction, vil_logit, vil_binary_prediction, vision_prediction, \
+        vision_logit, linguisic_prediction, linguisic_logit = \
+        self.model(
+            instructions,
+            features,
+            spatials,
+            segment_ids,
+            input_masks,
+            image_masks,
+            co_attention_masks
+        )
+
+        for i, ob in enumerate(observations):
+            if not any(True for obs in ob['adjacentViewpoints'] if obs[0] == 0):
+                teleport_idx = self.model_actions.index("TELEPORT")
+                vil_prediction[i][teleport_idx] = -100.0
+
+        instructions = None
+        previous_actions = None
+        features = None
+        spatials = None
+        segment_ids = None
+        input_masks = None
+        image_masks = None
+        co_attention_masks = None
+        #print("vision_prediction", vision_prediction.shape)
+        #print("linguisic_prediction", linguisic_prediction.shape)
+        #print("linguisic_logit", linguisic_logit.shape)
+
+        linguistic_tokens = torch.max(linguisic_prediction, 1)[1].data  # argmax
+        #print(linguisic_prediction.shape, linguisic_logit.shape)
+        #print(linguistic_tokens[:,-10:])
+
+        reduced_probs = torch.cat((torch.sum(vil_prediction[:,:4], dim=-1, keepdims=True),
+                                    vil_prediction[:,4:]), dim=1)
+        stop_probs = torch.cat((torch.sum(vil_prediction[:,:-1], dim=-1, keepdims=True),
+                                    vil_prediction[:,-1:]), dim=-1)
+
+        #self.loss = self.loss_weight["b"] * self.criterion(reduced_probs, category_target) + \
+        #    self.loss_weight["a"] * self.criterion(vil_prediction, target) + \
+        #    self.loss_weight["c"] * self.criterion(stop_probs, stop_target)
+
+        scores, reduce_scores, stop_scores = self.compute_all_scores_with_logits(vil_prediction, target)
+        vision_scores = self.compute_vision_score(vision_logit, image_one_hots, float(batch_size))
+
+        scores = scores.sum() / float(batch_size)
+        reduce_scores = reduce_scores.sum() / float(batch_size)
+        stop_scores = stop_scores.sum() / float(batch_size)
+
+        #im_features, boxes = self._get_image_features(im) #.to(self.bert_gpu_device)
+        #print("Target action ", target_action)
+
+        return  scores.item(), vision_scores
+
     def save_example_to_file(self):
         PATH = "/home/erick/Research/vln/examples/"
         path_id = self.save_example["path_id"] + ".json"
@@ -948,6 +1012,25 @@ class alignmentAgent(habitat.Agent):
         stop_one_hots = torch.zeros(*stop_probs.size(), device=self.bert_gpu_device)
         scores = one_hots * labels
         return scores
+
+    def compute_vision_score(self, logits, labels, batch_size=1):
+        logits_one_hots = (logits > 0).long()
+        tp = logits_one_hots * labels
+        fn = labels - tp
+        fp = logits_one_hots - tp
+        tn = torch.ones((p.size())).long() - ( fn + fp + tp)
+
+        tp = torch.sum(tp).item()
+        fn = torch.sum(fn).item()
+        fp = torch.sum(fp).item()
+        tn = torch.sum(tn).item()
+
+
+        precision = tp / (tp+fp) / batch_size
+        recall = tp / (tp + fn) / batch_size
+        accuracy = (tp + tn) / (tp + tn + fp + fn) / batch_size
+
+        return precision, recall, accuracy
 
     def compute_score_with_logits(self, logits, labels):
         logits = torch.max(logits, 1)[1].data  # argmax

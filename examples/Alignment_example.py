@@ -122,6 +122,145 @@ class VLNBenchmark(habitat.Benchmark):
 
         return avg_metrics
 
+    def eval_batch(
+        self,
+        agent,
+        num_episodes: Optional[int] = None,
+        feedback="teacher",
+        checkpoint_iter = 1000,
+        batch_size = 4
+    ):
+        print("Training is running on device ", torch.cuda.current_device())
+        agent.eval()
+        count_episodes = 0
+        agg_metrics = defaultdict(float)
+        steps = 0
+        ignore_idx = agent.model_actions.index("<ignore>")
+        action_padding_idx = self.action_tokens[self.action_tokens_idx[ignore_idx]]
+        rollout_observations = []
+        action_scores = []
+        vision_scores_p = []
+        vision_scores_r = []
+        vision_scores_a = []
+        while count_episodes < num_episodes:
+            agent.reset(steps)
+            observations = self._env.reset()
+            observations = {
+                            "rgb": observations["rgb"],
+                            "adjacentViewpoints": observations["adjacentViewpoints"]
+                            }
+            episode_loss = []
+            episode_batch_score = []
+            action_sequence = [30528] #Start token
+            while not self._env.episode_over:
+                final_goal = self._env._current_episode.goals[-1].image_id
+                episode = self._env._current_episode
+                shortest_path = self._env._task.get_shortest_path_to_target(
+                    episode.scan,
+                    episode.curr_viewpoint.image_id,
+                    final_goal
+                )
+
+                #print("shortest_path", shortest_path)
+                if len(shortest_path) > 1:
+                    goal_viewpoint = shortest_path[1]
+                else:
+                    #print("Shortest Path is not good!!!")
+                    goal_viewpoint = final_goal
+
+
+                # Adding observations to rollout
+                target_action, action_args = \
+                    agent._teacher_actions(observations, goal_viewpoint)
+                action_idx = agent.model_actions.index(target_action)
+                action_token_id = self.action_tokens[self.action_tokens_idx[action_idx]]
+                observations["golden_action"] = action_idx
+                action = {"action": target_action, "action_args": action_args}
+
+                action["action_args"].update(
+                    {
+                    "episode": self._env._current_episode
+                    }
+                )
+                # Adding tokens from episode
+                sep_token_id = self._env._current_episode.instruction.tokens[-1]
+                action_tokens = action_sequence[-10:] + [sep_token_id]
+                action_mask = [1] * len(action_tokens)
+
+                tokens = self._env._current_episode.instruction.tokens + \
+                    action_tokens
+                mask = self._env._current_episode.instruction.mask + \
+                    action_mask
+                segment = [0] * \
+                    len(self._env._current_episode.instruction.tokens) + \
+                    [1] * len(action_tokens)
+
+
+
+                padding = [0] * (128 - len(tokens))
+                tokens += padding
+                mask += padding
+                segment += padding
+
+                # add padding at the end
+                observations["target_tokens"] = \
+                    self._env._current_episode.instruction.tokens + \
+                    action_sequence[-10:] + [action_token_id] + \
+                    padding
+                observations["actions"] = action_tokens
+                observations["tokens"] = tokens
+                observations["mask"] = mask
+                observations["segment"] = segment
+
+                rollout_observations.append(observations)
+                action_sequence.append(action_token_id)
+                observations = self._env.step(action) # Step 1
+                observations = {
+                                "rgb": observations["rgb"],
+                                "adjacentViewpoints": observations["adjacentViewpoints"]
+                                }
+                steps += 1
+                if len(rollout_observations) == batch_size:
+
+                    ## Act with batch
+                    action_score, (precision, recall, accuracy) = agent.act_eval_batch(
+                        rollout_observations
+                    )
+                    action_scores.append(action_score)
+                    vision_scores_p.append(precision)
+                    vision_scores_r.append(recall)
+                    vision_scores_a.append(accuracy)
+
+                    rollout_observations = []
+                    print("Action scores", action_scores[-1])
+                    print("Vision Scores precision", vision_scores_p[-1])
+                    print("Vision Scores recall", vision_scores_r[-1])
+                    print("Vision Scores accuracy", vision_scores_a[-1])
+
+            self._env._current_episode.reset()
+
+            count_episodes += 1
+
+
+            metrics = self._env.get_metrics()
+            for m, v in metrics.items():
+                if m != "distance_to_goal":
+                    agg_metrics[m] += v
+
+        agent.reset(steps)
+        print(count_episodes)
+        avg_metrics = {k: v / count_episodes for k, v in agg_metrics.items()}
+        avg_metrics["action_scores"] = sum(action_scores) / len(action_scores)
+        avg_metrics["vision_scores_p"] = sum(vision_scores_p) / len(vision_scores_p)
+        avg_metrics["vision_scores_r"] = sum(vision_scores_r) / len(vision_scores_r)
+        avg_metrics["vision_scores_a"] = sum(vision_scores_a) / len(vision_scores_a)
+
+        return avg_metrics
+
+
+
+
+
     def train_batch(
         self,
         agent,
@@ -409,7 +548,7 @@ def main():
     if args.val:
         if args.checkpoint_num:
             agent.load("checkpoints/{}_{}.check".format(args.experiment_name, args.checkpoint_num))
-        eval_metrics = benchmark.evaluate(agent, num_episodes=args.num_episodes, save=args.save)
+        eval_metrics = benchmark.eval_batch(agent, num_episodes=args.num_episodes, save=args.save)
         for k, v in eval_metrics.items():
             print("{0}: {1}".format(k, v))
 
