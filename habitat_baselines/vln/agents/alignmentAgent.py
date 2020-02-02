@@ -969,7 +969,7 @@ class alignmentAgent(habitat.Agent):
         #    self.loss_weight["c"] * self.criterion(stop_probs, stop_target)
 
         scores, reduce_scores, stop_scores = self.compute_all_scores_with_logits(vil_prediction, target)
-        vision_scores = self.compute_vision_score(vision_logit, image_one_hots, float(batch_size))
+        vision_scores = self.compute_vision_score(vision_logit, image_one_hots)
 
         scores = scores.sum() / float(batch_size)
         reduce_scores = reduce_scores.sum() / float(batch_size)
@@ -1013,7 +1013,7 @@ class alignmentAgent(habitat.Agent):
         scores = one_hots * labels
         return scores
 
-    def compute_vision_score(self, logits, labels, batch_size=1):
+    def compute_vision_score(self, logits, labels):
         logits_one_hots = (logits > 0).long()
         tp = logits_one_hots * labels # and
         fn = labels - tp #
@@ -1031,9 +1031,9 @@ class alignmentAgent(habitat.Agent):
         print("tn", tn)
         e = 0.0000000001
 
-        precision = tp / (tp + fp + e) / batch_size
-        recall = tp / (tp + fn + e) / batch_size
-        accuracy = (tp + tn) / (tp + tn + fp + fn + e) / batch_size
+        precision = tp / (tp + fp + e)
+        recall = tp / (tp + fn + e)
+        accuracy = (tp + tn) / (tp + tn + fp + fn + e)
 
         return precision, recall, accuracy
 
