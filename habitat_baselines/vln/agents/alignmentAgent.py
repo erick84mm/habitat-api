@@ -1025,6 +1025,10 @@ class alignmentAgent(habitat.Agent):
         fn = torch.sum(fn).item()
         fp = torch.sum(fp).item()
         tn = torch.sum(tn).item()
+        print("tp", tp)
+        print("fn", fn)
+        print("fp", fp)
+        print("tn", tn)
         e = 0.0000000001
 
         precision = tp / (tp + fp + e) / batch_size
