@@ -1018,13 +1018,12 @@ class alignmentAgent(habitat.Agent):
         tp = logits_one_hots * labels
         fn = labels - tp
         fp = logits_one_hots - tp
-        tn = torch.ones((p.size())).long() - ( fn + fp + tp)
+        tn = torch.ones((logits.size())).long() - ( fn + fp + tp)
 
         tp = torch.sum(tp).item()
         fn = torch.sum(fn).item()
         fp = torch.sum(fp).item()
         tn = torch.sum(tn).item()
-
 
         precision = tp / (tp+fp) / batch_size
         recall = tp / (tp + fn) / batch_size
