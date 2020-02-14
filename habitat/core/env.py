@@ -244,6 +244,7 @@ class Env:
         observations = self.task.step(
             action=action, episode=self.current_episode
         )
+
         self._task.measurements.update_measures(
             episode=self.current_episode, action=action, task=self.task
         )

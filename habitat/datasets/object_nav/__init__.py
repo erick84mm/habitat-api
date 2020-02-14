@@ -15,10 +15,10 @@ from habitat.core.registry import registry
 # habitat-sim installed. In a future PR we will implement a base simulator
 # action class which will be the connection point for tasks and datasets.
 # Post that PR we would no longer need try register blocks.
-def _try_register_pointnavdatasetv1():
+def _try_register_objectnavdatasetv1():
     try:
-        from habitat.datasets.pointnav.pointnav_dataset import (
-            PointNavDatasetV1,
+        from habitat.datasets.object_nav.object_nav_dataset import (
+            ObjectNavDatasetV1,
         )
 
         has_pointnav = True
@@ -27,12 +27,12 @@ def _try_register_pointnavdatasetv1():
         pointnav_import_error = e
 
     if has_pointnav:
-        from habitat.datasets.pointnav.pointnav_dataset import (
-            PointNavDatasetV1,
+        from habitat.datasets.object_nav.object_nav_dataset import (
+            ObjectNavDatasetV1,
         )
     else:
 
-        @registry.register_dataset(name="PointNav-v1")
-        class PointnavDatasetImportError(Dataset):
+        @registry.register_dataset(name="ObjectNav-v1")
+        class ObjectNavDatasetImportError(Dataset):
             def __init__(self, *args, **kwargs):
                 raise pointnav_import_error

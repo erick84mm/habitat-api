@@ -16,11 +16,12 @@ from habitat.core.embodied_task import Episode
 from habitat.core.logging import logger
 from habitat.datasets import make_dataset
 from habitat.tasks.eqa.eqa import AnswerAction
-from habitat.tasks.nav.nav import MoveForwardAction
+from habitat.tasks.nav.nav import MoveForwardAction, StopAction
 from habitat.utils.test_utils import sample_non_stop_action
 
 CFG_TEST = "configs/test/habitat_mp3d_eqa_test.yaml"
 CLOSE_STEP_THRESHOLD = 0.028
+OLD_STOP_ACTION_ID = 3
 
 
 # List of episodes each from unique house
@@ -92,9 +93,7 @@ def test_mp3d_eqa_dataset():
     if not mp3d_dataset.Matterport3dDatasetV1.check_config_paths_exist(
         dataset_config
     ):
-        pytest.skip(
-            "Please download Matterport3D EQA dataset to " "data folder."
-        )
+        pytest.skip("Please download Matterport3D EQA dataset to data folder.")
 
     dataset = mp3d_dataset.Matterport3dDatasetV1(config=dataset_config)
     assert dataset
@@ -110,9 +109,7 @@ def test_mp3d_eqa_sim():
     if not mp3d_dataset.Matterport3dDatasetV1.check_config_paths_exist(
         eqa_config.DATASET
     ):
-        pytest.skip(
-            "Please download Matterport3D EQA dataset to " "data folder."
-        )
+        pytest.skip("Please download Matterport3D EQA dataset to data folder.")
 
     dataset = make_dataset(
         id_dataset=eqa_config.DATASET.TYPE, config=eqa_config.DATASET
@@ -147,9 +144,7 @@ def test_mp3d_eqa_sim_correspondence():
     if not mp3d_dataset.Matterport3dDatasetV1.check_config_paths_exist(
         eqa_config.DATASET
     ):
-        pytest.skip(
-            "Please download Matterport3D EQA dataset to " "data folder."
-        )
+        pytest.skip("Please download Matterport3D EQA dataset to data folder.")
 
     dataset = make_dataset(
         id_dataset=eqa_config.DATASET.TYPE, config=eqa_config.DATASET
@@ -213,7 +208,8 @@ def test_mp3d_eqa_sim_correspondence():
                 atol=CLOSE_STEP_THRESHOLD * (step_id + 1),
             ), "Agent's path diverges from the shortest path."
 
-            obs = env.step(action=point.action)
+            if point.action != OLD_STOP_ACTION_ID:
+                obs = env.step(action=point.action)
 
             if not env.episode_over:
                 rgb_mean += obs["rgb"][:, :, :3].mean()
