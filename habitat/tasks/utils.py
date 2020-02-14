@@ -8,40 +8,6 @@ import numpy as np
 import quaternion  # noqa # pylint: disable=unused-import
 
 
-def rotation_to_quaternion(r: np.array):
-    r"""
-    ref: https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
-    """
-    tr = r[0][0] + r[1][1] + r[2][2]
-
-    if (tr > 0):
-        S = np.sqrt(tr+1.0) * 2  # S=4*qw
-        qw = 0.25 * S
-        qx = (r[2][1] - r[1][2]) / S
-        qy = (r[0][2] - r[2][0]) / S
-        qz = (r[1][0] - r[0][1]) / S
-    elif ((r[0][0] > r[1][1]) & (r[0][0] > r[2][2])):
-        S = np.sqrt(1.0 + r[0][0] - r[1][1] - r[2][2]) * 2  # S=4*qx
-        qw = (r[2][1] - r[1][2]) / S
-        qx = 0.25 * S
-        qy = (r[0][1] + r[1][0]) / S
-        qz = (r[0][2] + r[2][0]) / S
-    elif (r[1][1] > r[2][2]):
-        S = np.sqrt(1.0 + r[1][1] - r[0][0] - r[2][2]) * 2  # S=4*qy
-        qw = (r[0][2] - r[2][0]) / S
-        qx = (r[0][1] + r[1][0]) / S
-        qy = 0.25 * S
-        qz = (r[1][2] + r[2][1]) / S
-    else:
-        S = np.sqrt(1.0 + r[2][2] - r[0][0] - r[1][1]) * 2  # S=4*qz
-        qw = (r[1][0] - r[0][1]) / S
-        qx = (r[0][2] + r[2][0]) / S
-        qy = (r[1][2] + r[2][1]) / S
-        qz = 0.25 * S
-
-    return np.quaternion(qw, qx, qy, qz)
-
-
 def quaternion_to_rotation(q_r, q_i, q_j, q_k):
     r"""
     ref: https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
@@ -95,27 +61,17 @@ def quaternion_from_coeff(coeffs: np.ndarray) -> np.quaternion:
 
 
 def cartesian_to_polar(x, y):
-    # rho is the norm (for unit vectors should be 1)
-    # phi is the angle in between the x = 0 and the vector.
-    # y determines phi sign
     rho = np.sqrt(x ** 2 + y ** 2)
     phi = np.arctan2(y, x)
     return rho, phi
 
 
-def polar_to_cartesian(phi, rho=1):
-    x = rho * np.cos(phi)
-    y = rho * np.sin(phi)
-    return x, y
+def compute_pixel_coverage(instance_seg, object_id):
+    cand_mask = instance_seg == object_id
+    score = cand_mask.sum().astype(np.float64) / cand_mask.size
+    return score
 
-'''
-def heading_to_rotation(heading):
-    x, y = polar_to_cartesian(heading)
-    heading_vector = [y, 0, -x]
-    rotation_matrix = np.array([[-x, 0, -y], [0, -1, 0], [-y, 0, x]])
-    quat = rotation_to_quaternion(rotation_matrix)
-    return [quat.real] + quat.imag.tolist()
-'''
+
 def heading_to_rotation(heading):
     cy = 1
     sy = 0
