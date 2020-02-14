@@ -24,7 +24,7 @@ def _try_register_r2r_vln_dataset():
         class R2RDatasetImportError(Dataset):
             def __init__(self, *args, **kwargs):
                 raise r2r_vln_import_error
-                
+
 def _try_register_r2r_dataset():
     try:
         from habitat.datasets.vln.r2r_dataset import (
