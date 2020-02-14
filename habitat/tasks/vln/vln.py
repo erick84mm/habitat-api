@@ -7,7 +7,6 @@
 from typing import Any, Dict, List, Optional, Type, Union
 
 import attr
-import json
 import numpy as np
 import quaternion
 
@@ -25,7 +24,6 @@ from habitat.core.simulator import (
     AgentState,
     Sensor,
     SensorTypes,
-    ShortestPathPoint,
     Simulator,
 )
 from habitat.core.utils import not_none_validator, try_cv2_import
@@ -33,17 +31,13 @@ from habitat.sims.habitat_simulator.actions import HabitatSimActions
 from habitat.tasks.utils import (
     cartesian_to_polar,
     quaternion_from_coeff,
-    quaternion_rotate_vector,
-    heading_to_rotation,
+    quaternion_rotate_vector
 )
-from habitat.utils.visualizations import fog_of_war, maps
 from habitat.utils.geometry_utils import quaternion_to_list
 from habitat.utils.geometry_utils import (
     angle_between_quaternions,
     dir_angle_between_quaternions,
 )
-from habitat.datasets.vln.r2r_utils import load_connectivity
-from habitat_sim.nav import PathFinder
 
 cv2 = try_cv2_import()
 

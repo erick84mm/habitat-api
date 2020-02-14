@@ -20,7 +20,9 @@ def angle_between_quaternions(q1: np.quaternion, q2: np.quaternion) -> float:
     return 2 * np.arctan2(np.linalg.norm(dq[1:]), np.abs(dq[0]))
 
 def dir_angle_between_quaternions(q1: np.quaternion, q2: np.quaternion) -> float:
-
+    r"""Returns the angle (in radians) between two quaternions. 
+    This angle will always be positive.
+    """
     q1_inv = np.conjugate(q1)
     dq = quaternion.as_float_array(q1_inv * q2)
 
